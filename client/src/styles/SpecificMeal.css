@@ -1,0 +1,8 @@
+.exit {
+    color: #6c757d;
+}
+
+.exit:hover {
+    cursor: pointer;
+    color: #535a5f;
+}

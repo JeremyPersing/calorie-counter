@@ -1,0 +1,16 @@
+.donut-chart {
+    margin-top: 3em;
+    height: 275px;
+    width: 275px;
+}
+
+.home-btn {
+    width: 15em;
+    margin-bottom: 20px;
+}
+
+.sidebar-container {
+    height: 80vh;
+    display: flex;
+    justify-content: flex-end;
+  }

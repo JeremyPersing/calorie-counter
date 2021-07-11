@@ -1,0 +1,37 @@
+.hero {
+    background-color: #c1d0e5;
+    background-image: url("../assets/background.jpg");
+    background-position: center;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
+} 
+
+
+.btn.btn-hero {
+    border-radius: 10rem;
+    font-size: 1.2rem;
+    background-color: transparent;
+    border:1px solid #303030;
+    border-color:#303030;
+    color: #303030;
+    -webkit-transition: all .35s;
+    -moz-transition: all .35s;
+    transition: all .35s;
+    margin-bottom: 30px;
+}
+
+.btn.btn-hero:hover {
+    cursor: pointer;
+    opacity: 0.7;
+    background-color: transparent;
+    border:1px solid #303030;
+    border-color:#303030;
+    color: #303030;
+}
+
+.btn {
+    border: 0;
+    font-family: 'Helvetica Neue',Arial,sans-serif;
+}

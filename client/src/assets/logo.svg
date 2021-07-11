@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="svg935" width="180.661" height="53.055" version="1.1">
+  <defs/>
+  <style id="style887">
+    .a{stop-color:#000}.b{stroke-linejoin:round;stroke-width:20;stroke:#000}.c{stroke-width:.9}
+  </style>
+  <defs id="defs907">
+    <linearGradient id="linearGradient891">
+      <stop id="stop889" offset="0" stop-color="#a12626"/>
+    </linearGradient>
+    <linearGradient id="linearGradient897">
+      <stop id="stop893" class="a" offset="0"/>
+      <stop id="stop895" offset="1" stop-color="#000" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="linearGradient901">
+      <stop id="stop899" class="a" offset="0"/>
+    </linearGradient>
+    <linearGradient id="linearGradient903" x1="11.3" x2="502" y1="256.7" y2="256.7" gradientUnits="userSpaceOnUse" xlink:href="#linearGradient1455"/>
+    <linearGradient id="linearGradient905" x1="98.3" x2="224.3" y1="55.4" y2="55.4" gradientUnits="userSpaceOnUse" xlink:href="#linearGradient3345"/>
+  </defs>
+  <text id="text911" x="69.237" y="36.132" fill="#1a1a1a" stroke="#000" stroke-width=".1" font-family="sans-serif" font-size="20" letter-spacing="0" style="line-height:1" transform="scale(.93693 1.06732)">
+    <tspan id="tspan909" x="69.237" y="36.132" fill="#333" stroke="#000" stroke-width=".1" font-family="'Microsoft JhengHei'" font-size="40" font-weight="300" style="-inkscape-font-specification:'Microsoft JhengHei, weight=295';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal">Lagom</tspan>
+  </text>
+  <g id="g925" class="b" transform="matrix(.04298 0 0 .04368 19.901 1.735)">
+    <g id="g917" class="b">
+      <g id="g915" class="b">
+        <path id="path913" d="M256.7 257.3c-135.3 0-245.3 110.1-245.3 245.3 0 5.9 4.8 10.7 10.7 10.7 5.9 0 10.7-4.8 10.7-10.7 0-123.5 100.5-224 224-224s224 100.5 224 224c0 5.9 4.8 10.7 10.7 10.7 5.9 0 10.7-4.8 10.7-10.7-.2-135.2-110.3-245.3-245.5-245.3z" class="b"/>
+      </g>
+    </g>
+    <g id="g923" class="b">
+      <g id="g921" class="b">
+        <path id="path919" d="M256.7 0C192 0 139.4 52.6 139.4 117.3c0 64.7 52.7 117.3 117.3 117.3 64.7 0 117.3-52.6 117.3-117.3C374 52.6 321.3 0 256.7 0zm0 213.3c-52.9 0-96-43.1-96-96s43.1-96 96-96 96 43.1 96 96-43.1 96-96 96z" class="b"/>
+      </g>
+    </g>
+  </g>
+  <g id="g933" class="c" transform="matrix(.12108 0 0 .10304 .833 14.325)">
+    <g id="g931" class="c">
+      <g id="g929" class="c">
+        <path id="path927" d="M379.7 124.8c-3-.2-6-.3-8.3-.3-.9-.1-96.5-7.1-134.7 118.8-33.4 110.1-110.9 105.2-115 104.9-1.5 0-3.1 0-4.6-.1-54.6-2.4-97.4-47.2-97.4-101.9 0-56.3 45.8-102 102-102 34.9 0 67 17.5 85.9 46.9l16.6-10.7c-22.6-35.1-60.9-56-102.5-56C54.6 124.4 0 179 0 246.2c0 65.3 51.1 118.7 116.2 121.6 1.8.1 3.6.1 4.6.1.1 0 1.3.1 3.3.1 17.2 0 97.2-6.2 131.5-118.9C289 139 366.5 143.9 370.6 144.2c2.6 0 5.2.1 7.7.3 52.9 3.9 94.3 48.6 94.3 101.7 0 56.3-45.8 102-102 102-34.9 0-67-17.5-85.9-46.9L268.1 312c22.5 35 60.8 56 102.4 56 67.1 0 121.7-54.6 121.7-121.7 0-63.4-49.4-116.7-112.6-121.4z" class="c"/>
+      </g>
+    </g>
+  </g>
+</svg>

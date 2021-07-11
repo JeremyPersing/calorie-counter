@@ -1,0 +1,27 @@
+.servings-form {
+    display:flex;
+    align-self: center;
+  }
+  
+  .servings-input {
+    border-color: rgb(145, 120, 120);
+  }
+  
+  .value-button {
+    width: 30px
+  }
+  
+  .value-button:hover {
+    cursor: pointer;
+    background-color: rgba(211, 211, 211, 0.925);
+  }
+  
+  .servings-form #decrease {
+    margin-right: -4px;
+    border-radius: 8px 0 0 8px;
+  }
+  
+  .servings-form #increase {
+    margin-left: -4px;
+    border-radius: 0 8px 8px 0;
+  }
