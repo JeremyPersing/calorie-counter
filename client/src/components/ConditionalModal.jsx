@@ -1,6 +1,6 @@
 import React from "react";
 import Modal from "react-bootstrap/Modal";
-import SearchMealsTable from "./SearchMealsTable";
+import SearchMealsDisplay from "./SearchMealsDisplay";
 import IngredientInputForm from "./IngredientInputForm";
 
 function ConditionalModal(props) {
@@ -30,7 +30,7 @@ function ConditionalModal(props) {
         </Modal.Header>
         <Modal.Body>
           {condition && show ? (
-            <SearchMealsTable
+            <SearchMealsDisplay
               setProducts={setProducts}
               products={products}
               keyField={keyField}

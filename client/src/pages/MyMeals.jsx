@@ -5,7 +5,7 @@ import LikeIcon from "../components/LikeIcon";
 import MealsTab from "../components/MealsTab";
 import { sortCaret } from "./../modules/tableModule";
 import {
-  putCreatedMeal,
+  putUserMeal,
   getCreatedMeals,
   getLocalUserMeals,
   setLocalUserMeals,
@@ -20,7 +20,7 @@ function MyMeals(props) {
   const [products, setProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
+  /* useEffect(() => {
     async function getMeals() {
       const meals = await getCreatedMeals();
       const { data } = meals;
@@ -61,7 +61,7 @@ function MyMeals(props) {
       setProducts(updatedProducts);
 
       try {
-        const response = await putCreatedMeal(serverObj);
+        const response = await putUserMeal(serverObj);
         if (response.status === 200) updateLocalUserMeal(response.data);
       } catch (error) {
         setProducts(productsBefore);
@@ -186,11 +186,12 @@ function MyMeals(props) {
         </p>
       </div>
     );
-  };
+  };*/
 
   return (
     <>
-      <Page>
+      MyMealsPage
+      {/* <Page>
         <MealsTab className="mt-2 mb-2 center" />
         <div className="text-center mt-3">
           <h5>Create Your Own Meals</h5>
@@ -203,7 +204,7 @@ function MyMeals(props) {
             </Link>
           </div>
         </div>
-      </Page>
+      </Page> */}
     </>
   );
 }

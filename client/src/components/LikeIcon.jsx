@@ -1,12 +1,32 @@
 import React from "react";
-import { ReactComponent as LikedMeal } from "../assets/full_heart.svg";
-import { ReactComponent as NotLikedMeal } from "../assets/empty_heart.svg";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
 
-function LikeIcon({ liked }) {
-  if (liked) {
-    return <LikedMeal height="25px" width="25px" />;
+function LikeIcon(props) {
+  if (props.liked) {
+    return (
+      <FontAwesomeIcon
+        icon={faHeart}
+        className={
+          props.FontAwesomeIconclassName
+            ? "text-primary meal-card-icon " + props.className
+            : "text-primary meal-card-icon"
+        }
+        onClick={props.onClick}
+      />
+    );
   }
-  return <NotLikedMeal height="25px" width="25px" />;
+  return (
+    <FontAwesomeIcon
+      icon={faHeart}
+      className={
+        props.FontAwesomeIconclassName
+          ? "meal-card-icon " + props.className
+          : "meal-card-icon"
+      }
+      onClick={props.onClick}
+    />
+  );
 }
 
 export default LikeIcon;

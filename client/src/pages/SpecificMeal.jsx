@@ -8,6 +8,7 @@ import Card from "../components/Card";
 import { toast } from "react-toastify";
 import "../styles/SpecificMeal.css";
 import {
+  getUserMealByNameAndBrand,
   getMealById,
   getLocalUserMeals,
   postSearchedMeal,
@@ -34,8 +35,13 @@ function SpecificMeal(props) {
   useEffect(() => {
     async function getMeal() {
       let urlArray = props.location.pathname.split("/");
-      const mealId = urlArray[2]; // Can either be a name or 24 char string
+      let mealId;
+
+      // user created meal
+      if (urlArray.length === 4) mealId = [urlArray[2], urlArray[3]];
+      else mealId = urlArray[2]; // Can either be a name or 24 char string
       console.log("mealId", mealId);
+
       setPlayLottie(true);
       // Using localstorage to have persistant meal in the case that user refreshes
       // We only set this when the user clicks on an item and is taken to this page
@@ -45,14 +51,21 @@ function SpecificMeal(props) {
         try {
           const nixIdRegex = /^[a-f\d]{24}$/i;
 
-          if (mealId.match(nixIdRegex)) {
-            console.log("matches ");
-            meal = await nutritionixService.getMealByNixItemId(mealId);
+          if (Array.isArray(mealId)) {
+            console.log(mealId[0]);
+            console.log(mealId[1]);
+            meal = await getUserMealByNameAndBrand(mealId[0], mealId[1]);
+            meal = meal.data;
           } else {
-            meal = await nutritionixService.getMealDetails(mealId);
+            if (mealId.match(nixIdRegex)) {
+              console.log("matches ");
+              meal = await nutritionixService.getMealByNixItemId(mealId);
+            } else {
+              meal = await nutritionixService.getMealDetails(mealId);
+            }
+            meal = meal.data.foods[0];
           }
 
-          meal = meal.data.foods[0];
           localStorage.setItem("currentMealSelected", JSON.stringify(meal));
         } catch (error) {
           console.log(error);
@@ -67,9 +80,6 @@ function SpecificMeal(props) {
       // if (index !== -1) setLocalUserMeal(true);
 
       setMeal(meal);
-
-      // if (meal.ingredients && meal.ingredients.length > 0)
-      //   await mapIngredients(meal);
 
       setPlayLottie(false);
     }
@@ -279,7 +289,9 @@ function SpecificMeal(props) {
                           </span>
                           <span className="col-4">{i.calories}</span>
                           <span className="col-4">
-                            {i.serving_qty + " " + i.serving_unit}
+                            {i.serving_unit
+                              ? i.serving_qty + " " + i.serving_unit
+                              : i.serving_qty}
                           </span>
                         </div>
                       </div>

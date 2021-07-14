@@ -47,6 +47,10 @@ function Pagination(props) {
     };
     setCurrPage(currentPage);
     onPageChanged(paginationData);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   const handleClick = (page) => (evt) => {
@@ -149,9 +153,13 @@ function Pagination(props) {
                 key={index}
                 className={`page-item${currPage === page ? " active" : ""}`}
               >
-                <button className="btn page-link" onClick={handleClick(page)}>
+                <a
+                  href="#page-top"
+                  className="btn page-link"
+                  onClick={handleClick(page)}
+                >
                   {page}
-                </button>
+                </a>
               </li>
             );
           })}

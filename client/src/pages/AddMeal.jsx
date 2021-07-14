@@ -4,8 +4,8 @@ import Form from "../components/Form";
 import ConditionalModal from "../components/ConditionalModal";
 import { sortCaret } from "./../modules/tableModule";
 import {
-  deleteCreatedMeal,
-  postCreatedMeal,
+  deleteUserMeal,
+  postUserMeal,
   pushLocalUserMeal,
   deleteLocalUserMealById,
 } from "../services/mealService";
@@ -107,7 +107,7 @@ class AddMeal extends Form {
       };
       console.log("serverObj in AddMeal", serverObj);
 
-      const response = await postCreatedMeal(serverObj);
+      const response = await postUserMeal(serverObj);
       console.log("data", response.data);
       if (response.status === 200) pushLocalUserMeal(response.data);
 
@@ -131,7 +131,7 @@ class AddMeal extends Form {
     // Deletes only the meals created from input because those get pushed to the db
     if (meal.fields.isInputted) {
       try {
-        const response = await deleteCreatedMeal(meal);
+        const response = await deleteUserMeal(meal);
         if (response.status === 200) deleteLocalUserMealById(meal._id);
       } catch (error) {
         toast.error("An unexpected error has occurred");

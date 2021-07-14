@@ -1,7 +1,7 @@
 import React from "react";
 import Joi from "joi-browser";
 import Form from "./Form";
-import { postCreatedMeal, pushLocalUserMeal } from "../services/mealService";
+import { postUserMeal, pushLocalUserMeal } from "../services/mealService";
 
 class IngredientInputForm extends Form {
   // props for this class are meal, ingredientList, handleClose
@@ -57,7 +57,7 @@ class IngredientInputForm extends Form {
     ingredient.ingredients = [];
     ingredient.servings = Number(this.state.data.servings);
     try {
-      const response = await postCreatedMeal(ingredient);
+      const response = await postUserMeal(ingredient);
       if (response.status === 200) {
         // This will be used in AddMeal.jsx removeIngredient()
         // to call the server to delete meal from db

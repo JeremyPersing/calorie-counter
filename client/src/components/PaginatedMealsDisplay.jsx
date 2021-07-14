@@ -6,7 +6,7 @@ function PaginatedMealsDisplay(props) {
   const [currProducts, setCurrProducts] = useState([]);
   const [currPage, setCurrPage] = useState(1);
   const [totalPages, setTotalPages] = useState();
-  const { products, pageLimit, pageNeighbors } = props;
+  const { products, setProducts, pageLimit, pageNeighbors } = props;
 
   const onPageChanged = (data) => {
     const { currentPage, totalPages, pageLimit } = data;
@@ -46,7 +46,12 @@ function PaginatedMealsDisplay(props) {
           </div>
         </div>
         {currProducts.map((item) => (
-          <MealCard key={item.food_name} meal={item} />
+          <MealCard
+            key={item.food_name}
+            meal={item}
+            products={products}
+            setProducts={setProducts}
+          />
         ))}
       </div>
       <div className="d-flex flex-row py-3 align-items-center justify-content-center">

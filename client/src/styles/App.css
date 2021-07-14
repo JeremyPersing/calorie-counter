@@ -347,3 +347,15 @@ h5 {
   cursor:pointer;
   color: red;
 }
+
+.meal-card-icon:hover {
+  opacity: .7;
+}
+
+.delete-icon:hover {
+  color: #e74a3b;
+}
+
+.add-icon:hover {
+  color: #1cc88a;
+}

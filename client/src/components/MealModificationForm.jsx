@@ -1,7 +1,7 @@
 import React from "react";
 import Joi from "joi-browser";
 import Form from "./Form";
-import { putCreatedMeal, updateLocalUserMeal } from "../services/mealService";
+import { putUserMeal, updateLocalUserMeal } from "../services/mealService";
 
 class MealModificationForm extends Form {
   state = {
@@ -53,7 +53,7 @@ class MealModificationForm extends Form {
     meal.servings = Number(this.state.data.servings);
 
     try {
-      const response = await putCreatedMeal(meal);
+      const response = await putUserMeal(meal);
 
       if (response.status === 200) {
         // This will be used in AddMeal.jsx removeIngredient()

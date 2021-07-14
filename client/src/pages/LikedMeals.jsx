@@ -3,7 +3,7 @@ import Page from "../components/Page";
 import MealsTab from "../components/MealsTab";
 import {
   getLikedMeals,
-  putCreatedMeal,
+  putUserMeal,
   updateLocalUserMeal,
 } from "../services/mealService";
 import MealsTable from "./../components/MealsTable";
@@ -57,7 +57,7 @@ function LikedMeals(props) {
       };
 
       try {
-        const response = await putCreatedMeal(meal);
+        const response = await putUserMeal(meal);
         if (response.status === 200) updateLocalUserMeal(response.data);
       } catch (error) {
         console.log(error.response);
