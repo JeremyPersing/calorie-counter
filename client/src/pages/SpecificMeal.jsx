@@ -185,17 +185,6 @@ function SpecificMeal(props) {
     return res.data;
   };
 
-  // const mapIngredients = async (meal) => {
-  //   let arr = [];
-
-  //   for (const i in meal.ingredients) {
-  //     const res = await getIngredient(meal.ingredients[i]);
-  //     arr.push(res);
-  //   }
-
-  //   setIngredients(arr);
-  // };
-
   const handleIngredientClick = (ingredientObj) => {
     console.log(ingredientObj);
     const mealName = ingredientObj.food;
@@ -240,7 +229,13 @@ function SpecificMeal(props) {
               className="col-lg-6 mb-4"
               color="info"
               title="Serving Size"
-              text={getGrams(meal.serving_weight_grams)}
+              text={
+                meal.serving_qty && meal.serving_unit
+                  ? meal.serving_qty + " " + meal.serving_unit
+                  : meal.serving_weight_grams
+                  ? getGrams(meal.serving_weight_grams)
+                  : "1 meal"
+              }
             />
           </div>
           <div className="row">
@@ -302,63 +297,6 @@ function SpecificMeal(props) {
             </div>
           )}
 
-          {/* Modal for added the meal to consumed meals */}
-          <Modal show={show} onHide={handleClose}>
-            <Modal.Header>
-              <Modal.Title>Enter the Number of Servings You Had</Modal.Title>
-
-              <i
-                className="fa fa-times exit"
-                aria-hidden="true"
-                onClick={handleClose}
-              ></i>
-            </Modal.Header>
-            <Modal.Body className="d-flex justify-content-center">
-              <input
-                className="form-control"
-                type="number"
-                value={servings}
-                min="0"
-                onChange={(e) => setServings(e.target.value)}
-              />
-            </Modal.Body>
-
-            <Modal.Footer>
-              <button className="btn btn-secondary" onClick={handleClose}>
-                Close
-              </button>
-              <button className="btn btn-primary" onClick={handleAdd}>
-                Add
-              </button>
-            </Modal.Footer>
-          </Modal>
-          {/* Modal for the consumed meals */}
-          <Modal
-            show={showEdit}
-            onHide={handleCloseEdit}
-            dialogClassName="modal-lg"
-          >
-            <Modal.Header>
-              <Modal.Title>Edit Meal</Modal.Title>
-              <i
-                className="fa fa-times exit"
-                aria-hidden="true"
-                onClick={handleCloseEdit}
-              ></i>
-            </Modal.Header>
-            <Modal.Body>
-              <MealModificationForm
-                meal={meal}
-                setMeal={setMeal}
-                handleClose={handleCloseEdit}
-              />
-            </Modal.Body>
-            <Modal.Footer>
-              <button className="btn btn-secondary" onClick={handleCloseEdit}>
-                Close
-              </button>
-            </Modal.Footer>
-          </Modal>
           <div className="d-flex justify-content-around mb-3">
             <button
               className="btn btn-primary btn-sm shadow-sm"
@@ -391,6 +329,63 @@ function SpecificMeal(props) {
             )}
           </div>
         </div>
+        {/* Modal for added the meal to consumed meals */}
+        <Modal show={show} onHide={handleClose}>
+          <Modal.Header>
+            <Modal.Title>Enter the Number of Servings You Had</Modal.Title>
+
+            <i
+              className="fa fa-times exit"
+              aria-hidden="true"
+              onClick={handleClose}
+            ></i>
+          </Modal.Header>
+          <Modal.Body className="d-flex justify-content-center">
+            <input
+              className="form-control"
+              type="number"
+              value={servings}
+              min="0"
+              onChange={(e) => setServings(e.target.value)}
+            />
+          </Modal.Body>
+
+          <Modal.Footer>
+            <button className="btn btn-secondary" onClick={handleClose}>
+              Close
+            </button>
+            <button className="btn btn-primary" onClick={handleAdd}>
+              Add
+            </button>
+          </Modal.Footer>
+        </Modal>
+        {/* Modal for the consumed meals */}
+        <Modal
+          show={showEdit}
+          onHide={handleCloseEdit}
+          dialogClassName="modal-lg"
+        >
+          <Modal.Header>
+            <Modal.Title>Edit Meal</Modal.Title>
+            <i
+              className="fa fa-times exit"
+              aria-hidden="true"
+              onClick={handleCloseEdit}
+            ></i>
+          </Modal.Header>
+          <Modal.Body>
+            <MealModificationForm
+              meal={meal}
+              setMeal={setMeal}
+              handleClose={handleCloseEdit}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <button className="btn btn-secondary" onClick={handleCloseEdit}>
+              Close
+            </button>
+          </Modal.Footer>
+        </Modal>
       </Page>
     </div>
   );

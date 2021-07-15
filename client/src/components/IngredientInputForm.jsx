@@ -1,21 +1,62 @@
 import React from "react";
 import Joi from "joi-browser";
 import Form from "./Form";
+import Search from "./Search";
 import { postUserMeal, pushLocalUserMeal } from "../services/mealService";
+import { getImagesByQuery } from "../services/pixabayService";
+import Modal from "react-bootstrap/Modal";
 
 class IngredientInputForm extends Form {
   // props for this class are meal, ingredientList, handleClose
 
+  // Ingredient schema for sub_recipe arr
+  //   calories: 17.88
+  // food: "garlic"
+  // ndb_number: 11215
+  // recipe_id: 1000143
+  // serving_qty: 4
+  // serving_unit: "cloves"
+  // serving_weight: 12
+
+  // userMeal schema for post
+  // food_name: temporaryMeal.food_name,
+  // brand_name: temporaryMeal.brand_name,
+  // serving_qty:
+  //         temporaryMeal.serving_qty === null ? 1 : temporaryMeal.serving_qty,
+  // serving_unit:
+  //         temporaryMeal.serving_unit === null
+  //           ? "meal"
+  //           : temporaryMeal.serving_unit,
+  // serving_weight_grams: temporaryMeal.serving_weight_grams,
+  // nf_calories: temporaryMeal.nf_calories,
+  // nf_protein: temporaryMeal.nf_protein,
+  // nf_total_carbohydrate: temporaryMeal.nf_total_carbohydrate,
+  // nf_total_fat: temporaryMeal.nf_total_fat,
+  // nix_item_id: temporaryMeal.nix_item_id,
+  // thumb: temporaryMeal.photo.thumb,
+  // sub_recipe: temporaryMeal.sub_recipe ? temporaryMeal.sub_recipe : [],
+  // liked: true,
+  // created_meal: false,
+  // user_meal: true,
+
   state = {
     data: {
+      food_name: "",
       brand_name: "",
-      item_name: "",
+      serving_qty: "",
+      serving_unit: "",
+      serving_weight: "",
       nf_calories: "",
       nf_protein: "",
       nf_total_carbohydrate: "",
       nf_total_fat: "",
+      thumb: null,
       servings: "",
     },
+    thumb: null,
+    show: false,
+    searchQuery: "",
+
     errors: {},
   };
 
@@ -72,10 +113,23 @@ class IngredientInputForm extends Form {
     }
   };
 
+  handleShow = () => this.setState({ show: true });
+  handleClose = () => this.setState({ show: false });
+
+  handleSearchChange = (e) => {
+    e.preventDefault();
+    this.setState({ searchQuery: e.target.value });
+  };
+
+  handleSearchClick = async () => {
+    const res = await getImagesByQuery(this.state.searchQuery);
+    console.log(res);
+  };
+
   render() {
     return (
       <div>
-        <form onSubmit={this.handleSubmit}>
+        <div className="form-user" onSubmit={this.handleSubmit}>
           {this.renderInput("brand_name", "Brand")}
           {this.renderInput("item_name", "Ingredient Name")}
           {this.renderInput("nf_calories", "Calories/Serving", "number")}
@@ -87,8 +141,46 @@ class IngredientInputForm extends Form {
           )}
           {this.renderInput("nf_total_fat", "Fat/Serving (g)", "number")}
           {this.renderInput("servings", "Servings", "number")}
-          {this.renderButton("Add", "w-100")}
-        </form>
+          <button
+            className="btn btn-secondary btn-user btn-block"
+            onClick={this.handleShow}
+          >
+            Search Image
+          </button>
+
+          <button
+            onClick={() => this.doSubmit()}
+            disabled={this.validate()}
+            className="btn btn-primary btn-user btn-block"
+            type="submit"
+          >
+            Add Meal
+          </button>
+        </div>
+        <Modal
+          show={this.state.show}
+          onHide={this.handleClose}
+          backdrop="static"
+          size="lg"
+        >
+          <Modal.Header>
+            <Modal.Title>Search Image</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Search
+              className="col-10 offset-1 d-flex mt-4 mb-4"
+              onChange={this.handleSearchChange}
+              onClick={this.handleSearchClick}
+              value={this.state.searchQuery}
+              placeholder="Search for an Image..."
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <button className="btn btn-secondary" onClick={this.handleClose}>
+              Close
+            </button>
+          </Modal.Footer>
+        </Modal>
       </div>
     );
   }

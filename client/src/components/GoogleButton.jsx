@@ -9,19 +9,20 @@ import {
   getLocalUserMeals,
 } from "../services/mealService";
 import { useHistory } from "react-router-dom";
-import { toast } from "react-toastify";
 
 function GoogleButton(props) {
   let history = useHistory();
 
   const googleResponse = async (res) => {
     try {
+      console.log("google response is occurring");
       const serverObj = {
         name: res.profileObj.name,
         email: res.profileObj.email,
         googleId: res.profileObj.googleId,
       };
 
+      // When user is registering they should have an account created
       if (!props.login) {
         const response = await userService.registerWithGoogle(serverObj);
         auth.loginWithJwt(response.headers["x-auth-token"]);
@@ -44,10 +45,6 @@ function GoogleButton(props) {
       history.push("/");
     } catch (error) {
       console.log(error);
-      // console.log(error);
-      // if (error.response.status === 400)
-      //   return toast.error(error.response.data);
-      return toast.error("An unexpected error has occured");
     }
   };
 

@@ -31,7 +31,7 @@ class AddMeal extends Form {
   };
 
   schema = {
-    brand_name: Joi.string().required().allow(""),
+    brand_name: Joi.string().required().allow(null).allow(""),
     item_name: Joi.string().required().label("Meal Name"),
   };
 
@@ -257,13 +257,13 @@ class AddMeal extends Form {
           </div>
           <div className="mt-3 d-flex justify-content-center">
             <button
-              className="btn btn-secondary mr-1"
+              className="btn btn-secondary btn-sm shadow-sm mr-1"
               onClick={this.handleSearchClicked}
             >
               Search Ingredient
             </button>
             <button
-              className="btn btn-secondary ml-1"
+              className="btn btn-secondary btn-sm shadow-sm ml-1"
               onClick={this.handleInputClicked}
             >
               Input Ingredient

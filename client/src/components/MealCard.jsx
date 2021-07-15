@@ -32,11 +32,15 @@ function MealCard(props) {
   const handleClick = () => {
     console.log(meal);
     const mealName = meal.food_name;
-    let pathName = "/meals/" + mealName;
+    let pathName = "/meals/" + mealName; // Generic meal
 
-    if (meal.nix_brand_id) pathName = "/meals/" + meal.nix_item_id;
+    // Represents non user created meals that are brand specific
+    if (meal.nix_item_id) pathName = "/meals/" + meal.nix_item_id;
+
     if (meal.created_meal)
       pathName = "/meals/" + meal.food_name + "/" + meal.brand_name;
+
+    console.log(pathName);
 
     const location = {
       pathname: pathName,
@@ -262,7 +266,7 @@ function MealCard(props) {
               <span style={img} className="avatar avatar-xl mr-3"></span>
               <div className="media-body overflow-hidden">
                 <p className="card-text mb-0 text-capitalize">
-                  { currMeal.brand_name
+                  {currMeal.brand_name
                     ? currMeal.brand_name + " " + currMeal.food_name
                     : currMeal.food_name}
                 </p>

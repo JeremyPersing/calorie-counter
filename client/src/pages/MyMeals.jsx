@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Page from "../components/Page";
-import LikeIcon from "../components/LikeIcon";
 import MealsTab from "../components/MealsTab";
-import { sortCaret } from "./../modules/tableModule";
 import {
   putUserMeal,
   getCreatedMeals,
@@ -14,104 +12,24 @@ import {
 import BootstrapTable from "react-bootstrap-table-next";
 import paginationFactory from "react-bootstrap-table2-paginator";
 import paginationService from "../services/paginationService";
-import { appendLikeButtonToMeals } from "../utils/likifyMeals";
 
 function MyMeals(props) {
   const [products, setProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  /* useEffect(() => {
+  useEffect(() => {
     async function getMeals() {
       const meals = await getCreatedMeals();
       const { data } = meals;
-      let properData = appendLikeButtonToMeals(data);
 
       if (getLocalUserMeals().length === 0) {
-        setLocalUserMeals(properData);
+        setLocalUserMeals(data);
       }
-      console.log("Products in MyMeals", properData);
-      setProducts(properData);
+      console.log("Products in MyMeals", data);
+      setProducts(data);
     }
     getMeals();
   }, []);
-
-  const handleLike = {
-    onClick: async (e, column, columnIndex, row, rowIndex) => {
-      const productsBefore = [...products];
-      const index = productsBefore.indexOf(row);
-      let meal = productsBefore[index];
-
-      meal.fields.liked = !meal.fields.liked;
-      meal.fields.likeComponent = <LikeIcon liked={meal.fields.liked} />;
-
-      const serverObj = {
-        ingredients: meal.fields.ingredients,
-        liked: meal.fields.liked,
-        brand_name: meal.fields.brand_name,
-        item_name: meal.fields.item_name,
-        nf_calories: meal.fields.nf_calories,
-        nf_protein: meal.fields.nf_protein,
-        nf_total_carbohydrate: meal.fields.nf_total_carbohydrate,
-        nf_total_fat: meal.fields.nf_total_fat,
-        _id: meal._id,
-      };
-
-      const updatedProducts = [...productsBefore];
-      updatedProducts[index] = meal;
-      setProducts(updatedProducts);
-
-      try {
-        const response = await putUserMeal(serverObj);
-        if (response.status === 200) updateLocalUserMeal(response.data);
-      } catch (error) {
-        setProducts(productsBefore);
-      }
-    },
-  };
-
-  const cellEvents = {
-    onClick: (e, column, columnIndex, row, rowIndex) => {
-      let meal = row.fields;
-
-      const location = {
-        pathname: "/meals/" + meal.item_id,
-        meal,
-      };
-
-      props.history.push(location);
-    },
-  };
-
-  const keyField = "fields.item_id";
-
-  const columns = [
-    {
-      dataField: "fields.item_name",
-      text: "Name",
-      sort: true,
-      sortCaret: (order, column) => sortCaret(order, column),
-      events: cellEvents,
-    },
-    {
-      dataField: "fields.brand_name",
-      text: "Brand",
-      sort: true,
-      sortCaret: (order, column) => sortCaret(order, column),
-      events: cellEvents,
-    },
-    {
-      dataField: "fields.nf_calories",
-      text: "Cal / Serving",
-      sort: true,
-      sortCaret: (order, column) => sortCaret(order, column),
-      events: cellEvents,
-    },
-    {
-      dataField: "fields.likeComponent",
-      text: "",
-      events: handleLike,
-    },
-  ];
 
   const filterByValue = (array, string) => {
     let matchingObjects = [];
@@ -154,7 +72,8 @@ function MyMeals(props) {
 
   const mealsCreatedTable = () => (
     <div>
-      <div className="d-flex justify-content-center">
+      Hello
+      {/* <div className="d-flex justify-content-center">
         <input
           type="text"
           value={searchQuery}
@@ -173,7 +92,7 @@ function MyMeals(props) {
         bordered={false}
         rowClasses="row-classes"
         noDataIndication="Table is empty"
-      />
+      /> */}
     </div>
   );
 
@@ -186,12 +105,11 @@ function MyMeals(props) {
         </p>
       </div>
     );
-  };*/
+  };
 
   return (
     <>
-      MyMealsPage
-      {/* <Page>
+      <Page>
         <MealsTab className="mt-2 mb-2 center" />
         <div className="text-center mt-3">
           <h5>Create Your Own Meals</h5>
@@ -200,11 +118,13 @@ function MyMeals(props) {
             : noCreatedMeals()}
           <div>
             <Link to="/meals/add">
-              <button className="btn btn-primary">Create a Meal</button>
+              <button className="btn btn-primary btn-sm shadow-sm">
+                Create a Meal
+              </button>
             </Link>
           </div>
         </div>
-      </Page> */}
+      </Page>
     </>
   );
 }

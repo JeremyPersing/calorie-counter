@@ -22,15 +22,14 @@ function Page(props) {
 
   return (
     <div id="wrapper">
-      {
-        auth.getCurrentUser() &&
-      <Navbar
-        toggled={toggled}
-        setToggled={setToggled}
-        getTextClasses={getTextClasses}
-        toggleSideBar={toggleSideBar}
-      />
-      }
+      {auth.getCurrentUser() && (
+        <Navbar
+          toggled={toggled}
+          setToggled={setToggled}
+          getTextClasses={getTextClasses}
+          toggleSideBar={toggleSideBar}
+        />
+      )}
       <div id="content-wrapper" className="d-flex flex-column">
         <div id="content">
           <HiddenNavbar toggled={toggled} toggleSideBar={toggleSideBar} />
@@ -44,6 +43,10 @@ function Page(props) {
               className="text-decoration-none"
             >
               Nutritionix API
+            </a>{" "}
+            and{" "}
+            <a href="https://pixabay.com/" className="text-decoration-none">
+              Pixabay
             </a>
           </p>
         </footer>

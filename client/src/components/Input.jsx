@@ -3,7 +3,8 @@ import "../styles/App.css";
 
 class Input extends Component {
   render() {
-    const { value, onChange, name, error, label, ...rest } = this.props;
+    const { value, onChange, name, error, label, onKeyPress, ...rest } =
+      this.props;
     return (
       <div className="form-group">
         <input
@@ -12,6 +13,7 @@ class Input extends Component {
           name={name}
           id={name}
           {...rest}
+          onKeyPress={this.props.onKeyPress}
           className="form-control form-control-user"
           placeholder={label}
         />

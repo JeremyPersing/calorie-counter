@@ -3,7 +3,6 @@ import Joi from "joi-browser";
 import Input from "./Input";
 import Select from "./Select";
 
-
 class Form extends Component {
   state = {
     data: {}, // going to be overridden in the child
@@ -50,7 +49,7 @@ class Form extends Component {
     this.setState({ data, errors });
   };
 
-  renderInput = (name, label, type = "text") => {
+  renderInput = (name, label, type = "text", onKeyPress) => {
     const { data, errors } = this.state;
 
     return (
@@ -59,6 +58,7 @@ class Form extends Component {
         value={data[name]}
         onChange={this.handleChange}
         error={errors[name]}
+        onKeyPress={onKeyPress}
         name={name}
         label={label}
       />

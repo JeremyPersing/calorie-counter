@@ -8,13 +8,11 @@ import "../styles/Home.css";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import Card from "../components/Card";
-import nutritionixService from "../services/nutritionixService";
 
 function Home(props) {
   const [dailyCalories, setDailyCalories] = useState(null);
   const [mealsConsumed, setMealsConsumed] = useState([]);
   const [totalCaloriesConsumed, setTotalCaloriesConsumed] = useState(0);
-  const [burger, setBurgers] = useState();
 
   useEffect(() => {
     async function getStats() {
@@ -38,22 +36,10 @@ function Home(props) {
     (totalCaloriesConsumed / dailyCalories) * 100
   );
 
-  const getBurgers = async () => {
-    try {
-      const burgers = await nutritionixService.getMealByName("burger");
-      console.log(burgers);
-      setBurgers(burgers.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   return (
     <Page>
       <div className="d-sm-flex align-items-center justify-content-between mb-4 mt-5">
         <Heading text="Daily Progress" />
-        <button onClick={getBurgers}>Get Burgers</button>
-        {burger && burger.common.map((i) => <li>{i.food_name}</li>)}
         <button
           className="mt-3-sm d-sm-inline-block btn btn-sm btn-primary shadow-sm"
           onClick={() => props.history.push("/meals/search")}

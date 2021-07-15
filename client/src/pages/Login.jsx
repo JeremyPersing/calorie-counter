@@ -53,6 +53,10 @@ class Login extends Form {
     }
   };
 
+  handleKeyPress = (e) => {
+    e.charCode === 13 && this.doSubmit();
+  };
+
   render() {
     if (auth.getCurrentUser()) return <Redirect to="/" />;
 
@@ -72,8 +76,18 @@ class Login extends Form {
                       </div>
                       {/* Form */}
                       <div className="form-user">
-                        {this.renderInput("email", "Enter Email Address...")}
-                        {this.renderInput("password", "Password", "password")}
+                        {this.renderInput(
+                          "email",
+                          "Enter Email Address...",
+                          "text",
+                          this.handleKeyPress
+                        )}
+                        {this.renderInput(
+                          "password",
+                          "Password",
+                          "password",
+                          this.handleKeyPress
+                        )}
                         <button
                           onClick={() => this.doSubmit()}
                           disabled={this.validate()}

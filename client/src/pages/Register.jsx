@@ -48,6 +48,10 @@ class Register extends Form {
     }
   };
 
+  handleKeyPress = (e) => {
+    e.charCode === 13 && this.doSubmit();
+  };
+
   render() {
     if (auth.getCurrentUser()) return <Redirect to="/" />;
 
@@ -75,17 +79,37 @@ class Register extends Form {
                           className="col-sm-6"
                           style={{ marginBottom: "-6px" }}
                         >
-                          {this.renderInput("first_name", "First Name")}
+                          {this.renderInput(
+                            "first_name",
+                            "First Name",
+                            "text",
+                            this.handleKeyPress
+                          )}
                         </div>
                         <div className="col-sm-6">
-                          {this.renderInput("last_name", "Last Name")}
+                          {this.renderInput(
+                            "last_name",
+                            "Last Name",
+                            "text",
+                            this.handleKeyPress
+                          )}
                         </div>
                       </div>
                       <div className="form-group">
-                        {this.renderInput("email", "Email", "email")}
+                        {this.renderInput(
+                          "email",
+                          "Email",
+                          "email",
+                          this.handleKeyPress
+                        )}
                       </div>
                       <div className="form-group">
-                        {this.renderInput("password", "Password", "password")}
+                        {this.renderInput(
+                          "password",
+                          "Password",
+                          "password",
+                          this.handleKeyPress
+                        )}
                       </div>
                       <button
                         onClick={() => this.doSubmit()}
