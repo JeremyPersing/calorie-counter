@@ -13,6 +13,8 @@ import {
 import Modal from "react-bootstrap/Modal";
 
 function MealCard(props) {
+  // props allows the user to pass an onClick function, and allows to specify if the
+  // curr meals are being displayed due to a search from user creating a meal
   let history = useHistory();
   const { meal, products, setProducts } = props;
   const [currMeal, setCurrMeal] = useState(meal);
@@ -262,7 +264,14 @@ function MealCard(props) {
       <div className="col-md-6 col-xl-4">
         <div className="card">
           <div className="meal-card-body">
-            <div className="media align-items-center" onClick={handleClick}>
+            <div
+              className="media align-items-center"
+              onClick={
+                props.onMealClick
+                  ? () => props.onMealClick(currMeal)
+                  : handleClick
+              }
+            >
               <span style={img} className="avatar avatar-xl mr-3"></span>
               <div className="media-body overflow-hidden">
                 <p className="card-text mb-0 text-capitalize">
@@ -272,16 +281,18 @@ function MealCard(props) {
                 </p>
               </div>
             </div>
-            <div className="d-flex justify-content-end">
-              <div>
-                <LikeIcon liked={currMeal.liked} onClick={handleLike} />
-                <AddedIcon
-                  className="mr-2 ml-4"
-                  added={currMeal.user_meal}
-                  onClick={currMeal.user_meal ? handleShow : handleAdd}
-                />
+            {!props.addMealSearch && (
+              <div className="d-flex justify-content-end">
+                <div>
+                  <LikeIcon liked={currMeal.liked} onClick={handleLike} />
+                  <AddedIcon
+                    className="mr-2 ml-4"
+                    added={currMeal.user_meal}
+                    onClick={currMeal.user_meal ? handleShow : handleAdd}
+                  />
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

@@ -2,14 +2,13 @@ import React from "react";
 import Joi from "joi-browser";
 import Form from "../components/Form";
 import ConditionalModal from "../components/ConditionalModal";
-import { sortCaret } from "./../modules/tableModule";
 import {
   deleteUserMeal,
   postUserMeal,
   pushLocalUserMeal,
   deleteLocalUserMealById,
 } from "../services/mealService";
-import IncreaseDecreaseInput from "../components/IncreaseDecreaseInput";
+import nutritionixService from "../services/nutritionixService";
 import Page from "../components/Page";
 import "../styles/App.css";
 import { toast } from "react-toastify";
@@ -27,7 +26,6 @@ class AddMeal extends Form {
     searchQuery: "",
     products: [],
     ingredients: [],
-    inputValue: "0",
   };
 
   schema = {
@@ -53,21 +51,6 @@ class AddMeal extends Form {
   handleInputClicked = () => {
     this.handleShow();
     this.setState({ inputClicked: true });
-  };
-
-  sumNutrientField = (fieldName) => {
-    let sum = 0;
-    for (const i in this.state.ingredients) {
-      let amount = this.state.ingredients[i].fields[fieldName];
-      if (typeof amount !== Number) {
-        amount = Number(amount);
-      }
-      if (this.state.ingredients[i].fields.servings) {
-        amount *= this.state.ingredients[i].fields.servings;
-      }
-      sum += amount;
-    }
-    return sum.toFixed(2);
   };
 
   handleSubmit = async () => {
@@ -121,6 +104,20 @@ class AddMeal extends Form {
     this.setState({ searchQuery: e.target.value });
   };
 
+  sumNutrientField = (fieldName) => {
+    let sum = 0;
+    for (const i in this.state.ingredients) {
+      let amount = this.state.ingredients[i].calories;
+
+      if (typeof amount !== Number) {
+        amount = Number(amount);
+      }
+
+      sum += amount;
+    }
+    return sum.toFixed(2);
+  };
+
   removeIngredient = async (meal) => {
     const originalIngredients = [...this.state.ingredients];
     let currIngredients = [...this.state.ingredients];
@@ -143,64 +140,40 @@ class AddMeal extends Form {
   setProducts = (arr) => {
     this.setState({ products: arr });
   };
-  // Contains info to add to the ingredients array
-  cellEvents = {
-    onClick: (e, column, columnIndex, row, rowIndex) => {
-      let meal = row;
 
-      let ingredientsArr = this.state.ingredients;
-      const index = ingredientsArr.findIndex((m) => m._id === meal._id);
+  handleMealClicked = async (meal) => {
+    let ingredientsArr, obj;
 
-      if (index !== -1) {
-        ingredientsArr[index].fields.servings += 1;
-        this.setState({ ingredients: ingredientsArr });
-        this.handleClose();
-        return;
-      }
+    if (meal.nf_calories) {
+      obj = {
+        serving_weight: meal.serving_weight_grams,
+        food: meal.food_name,
+        calories: meal.nf_calories,
+        serving_qty: meal.serving_qty,
+        serving_unit: meal.serving_unit,
+      };
+    } else {
+      const res = await nutritionixService.getMealDetails(meal.food_name);
+      const resObj = res.data.foods[0];
 
-      // This is put into place for so wen a user clicks his specific meal later
-      // that the nutritionix backend get called
+      obj = {
+        serving_weight: resObj.serving_weight_grams,
+        food: resObj.food_name,
+        calories: resObj.nf_calories,
+        serving_qty: resObj.serving_qty || 1,
+        serving_unit: resObj.serving_unit || "meal",
+      };
+    }
 
-      meal.item_name = meal.fields.item_name;
-      meal.searched_meal = true;
+    ingredientsArr = [...this.state.ingredients];
+    ingredientsArr.push(obj);
 
-      this.setState({ ingredients: [meal, ...ingredientsArr] });
-      this.handleClose();
-    },
+    this.setState({ ingredients: ingredientsArr });
+
+    this.handleClose();
   };
 
-  keyField = "fields.item_id";
-
-  columns = [
-    {
-      dataField: "fields.item_name",
-      text: "Name",
-      sort: true,
-      sortCaret: (order, column) => sortCaret(order, column),
-      events: this.cellEvents,
-    },
-    {
-      dataField: "fields.brand_name",
-      text: "Brand",
-      sort: true,
-      sortCaret: (order, column) => sortCaret(order, column),
-      events: this.cellEvents,
-    },
-    {
-      dataField: "fields.nf_calories",
-      text: "Calories / Serving",
-      sort: true,
-      sortCaret: (order, column) => sortCaret(order, column),
-      events: this.cellEvents,
-    },
-  ];
-
   render() {
-    for (const i in this.state.ingredients) {
-      if (!this.state.ingredients[i].fields.servings) {
-        this.state.ingredients[i].fields.servings = 1;
-      }
-    }
     return (
       <>
         <Page>
@@ -214,21 +187,14 @@ class AddMeal extends Form {
                   <h5 className="pt-3">Ingredients</h5>
 
                   {this.state.ingredients.map((i) => (
-                    <div key={i._id} className="d-flex justify-content-between">
-                      <ul className="mt-3 p-2 text-center">
-                        {i.fields.item_name}
-                      </ul>
-                      <IncreaseDecreaseInput
-                        className="p-2"
-                        inputValue={i.fields.servings}
-                        setInputValue={(value) => {
-                          let ingredients = this.state.ingredients;
-                          let index = ingredients.indexOf(i);
-
-                          ingredients[index].fields.servings = value;
-                          this.setState({ ingredients });
-                        }}
-                      />
+                    <div
+                      key={i.food}
+                      className="d-flex justify-content-between"
+                    >
+                      <span className="col-6 text-center text-capitalize">
+                        {i.food}
+                      </span>
+                      <span>{i.calories} cal</span>
                       <i
                         onClick={() => this.removeIngredient(i)}
                         className="p-2 align-self-center fa fa-trash-o delete-icon"
@@ -238,7 +204,8 @@ class AddMeal extends Form {
                   ))}
 
                   <p className="pt-3">
-                    Calories: {this.sumNutrientField("nf_calories")}
+                    <span className="font-weight-bold">Calories</span>:{" "}
+                    {this.sumNutrientField("calories")}
                   </p>
                 </div>
               ) : null}
@@ -270,6 +237,7 @@ class AddMeal extends Form {
             </button>
           </div>
           <ConditionalModal
+            onMealClick={this.handleMealClicked}
             show={this.state.show}
             handleClose={this.handleClose}
             condition={this.state.searchClicked}
@@ -278,8 +246,6 @@ class AddMeal extends Form {
             ingredientList={this.state.ingredients}
             setProducts={this.setProducts}
             products={this.state.products}
-            keyField={this.keyField}
-            columns={this.columns}
           />
         </Page>
       </>

@@ -6,7 +6,14 @@ function PaginatedMealsDisplay(props) {
   const [currProducts, setCurrProducts] = useState([]);
   const [currPage, setCurrPage] = useState(1);
   const [totalPages, setTotalPages] = useState();
-  const { products, setProducts, pageLimit, pageNeighbors } = props;
+  const {
+    products,
+    setProducts,
+    pageLimit,
+    pageNeighbors,
+    onMealClick,
+    addMealSearch,
+  } = props;
 
   const onPageChanged = (data) => {
     const { currentPage, totalPages, pageLimit } = data;
@@ -47,6 +54,8 @@ function PaginatedMealsDisplay(props) {
         </div>
         {currProducts.map((item) => (
           <MealCard
+            onMealClick={onMealClick}
+            addMealSearch={addMealSearch}
             key={item.food_name}
             meal={item}
             products={products}

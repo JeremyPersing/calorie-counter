@@ -14,7 +14,7 @@ import PaginatedMealDisplay from "./PaginatedMealsDisplay";
 import "../styles/MealsTable.css";
 
 function SearchMealsDisplay(props) {
-  const { setProducts, products } = props;
+  const { setProducts, products, addMealSearch, onClick, pageLimit } = props;
   const [playLottie, setPlayLottie] = useState(false);
   const [displayVisible, setdisplayVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,7 +55,7 @@ function SearchMealsDisplay(props) {
       let possibleMeals = [...usersMeals];
 
       console.log(possibleMeals);
-      let result = await nutritionixService.getMealByName(searchQuery);
+      let result = await nutritionixService.getMealsByName(searchQuery);
       result = [...result.data.common, ...result.data.branded];
 
       // Returns the meals that are not already in the user's meals
@@ -112,9 +112,11 @@ function SearchMealsDisplay(props) {
       {playLottie ? <UncontrolledLottie animationData={animationData} /> : null}
       {displayVisible && (
         <PaginatedMealDisplay
+          onMealClick={onClick}
+          addMealSearch={addMealSearch}
           products={products}
           setProducts={setProducts}
-          pageLimit={12}
+          pageLimit={pageLimit || 12}
           pageNeighbors={1}
         />
       )}

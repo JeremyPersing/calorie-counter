@@ -5,7 +5,7 @@ const appId = "569e8218";
 const appKey = "060a446755c10e2b489b8b92c34200d8";
 const remoteUserId = 0;
 
-export const getMealByName = (queryString) => {
+export const getMealsByName = (queryString) => {
   const options = {
     method: "get",
     url: "https://trackapi.nutritionix.com/v2/search/instant",
@@ -55,7 +55,7 @@ export const getMealByNixItemId = (id) => {
 };
 
 export default {
-  getMealByName,
+  getMealsByName,
   getMealDetails,
   getMealByNixItemId,
 };

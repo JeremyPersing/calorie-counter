@@ -13,13 +13,12 @@ function ConditionalModal(props) {
     ingredientList,
     setProducts,
     products,
-    keyField,
-    columns,
+    onMealClick,
   } = props;
 
   return (
     <div>
-      <Modal show={show} onHide={handleClose}>
+      <Modal show={show} onHide={handleClose} size="lg">
         <Modal.Header>
           <Modal.Title>{condition ? headerOne : headerTwo}</Modal.Title>
           <i
@@ -33,8 +32,9 @@ function ConditionalModal(props) {
             <SearchMealsDisplay
               setProducts={setProducts}
               products={products}
-              keyField={keyField}
-              columns={columns}
+              pageLimit={6}
+              addMealSearch={true}
+              onClick={onMealClick}
             />
           ) : (
             <IngredientInputForm

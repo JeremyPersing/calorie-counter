@@ -23,7 +23,6 @@ body {
     background-size: cover;
   }
 
-
 .border-0 {
     border: 0 !important;
 }
@@ -358,4 +357,82 @@ h5 {
 
 .add-icon:hover {
   color: #1cc88a;
+}
+
+.ingredient-img {
+  border-radius: 2px;
+}
+
+.ingredient-img:hover {
+  cursor: pointer;
+  opacity: 0.8
+}
+
+.my-masonry-grid {
+  display: -webkit-box; /* Not needed if autoprefixing */
+  display: -ms-flexbox; /* Not needed if autoprefixing */
+  display: flex;
+  margin-left: 30px; /*gutter size offset */
+  width: auto;
+}
+.my-masonry-grid_column {
+  background-clip: padding-box;
+}
+
+/* Style your items */
+.my-masonry-grid_column > div { /* change div to reference your elements you put in <Masonry> */
+  margin-bottom: 30px;
+}
+
+@media screen and (max-width: 991px) {
+  .my-masonry-grid {
+    display: -webkit-box; /* Not needed if autoprefixing */
+    display: -ms-flexbox; /* Not needed if autoprefixing */
+    display: flex;
+    margin-left: auto; /* gutter size offset */
+    margin-right: auto;
+    width: auto;
+  }
+}
+
+@media screen and (max-width: 514px) {
+  .my-masonry-grid {
+    display: -webkit-box; /* Not needed if autoprefixing */
+    display: -ms-flexbox; /* Not needed if autoprefixing */
+    display: flex;
+    margin-left: 55px;
+    width: auto;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .my-masonry-grid {
+    display: -webkit-box; /* Not needed if autoprefixing */
+    display: -ms-flexbox; /* Not needed if autoprefixing */
+    display: flex;
+    margin-left: 40px;
+    width: auto;
+  }
+}
+
+@media screen and (max-width: 440px) {
+  .my-masonry-grid {
+    display: -webkit-box; /* Not needed if autoprefixing */
+    display: -ms-flexbox; /* Not needed if autoprefixing */
+    display: flex; 
+    width: auto;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .my-masonry-grid {
+    display: -webkit-box; /* Not needed if autoprefixing */
+    display: -ms-flexbox; /* Not needed if autoprefixing */
+    display: flex; 
+    width: auto;
+  }
+  .my-masonry-grid_column {
+    padding-left: 10px;
+    background-clip: padding-box;
+  }
 }

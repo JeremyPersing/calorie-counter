@@ -3,7 +3,6 @@ import Page from "../components/Page";
 import MealsTab from "../components/MealsTab";
 import SearchMealsDisplay from "../components/SearchMealsDisplay";
 
-
 function Meals(props) {
   const [products, setProducts] = useState([]);
 

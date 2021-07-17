@@ -5,6 +5,7 @@ import Search from "./Search";
 import { postUserMeal, pushLocalUserMeal } from "../services/mealService";
 import { getImagesByQuery } from "../services/pixabayService";
 import Modal from "react-bootstrap/Modal";
+import Masonry from "react-masonry-css";
 
 class IngredientInputForm extends Form {
   // props for this class are meal, ingredientList, handleClose
@@ -53,11 +54,11 @@ class IngredientInputForm extends Form {
       thumb: null,
       servings: "",
     },
+    errors: {},
     thumb: null,
     show: false,
     searchQuery: "",
-
-    errors: {},
+    images: null,
   };
 
   schema = {
@@ -123,7 +124,22 @@ class IngredientInputForm extends Form {
 
   handleSearchClick = async () => {
     const res = await getImagesByQuery(this.state.searchQuery);
-    console.log(res);
+    const arr = res.data.hits;
+    console.log(arr);
+
+    this.setState({ images: arr });
+  };
+
+  handleImageClicked = (imgUrl) => {
+    this.setState({ thumb: imgUrl });
+    console.log(imgUrl);
+  };
+
+  breakpointColumnsObj = {
+    default: 4,
+    991: 3,
+    515: 2,
+    400: 1,
   };
 
   render() {
@@ -172,8 +188,25 @@ class IngredientInputForm extends Form {
               onChange={this.handleSearchChange}
               onClick={this.handleSearchClick}
               value={this.state.searchQuery}
-              placeholder="Search for an Image..."
+              placeholder="Search Food Images..."
             />
+            <Masonry
+              breakpointCols={this.breakpointColumnsObj}
+              className="my-masonry-grid"
+              columnClassName="my-masonry-grid_column"
+            >
+              {this.state.images &&
+                this.state.images.map((i) => (
+                  <div key={i.id}>
+                    <img
+                      src={i.previewURL}
+                      alt={i.tags[0]}
+                      className="ingredient-img"
+                      onClick={() => this.handleImageClicked(i.previewURL)}
+                    />
+                  </div>
+                ))}
+            </Masonry>
           </Modal.Body>
           <Modal.Footer>
             <button className="btn btn-secondary" onClick={this.handleClose}>

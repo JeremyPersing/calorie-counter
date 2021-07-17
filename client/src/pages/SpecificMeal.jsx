@@ -51,6 +51,7 @@ function SpecificMeal(props) {
         try {
           const nixIdRegex = /^[a-f\d]{24}$/i;
 
+          // User created meal
           if (Array.isArray(mealId)) {
             console.log(mealId[0]);
             console.log(mealId[1]);
@@ -151,38 +152,6 @@ function SpecificMeal(props) {
     } catch (error) {
       toast.error("Please add this meal to delete it");
     }
-  };
-
-  const getIngredient = async (item) => {
-    let res;
-
-    if (item.searched_meal) {
-      const searchedMeals = JSON.parse(localStorage.getItem("searchedMeals"));
-      const index = searchedMeals.findIndex((i) => i._id === item._id);
-
-      if (index !== -1) return searchedMeals[index];
-
-      // If the item_name contains a % then it will cause a cors error
-      if (item.item_name.includes("%")) {
-        item.item_name = item.item_name.replace("%", "");
-      }
-
-      res = await nutritionixService.getMealByName(item.item_name);
-      const resultArr = res.data.hits.filter((i) => i._id === item._id);
-      res = resultArr.pop();
-      return res;
-    }
-
-    const localUserMeals = JSON.parse(localStorage.getItem("userMeals"));
-    const index = localUserMeals.findIndex((i) => i._id === item._id);
-    // This should always hit
-    if (index !== -1) {
-      return localUserMeals[index];
-    }
-
-    // This should never hit
-    res = await getMealById(item._id);
-    return res.data;
   };
 
   const handleIngredientClick = (ingredientObj) => {
