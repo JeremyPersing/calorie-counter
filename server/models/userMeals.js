@@ -9,7 +9,7 @@ const validateRequest = (meal) => {
     food_name: Joi.string().required().min(1).max(100).trim(),
     brand_name: Joi.string().min(1).max(100).trim().allow(null),
     serving_qty: Joi.number().required(),
-    serving_unit: Joi.string().required().min(1).max(100).trim(),
+    serving_unit: Joi.string().min(1).max(100).trim().required(),
     serving_weight_grams: Joi.number().allow(null),
     nf_calories: Joi.number().required().min(0),
     nf_protein: Joi.number().required().min(0),
@@ -23,6 +23,7 @@ const validateRequest = (meal) => {
     user_meal: Joi.boolean().required(), // to determine if this is the user's meal
   });
 
+  console.log(schema.validate(meal));
   return schema.validate(meal);
 };
 

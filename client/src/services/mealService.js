@@ -10,8 +10,32 @@ export function createUserMealsDocument() {
 
 export function getLocalUserMeals() {
   let arr = JSON.parse(localStorage.getItem("userMeals") || "[]");
-
   return arr;
+}
+
+export function filterLocalUserMeals(filterCriteria) {
+  let arr = JSON.parse(localStorage.getItem("userMeals"));
+  console.log("arr in localUserMeals", arr);
+  if (arr.length === 0) return;
+
+  let arrayWithFiltered = [];
+  for (const i in arr) {
+    // brand_name can be null so check before comparing
+    if (arr[i].food_name && arr[i].brand_name) {
+      if (
+        arr[i].food_name.toLowerCase().includes(filterCriteria.toLowerCase()) ||
+        arr[i].brand_name.toLowerCase().includes(filterCriteria.toLowerCase())
+      ) {
+        arrayWithFiltered.push(arr[i]);
+      }
+    } else if (
+      arr[i].food_name.toLowerCase().includes(filterCriteria.toLowerCase())
+    ) {
+      arrayWithFiltered.push(arr[i]);
+    }
+  }
+
+  return arrayWithFiltered;
 }
 
 export function setLocalUserMeals(array) {
@@ -38,19 +62,19 @@ export function deleteLocalUserMealById(id) {
   setLocalUserMeals(arr);
 }
 
-export function getCreatedMeals() {
+export function getUserMeals() {
   http.setJwt(getJwt());
   return http.get(apiUrl + "/usermeals");
 }
 
-export function getMealById(id) {
+export function getUserMealByName(mealName) {
   http.setJwt(getJwt());
-  return http.get(apiUrl + "/usermeals/" + id);
+  return http.get(apiUrl + "/usermeals/" + mealName);
 }
 
-export function getCreatedMeal(meal) {
+export function getLikedMeals() {
   http.setJwt(getJwt());
-  return http.get(apiUrl + "/usermeals/" + meal._id);
+  return http.get(apiUrl + "/usermeals/liked");
 }
 
 export function getUserMealByNameAndBrand(name, brand) {
@@ -80,33 +104,15 @@ export function putUserMeal(meal) {
   return http.put(apiUrl + "/usermeals/" + id, meal);
 }
 
-////////////////////////////// LEFT HERE
-export function postMeal(meal) {
-  http.setJwt(getJwt());
-  return http.post(apiUrl + "/usermeals/", meal);
-}
-
-/// LOOK TO DELETE
 export function postUserMeal(meal) {
   http.setJwt(getJwt());
   return http.post(apiUrl + "/usermeals", meal);
 }
 
-export function getLikedMeals() {
-  http.setJwt(getJwt());
-  return http.get(apiUrl + "/usermeals/liked");
-}
-
-export function postSearchedMeal(meal) {
-  http.setJwt(getJwt());
-  return http.post(apiUrl + "/usermeals/search", meal);
-}
-
 export default {
   getLocalUserMeals,
   setLocalUserMeals,
-  getCreatedMeals,
-  getCreatedMeal,
+  getUserMeals,
   deleteUserMeal,
   putUserMeal,
   postUserMeal,

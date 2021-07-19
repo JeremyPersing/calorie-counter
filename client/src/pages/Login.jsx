@@ -3,7 +3,7 @@ import Form from "../components/Form";
 import Joi from "joi-browser";
 import auth from "../services/authService";
 import {
-  getCreatedMeals,
+  getUserMeals,
   getLocalUserMeals,
   setLocalUserMeals,
 } from "../services/mealService";
@@ -39,7 +39,7 @@ class Login extends Form {
       const userMeals = getLocalUserMeals();
 
       if (userMeals.length === 0) {
-        const { data } = await getCreatedMeals();
+        const { data } = await getUserMeals();
         setLocalUserMeals(data);
       }
 

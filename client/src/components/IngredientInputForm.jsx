@@ -1,113 +1,83 @@
 import React from "react";
 import Joi from "joi-browser";
 import Form from "./Form";
-import Search from "./Search";
 import { postUserMeal, pushLocalUserMeal } from "../services/mealService";
-import { getImagesByQuery } from "../services/pixabayService";
-import Modal from "react-bootstrap/Modal";
-import Masonry from "react-masonry-css";
+import SearchImageModal from "./SearchImageModal";
+import DeleteIcon from "./DeleteIcon";
 
 class IngredientInputForm extends Form {
   // props for this class are meal, ingredientList, handleClose
 
-  // Ingredient schema for sub_recipe arr
-  //   calories: 17.88
-  // food: "garlic"
-  // ndb_number: 11215
-  // recipe_id: 1000143
-  // serving_qty: 4
-  // serving_unit: "cloves"
-  // serving_weight: 12
-
-  // userMeal schema for post
-  // food_name: temporaryMeal.food_name,
-  // brand_name: temporaryMeal.brand_name,
-  // serving_qty:
-  //         temporaryMeal.serving_qty === null ? 1 : temporaryMeal.serving_qty,
-  // serving_unit:
-  //         temporaryMeal.serving_unit === null
-  //           ? "meal"
-  //           : temporaryMeal.serving_unit,
-  // serving_weight_grams: temporaryMeal.serving_weight_grams,
-  // nf_calories: temporaryMeal.nf_calories,
-  // nf_protein: temporaryMeal.nf_protein,
-  // nf_total_carbohydrate: temporaryMeal.nf_total_carbohydrate,
-  // nf_total_fat: temporaryMeal.nf_total_fat,
-  // nix_item_id: temporaryMeal.nix_item_id,
-  // thumb: temporaryMeal.photo.thumb,
-  // sub_recipe: temporaryMeal.sub_recipe ? temporaryMeal.sub_recipe : [],
-  // liked: true,
-  // created_meal: false,
-  // user_meal: true,
-
   state = {
     data: {
       food_name: "",
-      brand_name: "",
-      serving_qty: "",
+      brand_name: null,
+      serving_qty: null,
       serving_unit: "",
-      serving_weight: "",
-      nf_calories: "",
-      nf_protein: "",
-      nf_total_carbohydrate: "",
-      nf_total_fat: "",
-      thumb: null,
-      servings: "",
+      serving_weight_grams: null,
+      nf_calories: null,
+      nf_protein: null,
+      nf_total_carbohydrate: null,
+      nf_total_fat: null,
+      thumb: "",
     },
     errors: {},
-    thumb: null,
     show: false,
-    searchQuery: "",
-    images: null,
   };
 
   schema = {
-    brand_name: Joi.string().required(),
-    item_name: Joi.string().required().label("Ingredient Name"),
+    food_name: Joi.string().required().label("Ingredient Name"),
+    brand_name: Joi.string().allow(null).allow(""),
+    serving_qty: Joi.number().min(0).allow(null).allow(""),
+    serving_unit: Joi.string().allow(null).allow(""),
+    serving_weight_grams: Joi.number()
+      .min(0)
+      .required()
+      .label("Weight of Serving"),
     nf_calories: Joi.number().min(0).required().label("Calories"),
     nf_protein: Joi.number().min(0).required().label("Protein"),
     nf_total_carbohydrate: Joi.number().min(0).required().label("Carbs"),
     nf_total_fat: Joi.number().min(0).required().label("Fat"),
-    servings: Joi.number().min(0).required().label("Servings"),
+    thumb: Joi.string().allow(""),
   };
 
-  componentDidMount() {
-    const { meal } = this.props;
-    if (meal)
-      this.setState({
-        brand_name: meal.brand_name,
-        item_name: meal.item_name,
-        nf_calories: meal.nf_calories,
-        nf_protein: meal.nf_protein,
-        nf_total_carbohydrate: meal.nf_total_carbohydrate,
-        nf_total_fat: meal.nf_total_fat,
-        servings: meal.servings,
-      });
-  }
-
-  handleSubmit = async (e) => {
-    e.preventDefault();
-
+  handleSubmit = async () => {
     const errors = this.validate();
     if (errors) {
       this.setState({ errors });
       return;
     }
 
-    const ingredient = this.state.data;
-    ingredient.liked = false;
-    ingredient.ingredients = [];
-    ingredient.servings = Number(this.state.data.servings);
-    try {
-      const response = await postUserMeal(ingredient);
-      if (response.status === 200) {
-        // This will be used in AddMeal.jsx removeIngredient()
-        // to call the server to delete meal from db
-        response.data.fields.isInputted = true;
-        pushLocalUserMeal(response.data);
-      }
+    const meal = this.state.data;
+    console.log("meal b4", meal);
 
-      this.props.ingredientList.push(response.data);
+    // Sanitize the data
+    meal.serving_qty = Number(meal.serving_qty);
+    meal.serving_weight_grams = Number(meal.serving_weight_grams);
+    meal.nf_calories = Number(meal.nf_calories);
+    meal.nf_protein = Number(meal.nf_protein);
+    meal.nf_total_carbohydrate = Number(meal.nf_total_carbohydrate);
+    meal.nf_total_fat = Number(meal.nf_total_fat);
+    if (!meal.serving_qty) meal.serving_qty = 1;
+    if (!meal.serving_unit) meal.serving_unit = "meal";
+    if (!meal.thumb)
+      meal.thumb =
+        "https://d2eawub7utcl6.cloudfront.net/images/nix-apple-grey.png";
+
+    // Add additional necessary fields
+    meal.liked = false;
+    meal.nix_item_id = null;
+    meal.created_meal = true;
+    meal.user_meal = true;
+    meal.sub_recipe = [];
+
+    console.log("meal after more info", meal);
+
+    try {
+      const { data } = await postUserMeal(meal);
+      console.log(data);
+
+      this.props.ingredientList.push(data);
       this.props.handleClose();
     } catch (error) {
       console.log(error);
@@ -117,37 +87,25 @@ class IngredientInputForm extends Form {
   handleShow = () => this.setState({ show: true });
   handleClose = () => this.setState({ show: false });
 
-  handleSearchChange = (e) => {
-    e.preventDefault();
-    this.setState({ searchQuery: e.target.value });
-  };
-
-  handleSearchClick = async () => {
-    const res = await getImagesByQuery(this.state.searchQuery);
-    const arr = res.data.hits;
-    console.log(arr);
-
-    this.setState({ images: arr });
-  };
-
   handleImageClicked = (imgUrl) => {
-    this.setState({ thumb: imgUrl });
-    console.log(imgUrl);
+    const data = { ...this.state.data };
+    data.thumb = imgUrl;
+
+    this.setState({ data });
+    this.setState({ show: false });
   };
 
-  breakpointColumnsObj = {
-    default: 4,
-    991: 3,
-    515: 2,
-    400: 1,
+  handleDeleteImage = () => {
+    const data = { ...this.state.data };
+    data.thumb = null;
+    this.setState({ data });
   };
 
   render() {
     return (
       <div>
-        <div className="form-user" onSubmit={this.handleSubmit}>
-          {this.renderInput("brand_name", "Brand")}
-          {this.renderInput("item_name", "Ingredient Name")}
+        <div className="form-user">
+          {this.renderInput("food_name", "Ingredient Name")}
           {this.renderInput("nf_calories", "Calories/Serving", "number")}
           {this.renderInput("nf_protein", "Protein/Serving (g)", "number")}
           {this.renderInput(
@@ -156,16 +114,50 @@ class IngredientInputForm extends Form {
             "number"
           )}
           {this.renderInput("nf_total_fat", "Fat/Serving (g)", "number")}
-          {this.renderInput("servings", "Servings", "number")}
-          <button
-            className="btn btn-secondary btn-user btn-block"
-            onClick={this.handleShow}
-          >
-            Search Image
-          </button>
+          {this.renderInput(
+            "serving_weight_grams",
+            "Weight of Serving (g)",
+            "number"
+          )}
+          <div className="text-center">Optional</div>
+          {this.renderInput("brand_name", "Brand")}
+          <div className="form-row" style={{ marginTop: "-10px" }}>
+            <span className="col-sm-6" style={{ marginBottom: "-10px" }}>
+              {this.renderInput(
+                "serving_qty",
+                "Quantity of Ingredient/Serving"
+              )}
+            </span>
+            <span className="col-sm-6">
+              {this.renderInput(
+                "serving_unit",
+                "Serving Unit (cup, oz, slice, etc)"
+              )}
+            </span>
+          </div>
+          {!this.state.data.thumb ? (
+            <button
+              className="btn btn-secondary btn-user btn-block"
+              onClick={this.handleShow}
+            >
+              Search Image
+            </button>
+          ) : (
+            <div className="d-flex justify-content-center img-container">
+              <img
+                src={this.state.data.thumb}
+                alt="meal"
+                className="rounded mb-3 ml-1 center"
+              />
+              <DeleteIcon
+                className="img-delete-icon"
+                onClick={this.handleDeleteImage}
+              />
+            </div>
+          )}
 
           <button
-            onClick={() => this.doSubmit()}
+            onClick={this.handleSubmit}
             disabled={this.validate()}
             className="btn btn-primary btn-user btn-block"
             type="submit"
@@ -173,47 +165,11 @@ class IngredientInputForm extends Form {
             Add Meal
           </button>
         </div>
-        <Modal
+        <SearchImageModal
           show={this.state.show}
-          onHide={this.handleClose}
-          backdrop="static"
-          size="lg"
-        >
-          <Modal.Header>
-            <Modal.Title>Search Image</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Search
-              className="col-10 offset-1 d-flex mt-4 mb-4"
-              onChange={this.handleSearchChange}
-              onClick={this.handleSearchClick}
-              value={this.state.searchQuery}
-              placeholder="Search Food Images..."
-            />
-            <Masonry
-              breakpointCols={this.breakpointColumnsObj}
-              className="my-masonry-grid"
-              columnClassName="my-masonry-grid_column"
-            >
-              {this.state.images &&
-                this.state.images.map((i) => (
-                  <div key={i.id}>
-                    <img
-                      src={i.previewURL}
-                      alt={i.tags[0]}
-                      className="ingredient-img"
-                      onClick={() => this.handleImageClicked(i.previewURL)}
-                    />
-                  </div>
-                ))}
-            </Masonry>
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-secondary" onClick={this.handleClose}>
-              Close
-            </button>
-          </Modal.Footer>
-        </Modal>
+          handleClose={this.handleClose}
+          onImageClick={this.handleImageClicked}
+        />
       </div>
     );
   }

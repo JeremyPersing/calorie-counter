@@ -9,7 +9,11 @@ function Meals(props) {
   return (
     <Page>
       <MealsTab className="mt-2 mb-2 center" />
-      <SearchMealsDisplay setProducts={setProducts} products={products} />
+      <SearchMealsDisplay
+        search={true}
+        setProducts={setProducts}
+        products={products}
+      />
     </Page>
   );
 }

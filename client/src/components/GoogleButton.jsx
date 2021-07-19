@@ -5,7 +5,7 @@ import auth from "../services/authService";
 import {
   setLocalUserMeals,
   createUserMealsDocument,
-  getCreatedMeals,
+  getUserMeals,
   getLocalUserMeals,
 } from "../services/mealService";
 import { useHistory } from "react-router-dom";
@@ -38,7 +38,7 @@ function GoogleButton(props) {
       const userMeals = getLocalUserMeals();
 
       if (userMeals.length === 0) {
-        const { data } = await getCreatedMeals();
+        const { data } = await getUserMeals();
         setLocalUserMeals(data);
       }
 

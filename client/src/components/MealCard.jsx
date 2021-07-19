@@ -3,7 +3,7 @@ import "../styles/MealCard.css";
 import { useHistory } from "react-router-dom";
 import nutritionixService from "../services/nutritionixService";
 import LikeIcon from "./LikeIcon";
-import AddedIcon from "./AddedIcon";
+import MealAddedIcon from "./MealAddedIcon";
 import { toast } from "react-toastify";
 import {
   postUserMeal,
@@ -46,6 +46,7 @@ function MealCard(props) {
 
     const location = {
       pathname: pathName,
+      meal: meal,
     };
 
     history.push(location);
@@ -145,8 +146,6 @@ function MealCard(props) {
     }
   };
 
-  // DO HANDLEADD NEXT, FOLLOWING THE SAME TEMPLATE AS ABOVE
-
   const handleAdd = async () => {
     const originalProds = [...products];
     const originalMeal = { ...meal };
@@ -177,9 +176,8 @@ function MealCard(props) {
       let serverObj = {
         food_name: tempMeal.food_name,
         brand_name: tempMeal.brand_name,
-        serving_qty: tempMeal.serving_qty === null ? 1 : tempMeal.serving_qty,
-        serving_unit:
-          tempMeal.serving_unit === null ? "meal" : tempMeal.serving_unit,
+        serving_qty: tempMeal.serving_qty ? tempMeal.serving_qty : 1,
+        serving_unit: tempMeal.serving_unit ? tempMeal.serving_unit : "meal",
         serving_weight_grams: tempMeal.serving_weight_grams,
         nf_calories: tempMeal.nf_calories,
         nf_protein: tempMeal.nf_protein,
@@ -285,7 +283,7 @@ function MealCard(props) {
               <div className="d-flex justify-content-end">
                 <div>
                   <LikeIcon liked={currMeal.liked} onClick={handleLike} />
-                  <AddedIcon
+                  <MealAddedIcon
                     className="mr-2 ml-4"
                     added={currMeal.user_meal}
                     onClick={currMeal.user_meal ? handleShow : handleAdd}

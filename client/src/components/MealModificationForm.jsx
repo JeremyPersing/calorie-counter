@@ -1,33 +1,36 @@
 import React from "react";
 import Joi from "joi-browser";
 import Form from "./Form";
+import DeleteIcon from "./DeleteIcon";
+import SearchImageModal from "./SearchImageModal";
 import { putUserMeal, updateLocalUserMeal } from "../services/mealService";
 
 class MealModificationForm extends Form {
   state = {
     data: {
       brand_name: this.props.meal.brand_name,
-      ingredients: this.props.meal.ingredients || [],
-      item_name: this.props.meal.item_name,
+      sub_recipe: this.props.meal.sub_recipe,
+      food_name: this.props.meal.food_name,
       nf_calories: this.props.meal.nf_calories,
       nf_protein: this.props.meal.nf_protein,
       nf_total_carbohydrate: this.props.meal.nf_total_carbohydrate,
       nf_total_fat: this.props.meal.nf_total_fat,
-      servings: this.props.meal.servings || 1,
+      thumb: this.props.meal.photo.thumb,
     },
+    showImageModal: false,
     priorMeal: this.props.meal,
     errors: {},
   };
 
   schema = {
     brand_name: Joi.string().required(),
-    item_name: Joi.string().required().label("Meal Name"),
-    ingredients: Joi.array().label("Ingredients"),
+    food_name: Joi.string().required().label("Meal Name"),
+    sub_recipe: Joi.array().label("Ingredients"),
     nf_calories: Joi.number().min(0).required().label("Calories"),
     nf_protein: Joi.number().min(0).required().label("Protein"),
     nf_total_carbohydrate: Joi.number().min(0).required().label("Carbs"),
     nf_total_fat: Joi.number().min(0).required().label("Fat"),
-    servings: Joi.number().min(0).required().label("Servings"),
+    thumb: Joi.string().required(),
   };
 
   componentDidMount() {
@@ -37,6 +40,14 @@ class MealModificationForm extends Form {
     if (currSelected !== this.props.priorMeal)
       this.setState({ priorMeal: currSelected });
   }
+
+  handleShowImageModal = () => {
+    this.setState({ showImageModal: true });
+  };
+
+  handleCloseImageModal = () => {
+    this.setState({ showImageModal: false });
+  };
 
   handleSubmit = async (e) => {
     e.preventDefault();
@@ -71,36 +82,99 @@ class MealModificationForm extends Form {
     }
   };
 
+  handleImageClicked = (imgUrl) => {
+    const data = { ...this.state.data };
+    data.thumb = imgUrl;
+
+    this.setState({ data });
+    this.setState({ showImageModal: false });
+  };
+
+  handleDeleteImage = () => {
+    const data = { ...this.state.data };
+    data.thumb = null;
+    this.setState({ data });
+  };
+
   render() {
     return (
       <div>
-        <form>
-          <label>Brand</label>
+        <div className="form-user">
+          <small className="ml-3">
+            <strong>Brand</strong>
+          </small>
           {this.renderInput("brand_name", "Brand")}
-          <label>Item</label>
-          {this.renderInput("item_name", "Ingredient Name")}
-          <label>Calories/Serving</label>
+          <small className="ml-3">
+            <strong>Item Name</strong>
+          </small>
+          {this.renderInput("food_name", "Ingredient Name")}
+          <small className="ml-3">
+            <strong>Calories</strong>
+          </small>
           {this.renderInput("nf_calories", "Calories/Serving", "number")}
-          <label>Protein/Serving</label>
+          <small className="ml-3">
+            <strong>Protein (g)</strong>
+          </small>
           {this.renderInput("nf_protein", "Protein/Serving (g)", "number")}
-          <label>Carbs/Serving</label>
+          <small className="ml-3">
+            <strong>Carbohydrates (g)</strong>
+          </small>
           {this.renderInput(
             "nf_total_carbohydrate",
             "Carbs/Serving (g)",
             "number"
           )}
-          <label>Fat/Serving</label>
+          <small className="ml-3">
+            <strong>Fat (g)</strong>
+          </small>
           {this.renderInput("nf_total_fat", "Fat/Serving (g)", "number")}
-          <label>Number of Servings</label>
-          {this.renderInput("servings", "Servings", "number")}
-        </form>
-        <button
-          className="btn btn-primary w-100"
-          disabled={this.validate()}
-          onClick={this.handleSubmit}
-        >
-          Save
-        </button>
+          {this.state.data.sub_recipe.length > 0 && (
+            <div>
+              <small className="ml-3">
+                <strong>Ingredients</strong>
+              </small>
+              {this.state.data.sub_recipe.map((m) => (
+                <span key={m.food_name}>{m.food_name}</span>
+              ))}
+            </div>
+          )}
+
+          {/* Image */}
+          {!this.state.data.thumb ? (
+            <button
+              className="btn btn-secondary btn-user btn-block"
+              onClick={this.handleShowImageModal}
+            >
+              Search Image
+            </button>
+          ) : (
+            <div className="d-flex justify-content-center img-container">
+              <img
+                src={this.state.data.thumb}
+                alt="meal"
+                className="rounded mb-3 ml-1 center"
+              />
+              <DeleteIcon
+                className="img-delete-icon"
+                onClick={this.handleDeleteImage}
+              />
+            </div>
+          )}
+
+          <button
+            className="btn btn-primary btn-user btn-block"
+            disabled={this.validate()}
+            onClick={this.handleSubmit}
+            type="submit"
+          >
+            Save
+          </button>
+        </div>
+        <SearchImageModal
+          show={this.state.showImageModal}
+          handleClose={this.handleCloseImageModal}
+          onImageClick={this.handleImageClicked}
+        />
       </div>
     );
   }

@@ -2,6 +2,7 @@ import React from "react";
 import Joi from "joi-browser";
 import Form from "../components/Form";
 import ConditionalModal from "../components/ConditionalModal";
+import DeleteIcon from "../components/DeleteIcon";
 import {
   deleteUserMeal,
   postUserMeal,
@@ -12,17 +13,20 @@ import nutritionixService from "../services/nutritionixService";
 import Page from "../components/Page";
 import "../styles/App.css";
 import { toast } from "react-toastify";
+import SearchImageModal from "../components/SearchImageModal";
 
 class AddMeal extends Form {
   state = {
     data: {
       brand_name: "",
-      item_name: "",
+      food_name: "",
+      thumb: "",
     },
     errors: {},
-    searchClicked: false,
-    inputClicked: false,
-    show: false,
+    searchClicked: false, // For the ingredient input modal
+    inputClicked: false, // For the ingredient input modal
+    show: false, // To show either ingredient modals
+    showImageSearch: false, // To the image search modal
     searchQuery: "",
     products: [],
     ingredients: [],
@@ -30,18 +34,18 @@ class AddMeal extends Form {
 
   schema = {
     brand_name: Joi.string().required().allow(null).allow(""),
-    item_name: Joi.string().required().label("Meal Name"),
+    food_name: Joi.string().required().label("Meal Name"),
+    thumb: Joi.string().allow(null).allow(""),
   };
 
-  handleShow = () => {
-    this.setState({ show: true });
-  };
-
+  handleShow = () => this.setState({ show: true });
   handleClose = () => {
     this.setState({ show: false });
     if (this.state.searchClicked) this.setState({ searchClicked: false });
     if (this.state.inputClicked) this.setState({ inputClicked: false });
   };
+  handleShowImageSearch = () => this.setState({ showImageSearch: true });
+  handleCloseImageSearch = () => this.setState({ showImageSearch: false });
 
   handleSearchClicked = () => {
     this.handleShow();
@@ -61,14 +65,21 @@ class AddMeal extends Form {
       return;
     }
 
+    const currIngredients = this.state.ingredients;
     const ingredientsList = [];
-    for (const i in this.state.ingredients) {
-      let obj = {};
-      obj._id = this.state.ingredients[i]._id;
-      obj.servings = this.state.ingredients[i].fields.servings;
-      if (this.state.ingredients[i].item_name)
-        obj.item_name = this.state.ingredients[i].item_name;
-      if (this.state.ingredients[i].searched_meal) obj.searched_meal = true;
+    for (const i in currIngredients) {
+      let obj = {
+        serving_weight: currIngredients[i].serving_weight_grams,
+        food: currIngredients[i].food_name,
+        calories: currIngredients[i].nf_calories,
+        serving_qty: currIngredients[i].serving_qty
+          ? currIngredients[i].serving_qty
+          : 1,
+        serving_unit: currIngredients[i].serving_unit
+          ? currIngredients[i].serving_unit
+          : "meal",
+        created_meal: currIngredients[i].created_meal ? true : false,
+      };
       ingredientsList.push(obj);
     }
 
@@ -77,16 +88,29 @@ class AddMeal extends Form {
       const totalProtein = this.sumNutrientField("nf_protein");
       const totalCarbs = this.sumNutrientField("nf_total_carbohydrate");
       const totalFat = this.sumNutrientField("nf_total_fat");
+      const totalServingWeight = this.sumNutrientField("serving_weight_grams");
+
+      const brand_name = this.state.brand_name ? this.state.brand_name : null;
+      const thumb = this.state.data.thumb
+        ? this.state.data.thumb
+        : "https://d2eawub7utcl6.cloudfront.net/images/nix-apple-grey.png";
 
       const serverObj = {
-        brand_name: this.state.data.brand_name,
-        item_name: this.state.data.item_name,
-        ingredients: ingredientsList,
-        liked: false,
+        food_name: this.state.data.food_name,
+        brand_name: brand_name,
+        serving_qty: 1,
+        serving_unit: "meal",
+        serving_weight_grams: totalServingWeight,
         nf_calories: totalCalories,
         nf_protein: totalProtein,
         nf_total_carbohydrate: totalCarbs,
         nf_total_fat: totalFat,
+        nix_item_id: null,
+        thumb: thumb,
+        sub_recipe: ingredientsList,
+        liked: false,
+        created_meal: true,
+        user_meal: true,
       };
       console.log("serverObj in AddMeal", serverObj);
 
@@ -104,10 +128,10 @@ class AddMeal extends Form {
     this.setState({ searchQuery: e.target.value });
   };
 
-  sumNutrientField = (fieldName) => {
+  sumNutrientField = (nutrientField) => {
     let sum = 0;
     for (const i in this.state.ingredients) {
-      let amount = this.state.ingredients[i].calories;
+      let amount = this.state.ingredients[i][nutrientField];
 
       if (typeof amount !== Number) {
         amount = Number(amount);
@@ -121,15 +145,16 @@ class AddMeal extends Form {
   removeIngredient = async (meal) => {
     const originalIngredients = [...this.state.ingredients];
     let currIngredients = [...this.state.ingredients];
-    console.log(currIngredients);
-    currIngredients = currIngredients.filter((i) => i._id !== meal._id);
+
+    currIngredients = currIngredients.filter((m) => m !== meal);
     this.setState({ ingredients: currIngredients });
+    console.log(currIngredients);
 
     // Deletes only the meals created from input because those get pushed to the db
-    if (meal.fields.isInputted) {
+    if (meal.created_meal) {
       try {
-        const response = await deleteUserMeal(meal);
-        if (response.status === 200) deleteLocalUserMealById(meal._id);
+        await deleteUserMeal(meal);
+        // if (response.status === 200) deleteLocalUserMealById(meal._id);
       } catch (error) {
         toast.error("An unexpected error has occurred");
         this.setState({ ingredients: originalIngredients });
@@ -142,30 +167,11 @@ class AddMeal extends Form {
   };
 
   handleMealClicked = async (meal) => {
-    let ingredientsArr, obj;
+    const res = await nutritionixService.getMealDetails(meal.food_name);
+    const obj = res.data.foods[0];
+    console.log(obj);
 
-    if (meal.nf_calories) {
-      obj = {
-        serving_weight: meal.serving_weight_grams,
-        food: meal.food_name,
-        calories: meal.nf_calories,
-        serving_qty: meal.serving_qty,
-        serving_unit: meal.serving_unit,
-      };
-    } else {
-      const res = await nutritionixService.getMealDetails(meal.food_name);
-      const resObj = res.data.foods[0];
-
-      obj = {
-        serving_weight: resObj.serving_weight_grams,
-        food: resObj.food_name,
-        calories: resObj.nf_calories,
-        serving_qty: resObj.serving_qty || 1,
-        serving_unit: resObj.serving_unit || "meal",
-      };
-    }
-
-    ingredientsArr = [...this.state.ingredients];
+    let ingredientsArr = [...this.state.ingredients];
     ingredientsArr.push(obj);
 
     this.setState({ ingredients: ingredientsArr });
@@ -173,31 +179,65 @@ class AddMeal extends Form {
     this.handleClose();
   };
 
+  handleImageClicked = (imgUrl) => {
+    const data = { ...this.state.data };
+    data.thumb = imgUrl;
+    this.setState({ data });
+    this.handleCloseImageSearch();
+  };
+
+  handleDeleteImage = () => {
+    const data = { ...this.state.data };
+    data.thumb = "";
+    this.setState({ data });
+  };
+
   render() {
     return (
       <>
         <Page>
           <h5 className="text-center mt-3">Create a Meal</h5>
-          <div className="d-flex justify-content-center">
-            <div className="create-meal-form">
+          <div>
+            <div className="form-user">
               {this.renderInput("brand_name", "Brand")}
-              {this.renderInput("item_name", "Meal Name")}
+              {this.renderInput("food_name", "Meal Name")}
+              {/* SearchImage button/Image */}
+              {!this.state.data.thumb ? (
+                <button
+                  className="btn btn-secondary btn-user btn-block"
+                  onClick={this.handleShowImageSearch}
+                >
+                  Search Image
+                </button>
+              ) : (
+                <div className="d-flex justify-content-center img-container">
+                  <img
+                    src={this.state.data.thumb}
+                    alt="meal"
+                    className="rounded mb-3 ml-1 center"
+                  />
+                  <DeleteIcon
+                    className="img-delete-icon"
+                    onClick={this.handleDeleteImage}
+                  />
+                </div>
+              )}
+              {/* Ingredients */}
               {this.state.ingredients.length !== 0 ? (
                 <div className="text-center">
                   <h5 className="pt-3">Ingredients</h5>
-
                   {this.state.ingredients.map((i) => (
                     <div
                       key={i.food}
                       className="d-flex justify-content-between"
                     >
-                      <span className="col-6 text-center text-capitalize">
-                        {i.food}
+                      <span className="text-capitalize col-6">
+                        {i.food_name}
                       </span>
-                      <span>{i.calories} cal</span>
-                      <i
+                      <span className="col-3">{i.nf_calories}</span>
+                      <DeleteIcon
+                        className="mt-1 col-3"
                         onClick={() => this.removeIngredient(i)}
-                        className="p-2 align-self-center fa fa-trash-o delete-icon"
                         aria-hidden="true"
                       />
                     </div>
@@ -205,7 +245,7 @@ class AddMeal extends Form {
 
                   <p className="pt-3">
                     <span className="font-weight-bold">Calories</span>:{" "}
-                    {this.sumNutrientField("calories")}
+                    {this.sumNutrientField("nf_calories")}
                   </p>
                 </div>
               ) : null}
@@ -214,28 +254,35 @@ class AddMeal extends Form {
                   <button
                     onClick={this.handleSubmit}
                     disabled={this.validate()}
-                    className=" btn btn-primary"
+                    className="btn btn-primary btn-user btn-block"
                   >
                     Create Meal
                   </button>
                 </div>
               ) : null}
+              {/* Ingredient Buttons */}
+              <div className="form-row mt-3 justify-content-around">
+                <button
+                  className="btn btn-secondary btn-user"
+                  onClick={this.handleSearchClicked}
+                >
+                  Search Ingredient
+                </button>
+                <button
+                  className="btn btn-secondary btn-secondary btn-user"
+                  onClick={this.handleInputClicked}
+                >
+                  Input Ingredient
+                </button>
+              </div>
             </div>
           </div>
-          <div className="mt-3 d-flex justify-content-center">
-            <button
-              className="btn btn-secondary btn-sm shadow-sm mr-1"
-              onClick={this.handleSearchClicked}
-            >
-              Search Ingredient
-            </button>
-            <button
-              className="btn btn-secondary btn-sm shadow-sm ml-1"
-              onClick={this.handleInputClicked}
-            >
-              Input Ingredient
-            </button>
-          </div>
+          {/* Modals */}
+          <SearchImageModal
+            show={this.state.showImageSearch}
+            onImageClick={this.handleImageClicked}
+            handleClose={this.handleCloseImageSearch}
+          />
           <ConditionalModal
             onMealClick={this.handleMealClicked}
             show={this.state.show}

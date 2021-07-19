@@ -11,9 +11,19 @@ const getMealByMealNameAndBrand = async (userId, mealName, mealBrand) => {
 
   let meal;
   for (const i in meals) {
-    if (meals[i].brand_name === mealBrand && meals[i].food_name === mealName) {
-      meal = meals[i];
-      break;
+    if (mealBrand !== "null") {
+      if (
+        meals[i].brand_name === mealBrand &&
+        meals[i].food_name === mealName
+      ) {
+        meal = meals[i];
+        break;
+      }
+    } else {
+      if (meals[i].brand_name === null && meals[i].food_name === mealName) {
+        meal = meals[i];
+        break;
+      }
     }
   }
 
@@ -41,6 +51,17 @@ const getMealById = async (userId, mealId) => {
   return meal;
 };
 
+const getMealByName = async (userId, mealName) => {
+  let { meals } = await UserMeals.findOne({ user_id: userId }).set("food_name");
+
+  if (meals.length === 0) return;
+
+  const index = meals.findIndex((m) => m.food_name === mealName);
+
+  if (index === -1) return;
+
+  return meals[index];
+};
 // Works
 router.get("/", auth, async (req, res) => {
   const { meals } = await UserMeals.findOne({ user_id: req.user._id });
@@ -53,6 +74,18 @@ router.get("/liked", auth, async (req, res) => {
 
   const meals = userAccount.meals.filter((m) => m.liked === true);
   res.send(meals);
+});
+
+router.get("/:mealname", auth, async (req, res) => {
+  try {
+    const meal = await getMealByName(req.user._id, req.params.mealname);
+
+    if (!meal) res.status(404).send("Meal could not be found");
+
+    res.send(meal);
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 // works
@@ -135,15 +168,15 @@ router.post("/", auth, async (req, res) => {
 
   let meal = {
     food_name: req.body.food_name,
-    brand_name: req.body.brand_name,
+    brand_name: req.body.brand_name || null,
     serving_qty: req.body.serving_qty,
-    serving_unit: req.body.serving_unit,
+    serving_unit: req.body.serving_unit || "meal",
     serving_weight_grams: req.body.serving_weight_grams,
     nf_calories: req.body.nf_calories,
     nf_protein: req.body.nf_protein,
     nf_total_carbohydrate: req.body.nf_total_carbohydrate,
     nf_total_fat: req.body.nf_total_fat,
-    nix_item_id: req.body.nix_item_id || null,
+    nix_item_id: req.body.nix_item_id,
     photo: {
       thumb: req.body.thumb,
     },

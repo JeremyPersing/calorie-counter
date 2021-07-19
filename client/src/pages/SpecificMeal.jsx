@@ -9,9 +9,10 @@ import { toast } from "react-toastify";
 import "../styles/SpecificMeal.css";
 import {
   getUserMealByNameAndBrand,
-  getMealById,
   getLocalUserMeals,
+  getUserMealByName,
   postSearchedMeal,
+  postUserMeal,
   pushLocalUserMeal,
   deleteMealById,
   deleteLocalUserMealById,
@@ -40,47 +41,51 @@ function SpecificMeal(props) {
       // user created meal
       if (urlArray.length === 4) mealId = [urlArray[2], urlArray[3]];
       else mealId = urlArray[2]; // Can either be a name or 24 char string
-      console.log("mealId", mealId);
 
       setPlayLottie(true);
-      // Using localstorage to have persistant meal in the case that user refreshes
-      // We only set this when the user clicks on an item and is taken to this page
-      let meal = JSON.parse(localStorage.getItem("currentMealSelected"));
+      let meal = props.location.meal;
+      if (!meal) meal = JSON.parse(localStorage.getItem("currentSelectedMeal"));
+      console.log("meal passed into the specific meal page", meal);
 
-      if (!meal || mealId !== meal.food_name || mealId !== meal.nix_item_id) {
+      // We're clicking on an ingredient from within a specific meal
+      if (meal.created_meal === true) {
         try {
-          const nixIdRegex = /^[a-f\d]{24}$/i;
+          meal = await getUserMealByName(meal.food_name);
+          meal = meal.data;
+        } catch (error) {
+          console.log(error);
+          toast.error("Could not retrieve meal");
+        }
+      } else {
+        if (mealId !== meal.food_name || mealId !== meal.nix_item_id) {
+          try {
+            const nixIdRegex = /^[a-f\d]{24}$/i;
 
-          // User created meal
-          if (Array.isArray(mealId)) {
-            console.log(mealId[0]);
-            console.log(mealId[1]);
-            meal = await getUserMealByNameAndBrand(mealId[0], mealId[1]);
-            meal = meal.data;
-          } else {
             if (mealId.match(nixIdRegex)) {
               console.log("matches ");
               meal = await nutritionixService.getMealByNixItemId(mealId);
             } else {
               meal = await nutritionixService.getMealDetails(mealId);
             }
-            meal = meal.data.foods[0];
-          }
 
-          localStorage.setItem("currentMealSelected", JSON.stringify(meal));
-        } catch (error) {
-          console.log(error);
+            meal = meal.data.foods[0];
+          } catch (error) {
+            console.log(error);
+          }
         }
       }
 
-      // See if the meal exists in the user's meals so they can possibly edit / delete
-
-      // const index = JSON.parse(localStorage.getItem("userMeals")).findIndex(
-      //   (m) => m._id === meal.item_id
-      // );
-      // if (index !== -1) setLocalUserMeal(true);
+      localStorage.setItem("currentMealSelected", JSON.stringify(meal));
 
       setMeal(meal);
+      console.log("current meal", meal);
+      // See if the meal is editable or not
+      const arr = getLocalUserMeals();
+      const index = arr.findIndex(
+        (m) =>
+          m.food_name === meal.food_name && m.brand_name === meal.brand_name
+      );
+      if (index > -1) setLocalUserMeal(true);
 
       setPlayLottie(false);
     }
@@ -88,24 +93,23 @@ function SpecificMeal(props) {
   }, [props.location.pathname]);
 
   const displayHeader = () => {
-    if (meal.brand_name === undefined || meal.brand_name === null) {
-      return meal.food_name;
+    if (meal.brand_name && meal.food_name) {
+      return meal.brand_name + " " + meal.food_name;
     }
-    return meal.brand_name + " " + meal.food_name;
+    return meal.food_name;
   };
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const handleAdd = async () => {
+  const handleAddToConsumedMeals = async () => {
     if (servings <= 0) {
       return toast.error("Please enter a valid input");
     }
     handleClose();
     const obj = {
+      food_name: meal.food_name,
       brand_name: meal.brand_name,
-      item_id: meal.item_id,
-      item_name: meal.item_name,
-      ingredients: meal.ingredients || [],
+      sub_recipe: meal.sub_recipe || [],
       nf_calories: meal.nf_calories,
       nf_total_fat: meal.nf_total_fat,
       nf_total_carbohydrate: meal.nf_total_carbohydrate,
@@ -121,23 +125,29 @@ function SpecificMeal(props) {
 
   const handleAddToMyMeals = async () => {
     const serverObj = {
+      food_name: meal.food_name,
       brand_name: meal.brand_name,
-      item_name: meal.item_name,
-      item_id: meal.item_id,
-      ingredients: [],
+      serving_qty: meal.serving_qty ? meal.serving_qty : 1,
+      serving_unit: meal.serving_unit ? meal.serving_unit : "meal",
+      serving_weight_grams: meal.serving_weight_grams,
       nf_calories: meal.nf_calories,
-      nf_total_fat: meal.nf_total_fat,
-      nf_total_carbohydrate: meal.nf_total_carbohydrate,
       nf_protein: meal.nf_protein,
-      servings: 1,
+      nf_total_carbohydrate: meal.nf_total_carbohydrate,
+      nf_total_fat: meal.nf_total_fat,
+      nix_item_id: meal.nix_item_id,
+      thumb: meal.photo.thumb,
+      sub_recipe: meal.sub_recipe ? meal.sub_recipe : [],
       liked: false,
-      _id: meal.item_id,
+      created_meal: false,
+      user_meal: true,
     };
 
     try {
       setLocalUserMeal(true);
-      const response = await postSearchedMeal(serverObj);
+      const response = await postUserMeal(serverObj);
       if (response.status === 200) pushLocalUserMeal(response.data);
+
+      setMeal(response.data);
     } catch (error) {
       setLocalUserMeal(false);
       console.log(error);
@@ -145,8 +155,8 @@ function SpecificMeal(props) {
   };
   const handleDelete = async () => {
     try {
-      const response = await deleteMealById(meal.item_id);
-      if (response.status === 200) deleteLocalUserMealById(meal.item_id);
+      const response = await deleteMealById(meal._id);
+      if (response.status === 200) deleteLocalUserMealById(meal._id);
 
       history.goBack();
     } catch (error) {
@@ -155,11 +165,18 @@ function SpecificMeal(props) {
   };
 
   const handleIngredientClick = (ingredientObj) => {
-    console.log(ingredientObj);
+    console.log("ingredientObj", ingredientObj);
     const mealName = ingredientObj.food;
+    const obj = {
+      food_name: mealName,
+      created_meal: ingredientObj.created_meal,
+    };
+
+    localStorage.setItem("currentMealSelected", JSON.stringify(obj));
 
     const location = {
       pathname: "/meals/" + mealName,
+      meal: obj,
     };
 
     history.push(location);
@@ -275,14 +292,16 @@ function SpecificMeal(props) {
             </button>
             {localUserMeal ? (
               <div>
+                {meal.user_meal && (
+                  <button
+                    className="btn btn-secondary btn-sm shadow-sm ml-3 mr-3"
+                    onClick={handleShowEdit}
+                  >
+                    Edit
+                  </button>
+                )}
                 <button
-                  className="btn btn-secondary btn-sm shadow-sm"
-                  onClick={handleShowEdit}
-                >
-                  Edit
-                </button>
-                <button
-                  className="btn btn-danger btn-sm shadow-sm"
+                  className="btn btn-danger btn-sm shadow-sm ml-3"
                   onClick={handleDelete}
                 >
                   Delete
@@ -323,7 +342,10 @@ function SpecificMeal(props) {
             <button className="btn btn-secondary" onClick={handleClose}>
               Close
             </button>
-            <button className="btn btn-primary" onClick={handleAdd}>
+            <button
+              className="btn btn-primary"
+              onClick={handleAddToConsumedMeals}
+            >
               Add
             </button>
           </Modal.Footer>

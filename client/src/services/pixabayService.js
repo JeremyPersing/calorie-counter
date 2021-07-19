@@ -1,22 +1,9 @@
-import axios from "axios";
+import { apiUrl } from "../config.json";
+import http from "./httpService";
 
-const apiKey = "22505356-2a4483d932144354de59c3ade";
-
+const apiEndpoint = apiUrl + "/pixabay";
 export const getImagesByQuery = (queryString) => {
-  const options = {
-    method: "get",
-    url: "https://pixabay.com/api/",
-    params: {
-      key: apiKey,
-      q: queryString,
-      lang: "en",
-      image_type: "photo",
-      orientation: "horizontal",
-      category: "food",
-      safesearch: "true",
-    },
-  };
-  return axios.request(options);
+  return http.post(apiEndpoint, { query: queryString });
 };
 
 export default {

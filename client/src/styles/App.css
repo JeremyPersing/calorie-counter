@@ -384,6 +384,20 @@ h5 {
   margin-bottom: 30px;
 }
 
+.img-container { position: relative; }
+.img-container img { display: block; }
+.img-container .img-delete-icon {
+  position: absolute; 
+  top: 0; 
+  right: 0;
+}
+
+.add-meal-container {
+  max-width: 760px;
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
 @media screen and (max-width: 991px) {
   .my-masonry-grid {
     display: -webkit-box; /* Not needed if autoprefixing */

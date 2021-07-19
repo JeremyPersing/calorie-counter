@@ -4,7 +4,7 @@ import animationData from "../lotties/lf30_editor_2nt0sohi.json";
 import {
   filterCreatedMeals,
   getLocalUserMeals,
-  getCreatedMeals,
+  filterLocalUserMeals,
 } from "../services/mealService";
 import nutritionixService from "../services/nutritionixService";
 import likify from "../utils/likifyMeals";
@@ -14,25 +14,45 @@ import PaginatedMealDisplay from "./PaginatedMealsDisplay";
 import "../styles/MealsTable.css";
 
 function SearchMealsDisplay(props) {
-  const { setProducts, products, addMealSearch, onClick, pageLimit } = props;
+  const {
+    setProducts,
+    products,
+    search, // Purpose of the display is to search for new meals
+    getUserMeals, // Purpose of the display is to filter current user meals
+    // Not necessary props below this point
+    addMealSearch,
+    onClick,
+    pageLimit,
+  } = props;
   const [playLottie, setPlayLottie] = useState(false);
   const [displayVisible, setdisplayVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     async function getMeals() {
-      const prevSearchQuery = localStorage.getItem("searchQuery");
-
-      if (prevSearchQuery) setSearchQuery(prevSearchQuery);
+      if (search && getUserMeals)
+        return alert("Only select either search or getUserMeals. Not both");
 
       let meals;
-      // let meals = [...mealsObj.common, ...mealsObj.branded];
-      if (products.length === 0) {
-        meals = JSON.parse(localStorage.getItem("searchedMeals"));
+      if (search) {
+        const prevSearchQuery = localStorage.getItem("searchQuery");
 
-        if (!meals) return; // only show the table if something we have meals
-      } else {
-        meals = products;
+        if (prevSearchQuery) setSearchQuery(prevSearchQuery);
+
+        if (products.length === 0) {
+          meals = JSON.parse(localStorage.getItem("searchedMeals"));
+
+          if (!meals) return; // only show the table if something we have meals
+        } else {
+          meals = products;
+        }
+      } else if (getUserMeals) {
+        if (products.length === 0) {
+          meals = JSON.parse(localStorage.getItem("userMeals"));
+          if (!meals) return;
+        } else {
+          meals = products;
+        }
       }
 
       setProducts(meals);
@@ -43,6 +63,9 @@ function SearchMealsDisplay(props) {
 
   const handleChange = (e) => {
     setSearchQuery(e.target.value);
+    if (getUserMeals) {
+      getProducts();
+    }
   };
 
   const getProducts = async () => {
@@ -50,34 +73,42 @@ function SearchMealsDisplay(props) {
       setdisplayVisible(false); // A new search should allow for a new loading logo & table
       setPlayLottie(true);
 
-      const { data: usersMeals } = await filterCreatedMeals(searchQuery);
-      console.log(usersMeals);
-      let possibleMeals = [...usersMeals];
+      if (search) {
+        const { data: usersMeals } = await filterCreatedMeals(searchQuery);
+        console.log(usersMeals);
+        let possibleMeals = [...usersMeals];
 
-      console.log(possibleMeals);
-      let result = await nutritionixService.getMealsByName(searchQuery);
-      result = [...result.data.common, ...result.data.branded];
+        console.log(possibleMeals);
+        let result = await nutritionixService.getMealsByName(searchQuery);
+        result = [...result.data.common, ...result.data.branded];
 
-      // Returns the meals that are not already in the user's meals
-      let res;
-      if (possibleMeals.length > 0) {
-        res = result.filter(
-          (searchedMeal) =>
-            !usersMeals.some((userMeal) =>
-              searchedMeal.nix_item_id
-                ? searchedMeal.nix_item_id === userMeal.nix_item_id
-                : searchedMeal.food_name.toLowerCase().trim() ===
-                  userMeal.food_name.toLowerCase().trim()
-            )
-        );
-      } else res = result;
+        // Returns the meals that are not already in the user's meals
+        let res;
+        if (possibleMeals.length > 0) {
+          res = result.filter(
+            (searchedMeal) =>
+              !usersMeals.some((userMeal) =>
+                searchedMeal.nix_item_id
+                  ? searchedMeal.nix_item_id === userMeal.nix_item_id
+                  : searchedMeal.food_name.toLowerCase().trim() ===
+                    userMeal.food_name.toLowerCase().trim()
+              )
+          );
+        } else res = result;
 
-      let searchedMealsLikified = await likify.likifyAllMeals(res);
+        let searchedMealsLikified = await likify.likifyAllMeals(res);
 
-      possibleMeals = [...possibleMeals, ...searchedMealsLikified];
-      localStorage.setItem("searchedMeals", JSON.stringify(possibleMeals));
+        possibleMeals = [...possibleMeals, ...searchedMealsLikified];
+        localStorage.setItem("searchedMeals", JSON.stringify(possibleMeals));
 
-      setProducts(possibleMeals);
+        setProducts(possibleMeals);
+      } else if (getUserMeals) {
+        if (searchQuery === "") return getLocalUserMeals();
+
+        const filtered = filterLocalUserMeals(searchQuery);
+        setProducts(filtered);
+      }
+
       setPlayLottie(false);
       setdisplayVisible(true);
     } catch (error) {
@@ -93,7 +124,7 @@ function SearchMealsDisplay(props) {
         toast.warning("Input a value into the search field");
         return;
       }
-      localStorage.setItem("searchQuery", searchQuery);
+      if (search) localStorage.setItem("searchQuery", searchQuery);
       getProducts();
     } catch (error) {
       toast.error("Something's gone wrong ...");
