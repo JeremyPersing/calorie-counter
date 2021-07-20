@@ -6,12 +6,9 @@ import React from "react";
 function AddIcon(props) {
   return (
     <FontAwesomeIcon
+      ref={props.ref}
       icon={faPlus}
-      className={
-        props.className
-          ? "add-icon " + props.className
-          : "add-icon"
-      }
+      className={props.className ? "add-icon " + props.className : "add-icon"}
       onClick={props.onClick}
     />
   );

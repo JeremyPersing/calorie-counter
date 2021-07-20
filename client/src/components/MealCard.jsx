@@ -10,7 +10,8 @@ import {
   putUserMeal,
   deleteUserMeal,
 } from "../services/mealService";
-import Modal from "react-bootstrap/Modal";
+import DeleteMealModal from "./DeleteMealModal";
+// import Modal from "react-bootstrap/Modal";
 
 function MealCard(props) {
   // props allows the user to pass an onClick function, and allows to specify if the
@@ -294,24 +295,12 @@ function MealCard(props) {
           </div>
         </div>
       </div>
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header>
-          <Modal.Title>Are you sure?</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {currMeal.created_meal
-            ? "Are you sure you want to permanently delete your created meal?"
-            : "Are you sure you want to delete this item from your meals?"}
-        </Modal.Body>
-        <Modal.Footer>
-          <button className="btn btn-danger" onClick={handleDelete}>
-            Delete
-          </button>
-          <button className="btn btn-secondary" onClick={handleClose}>
-            Cancel
-          </button>
-        </Modal.Footer>
-      </Modal>
+      <DeleteMealModal
+        show={show}
+        handleClose={handleClose}
+        currMeal={currMeal}
+        handleDelete={handleDelete}
+      />
     </>
   );
 }

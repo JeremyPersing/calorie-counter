@@ -4,11 +4,9 @@ import Page from "../components/Page";
 import MealsTab from "../components/MealsTab";
 import SearchMealsDisplay from "../components/SearchMealsDisplay";
 import {
-  putUserMeal,
   getUserMeals,
   getLocalUserMeals,
   setLocalUserMeals,
-  updateLocalUserMeal,
 } from "../services/mealService";
 
 function MyMeals(props) {
@@ -19,31 +17,13 @@ function MyMeals(props) {
     async function getMeals() {
       const meals = await getUserMeals();
       const { data } = meals;
+      console.log("meals in MyMeals", data);
 
       setLocalUserMeals(data);
       setProducts(data);
     }
     getMeals();
   }, []);
-
-  const filterByValue = (array, string) => {
-    let matchingObjects = [];
-    string = string.replace(/\s/g, "").trim().toLowerCase();
-
-    for (const i in array) {
-      const arr = Object.values(array[i]);
-      const obj = arr[0];
-
-      const itemName = obj.item_name.replace(/\s/g, "").trim().toLowerCase();
-      const brandName = obj.brand_name.replace(/\s/g, "").trim().toLowerCase();
-
-      if (itemName.includes(string) || brandName.includes(string)) {
-        matchingObjects.push(array[i]);
-      }
-    }
-
-    return matchingObjects;
-  };
 
   return (
     <>

@@ -75,9 +75,19 @@ class IngredientInputForm extends Form {
 
     try {
       const { data } = await postUserMeal(meal);
-      console.log(data);
 
-      this.props.ingredientList.push(data);
+      if (this.props.pushSmallIngredient) {
+        const obj = {
+          serving_weight: data.serving_weight_grams,
+          food: data.food_name,
+          calories: data.nf_calories,
+          serving_qty: data.serving_qty,
+          serving_unit: data.serving_unit,
+          created_meal: data.created_meal,
+        };
+        this.props.ingredientList.push(obj);
+      } else this.props.ingredientList.push(data);
+
       this.props.handleClose();
     } catch (error) {
       console.log(error);

@@ -45,7 +45,10 @@ function ConditionalModal(props) {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <button className="btn btn-secondary" onClick={handleClose}>
+          <button
+            className="btn btn-sm shadow-sm btn-secondary"
+            onClick={handleClose}
+          >
             Close
           </button>
         </Modal.Footer>

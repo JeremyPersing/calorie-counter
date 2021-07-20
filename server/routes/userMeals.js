@@ -214,7 +214,7 @@ router.put("/:id", auth, async (req, res) => {
     nf_protein: req.body.nf_protein,
     nf_total_carbohydrate: req.body.nf_total_carbohydrate,
     nf_total_fat: req.body.nf_total_fat,
-    nix_item_id: req.body.nix_item_id || null,
+    nix_item_id: req.body.nix_item_id,
     photo: {
       thumb: req.body.thumb,
     },

@@ -180,7 +180,10 @@ function ChooseDiet(props) {
             advice and advice for trying a new diet.
           </Modal.Body>
           <Modal.Footer>
-            <button className="btn btn-primary" onClick={handleClose}>
+            <button
+              className="btn btn-primary shadow-sm btn-sm"
+              onClick={handleClose}
+            >
               Okay
             </button>
           </Modal.Footer>
