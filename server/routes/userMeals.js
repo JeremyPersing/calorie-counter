@@ -88,6 +88,18 @@ router.get("/:mealname", auth, async (req, res) => {
   }
 });
 
+router.get("/id/:id", auth, async (req, res) => {
+  try {
+    const meal = await getMealById(req.user._id, req.params.id);
+
+    if (!meal) res.status(404).send("Meal could not be found");
+
+    res.send(meal);
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 // works
 router.get("/search/:query", auth, async (req, res) => {
   let { meals } = await UserMeals.findOne({ user_id: req.user._id }).set(

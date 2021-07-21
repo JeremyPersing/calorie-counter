@@ -43,7 +43,7 @@ export const getMealByNixItemId = (id) => {
     method: "get",
     url: "https://trackapi.nutritionix.com/v2/search/item",
     params: {
-      "nix_item_id": id,
+      nix_item_id: id,
     },
     headers: {
       "x-app-id": appId,

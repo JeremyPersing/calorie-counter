@@ -9,6 +9,7 @@ import {
   pushLocalUserMeal,
   deleteLocalUserMealById,
 } from "../services/mealService";
+import { sumNutrientField } from "../utils/sumNutrientField";
 import nutritionixService from "../services/nutritionixService";
 import Page from "../components/Page";
 import "../styles/App.css";
@@ -84,11 +85,26 @@ class AddMeal extends Form {
     }
 
     try {
-      const totalCalories = this.sumNutrientField("nf_calories");
-      const totalProtein = this.sumNutrientField("nf_protein");
-      const totalCarbs = this.sumNutrientField("nf_total_carbohydrate");
-      const totalFat = this.sumNutrientField("nf_total_fat");
-      const totalServingWeight = this.sumNutrientField("serving_weight_grams");
+      const totalCalories = this.sumNutrientField(
+        this.state.ingredients,
+        "nf_calories"
+      );
+      const totalProtein = this.sumNutrientField(
+        this.state.ingredients,
+        "nf_protein"
+      );
+      const totalCarbs = this.sumNutrientField(
+        this.state.ingredients,
+        "nf_total_carbohydrate"
+      );
+      const totalFat = this.sumNutrientField(
+        this.state.ingredients,
+        "nf_total_fat"
+      );
+      const totalServingWeight = this.sumNutrientField(
+        this.state.ingredients,
+        "serving_weight_grams"
+      );
 
       const brand_name = this.state.brand_name ? this.state.brand_name : null;
       const thumb = this.state.data.thumb
@@ -126,20 +142,6 @@ class AddMeal extends Form {
 
   handleSearchChanged = (e) => {
     this.setState({ searchQuery: e.target.value });
-  };
-
-  sumNutrientField = (nutrientField) => {
-    let sum = 0;
-    for (const i in this.state.ingredients) {
-      let amount = this.state.ingredients[i][nutrientField];
-
-      if (typeof amount !== Number) {
-        amount = Number(amount);
-      }
-
-      sum += amount;
-    }
-    return sum.toFixed(2);
   };
 
   removeIngredient = async (meal) => {

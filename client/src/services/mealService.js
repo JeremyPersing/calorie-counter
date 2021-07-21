@@ -67,6 +67,11 @@ export function getUserMeals() {
   return http.get(apiUrl + "/usermeals");
 }
 
+export function getUserMealById(mealId) {
+  http.setJwt(getJwt());
+  return http.get(apiUrl + "/usermeals/id/" + mealId);
+}
+
 export function getUserMealByName(mealName) {
   http.setJwt(getJwt());
   return http.get(apiUrl + "/usermeals/" + mealName);

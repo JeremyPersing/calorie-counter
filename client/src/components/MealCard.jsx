@@ -11,7 +11,6 @@ import {
   deleteUserMeal,
 } from "../services/mealService";
 import DeleteMealModal from "./DeleteMealModal";
-// import Modal from "react-bootstrap/Modal";
 
 function MealCard(props) {
   // props allows the user to pass an onClick function, and allows to specify if the
@@ -260,6 +259,7 @@ function MealCard(props) {
 
   return (
     <>
+      {/*  */}
       <div className="col-md-6 col-xl-4">
         <div className="card">
           <div className="meal-card-body">
@@ -277,6 +277,9 @@ function MealCard(props) {
                   {currMeal.brand_name
                     ? currMeal.brand_name + " " + currMeal.food_name
                     : currMeal.food_name}
+                </p>
+                <p className="card-text mt-2">
+                  {currMeal.nf_calories && currMeal.nf_calories + " cals"}
                 </p>
               </div>
             </div>

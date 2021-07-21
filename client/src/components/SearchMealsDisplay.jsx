@@ -20,7 +20,7 @@ function SearchMealsDisplay(props) {
     search, // Purpose of the display is to search for new meals
     getUserMeals, // Purpose of the display is to filter current user meals
     // Not necessary props below this point
-    addMealSearch,
+    addMealSearch, // When the user shouldn't have the option to like/delete meals
     onClick,
     pageLimit,
   } = props;

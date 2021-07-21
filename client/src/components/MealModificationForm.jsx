@@ -8,8 +8,16 @@ import SearchImageModal from "./SearchImageModal";
 import SearchMealsDisplay from "./SearchMealsDisplay";
 import Dropdown from "react-bootstrap/Dropdown";
 import Modal from "react-bootstrap/Modal";
-import { putUserMeal, updateLocalUserMeal } from "../services/mealService";
+import {
+  getUserMealById,
+  putUserMeal,
+  updateLocalUserMeal,
+} from "../services/mealService";
 import { toast } from "react-toastify";
+import {
+  getMealByNixItemId,
+  getMealDetails,
+} from "./../services/nutritionixService";
 
 class MealModificationForm extends Form {
   state = {
@@ -22,12 +30,14 @@ class MealModificationForm extends Form {
       nf_total_fat: this.props.meal.nf_total_fat,
       thumb: this.props.meal.photo.thumb,
     },
+    errors: {},
     meal_ingredients: this.props.meal.sub_recipe, // Used for when an ingredient gets added to meal
     showImageModal: false,
     priorMeal: this.props.meal,
     showIngredientInputModal: false,
     value: "",
-    errors: {},
+    products: [],
+    showSearchMealsDisplayModal: false,
   };
 
   schema = {
@@ -37,7 +47,11 @@ class MealModificationForm extends Form {
     nf_protein: Joi.number().min(0).required().label("Protein"),
     nf_total_carbohydrate: Joi.number().min(0).required().label("Carbs"),
     nf_total_fat: Joi.number().min(0).required().label("Fat"),
-    thumb: Joi.string().required(),
+    thumb: Joi.string().allow("").allow(null),
+  };
+
+  setProducts = (prods) => {
+    this.setState({ products: prods });
   };
 
   componentDidMount() {
@@ -65,6 +79,14 @@ class MealModificationForm extends Form {
     this.setState({ showIngredientInputModal: false });
   };
 
+  handleShowSearchMealsDisplayModal = () => {
+    this.setState({ showSearchMealsDisplayModal: true });
+  };
+
+  handleCloseSearchMealsDisplayModal = () => {
+    this.setState({ showSearchMealsDisplayModal: false });
+  };
+
   handleSubmit = async () => {
     const errors = this.validate();
     if (errors) {
@@ -88,6 +110,7 @@ class MealModificationForm extends Form {
     meal.nf_protein = Number(meal.nf_protein);
     meal.nf_total_carbohydrate = Number(meal.nf_total_carbohydrate);
     meal.nf_total_fat = Number(meal.nf_total_fat);
+    meal.sub_recipe = this.state.meal_ingredients;
 
     if (!meal.brand_name) meal.brand_name = null;
     if (!meal.thumb) {
@@ -128,11 +151,11 @@ class MealModificationForm extends Form {
   };
 
   handleDeleteIngredient = (ingredientObj) => {
-    const data = { ...this.state.data };
-    let recipe = data.sub_recipe.filter((m) => m !== ingredientObj);
-    data.sub_recipe = recipe;
+    let ingredientsArr = this.state.meal_ingredients.filter(
+      (m) => m !== ingredientObj
+    );
 
-    this.setState({ data, meal_ingredients: recipe });
+    this.setState({ meal_ingredients: ingredientsArr });
   };
 
   addMealIcon = () => {
@@ -185,7 +208,7 @@ class MealModificationForm extends Form {
             Input Ingredient
           </Dropdown.Item>
           <Dropdown.Item
-            onClick={() => console.log("show search")}
+            onClick={this.handleShowSearchMealsDisplayModal}
             eventKey="2"
           >
             Search Ingredient
@@ -195,21 +218,53 @@ class MealModificationForm extends Form {
     );
   };
 
-  componentDidUpdate() {
-    console.log("componentDidUpdate");
-    console.log("sub_recipe", this.state.data.sub_recipe);
-    console.log("meal_ingredients", this.state.meal_ingredients);
-    // Meal has updated in regards to the ingredients calories have changed too
-    // these will be saved when the user presses save meal
-    if (this.state.data.sub_recipe !== this.state.meal_ingredients) {
-      console.log("not the same");
-      const data = { ...this.state.data };
-      const newIngredients = [...this.state.meal_ingredients];
-      data.sub_recipe = newIngredients;
-      console.log("data", data);
-      this.setState({ data });
+  handleSearchMealsDisplayMealClick = async (meal) => {
+    try {
+      let resMeal;
+      if (meal.user_meal) {
+        const currMealSelected = JSON.parse(
+          localStorage.getItem("currentMealSelected")
+        );
+        if (currMealSelected._id.toString() === meal._id.toString()) {
+          throw new Error("Can't add the same ingredient to itself");
+        }
+        const { data } = await getUserMealById(meal._id);
+        resMeal = data;
+        console.log("resMeal", resMeal);
+      } else if (meal.nix_item_id) {
+        const { data } = await getMealByNixItemId(meal.nix_item_id);
+        resMeal = data.foods[0];
+        console.log("resMeal", resMeal);
+      } else {
+        const { data } = await getMealDetails(meal.food_name);
+        resMeal = data.foods[0];
+        console.log("resMeal", resMeal);
+      }
+      const ingredients_added = [...this.state.ingredients_added];
+      ingredients_added.push(resMeal);
+      this.setState({ ingredients_added });
+
+      const ingredientObj = {
+        serving_weight: resMeal.serving_weight_grams,
+        food: resMeal.food_name,
+        calories: resMeal.nf_calories,
+        serving_qty: resMeal.serving_qty,
+        serving_unit: resMeal.serving_unit,
+        created_meal: resMeal.created_meal,
+      };
+
+      console.log("ingredientObj", ingredientObj);
+      //Call the nutritionix server if nutritionix meal
+      const ingredientsArr = [...this.state.meal_ingredients];
+      ingredientsArr.push(ingredientObj);
+      this.setState({ meal_ingredients: ingredientsArr });
+      this.handleCloseSearchMealsDisplayModal();
+    } catch (error) {
+      console.log(error);
+      toast.error("Unable to add ingredient");
     }
-  }
+  };
+
   render() {
     return (
       <div>
@@ -244,7 +299,7 @@ class MealModificationForm extends Form {
                 <strong>Ingredients</strong>
                 {this.addMealIcon()}
               </small>
-              {this.state.data.sub_recipe.map((m) => (
+              {this.state.meal_ingredients.map((m) => (
                 <div className="d-flex justify-content-between ml-3 mb-1 ">
                   <span className="text-capitalize" key={m.food}>
                     <small>{m.food}</small>
@@ -296,11 +351,13 @@ class MealModificationForm extends Form {
             Save
           </button>
         </div>
+
         <SearchImageModal
           show={this.state.showImageModal}
           handleClose={this.handleCloseImageModal}
           onImageClick={this.handleImageClicked}
         />
+        {/* Modal for ingredient input */}
         <Modal
           show={this.state.showIngredientInputModal}
           onHide={this.handleCloseIngredientInputModal}
@@ -322,7 +379,43 @@ class MealModificationForm extends Form {
               pushSmallIngredient={true}
             />
           </Modal.Body>
-          <Modal.Footer></Modal.Footer>
+          <Modal.Footer>
+            <button
+              className="btn btn-sm shadow-sm btn-secondary"
+              onClick={this.handleCloseIngredientInputModal}
+            >
+              Close
+            </button>
+          </Modal.Footer>
+        </Modal>
+        {/* Modal For Searching Ingredient */}
+        <Modal
+          show={this.state.showSearchMealsDisplayModal}
+          onHide={this.handleCloseSearchMealsDisplayModal}
+          backdrop="static"
+          size="lg"
+        >
+          <Modal.Header>
+            <Modal.Title>Search for Your Ingredient</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <SearchMealsDisplay
+              search={true}
+              setProducts={this.setProducts}
+              products={this.state.products}
+              pageLimit={6}
+              addMealSearch={true}
+              onClick={this.handleSearchMealsDisplayMealClick}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <button
+              className="btn btn-sm shadow-sm btn-secondary"
+              onClick={this.handleCloseSearchMealsDisplayModal}
+            >
+              Close
+            </button>
+          </Modal.Footer>
         </Modal>
       </div>
     );
