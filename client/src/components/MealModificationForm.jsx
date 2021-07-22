@@ -57,6 +57,7 @@ class MealModificationForm extends Form {
   componentDidMount() {
     let currSelected = JSON.parse(localStorage.getItem("currentMealSelected"));
     console.log("currSelected", currSelected);
+
     // Makes sure that when the user refreshes the page, the most recent version of the updated
     // meal is being displayed
     if (currSelected !== this.props.priorMeal)
@@ -94,8 +95,11 @@ class MealModificationForm extends Form {
       return;
     }
 
+    console.log("SUBMITTTIIIIIIIINGGGGGG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     const priorMeal = this.state.priorMeal;
     const meal = this.state.data;
+
+    console.log("priorMeal._id", priorMeal._id);
 
     meal.food_name = priorMeal.food_name;
     meal.serving_qty = priorMeal.serving_qty;
@@ -105,7 +109,7 @@ class MealModificationForm extends Form {
     meal.liked = priorMeal.liked;
     meal.created_meal = priorMeal.created_meal;
     meal.user_meal = priorMeal.user_meal;
-    meal._id = priorMeal._id;
+    meal._id = priorMeal._id; ////////////////////////////////////////////////// Unable to set currently
     meal.nf_calories = Number(meal.nf_calories);
     meal.nf_protein = Number(meal.nf_protein);
     meal.nf_total_carbohydrate = Number(meal.nf_total_carbohydrate);
@@ -127,6 +131,14 @@ class MealModificationForm extends Form {
         // to call the server to delete meal from db
         localStorage.setItem("userMeals", JSON.stringify(response.data.meals));
 
+        // Need to have this for when the meal has saved once and the user may want to edit again
+        meal.photo = {
+          thumb: meal.thumb,
+        };
+        delete meal.thumb;
+
+        console.log("submitting the MealModificationForm");
+        console.log("setting meal to ", meal);
         this.props.setMeal(meal);
         localStorage.setItem("currentMealSelected", JSON.stringify(meal));
         this.props.handleClose();
@@ -220,11 +232,14 @@ class MealModificationForm extends Form {
 
   handleSearchMealsDisplayMealClick = async (meal) => {
     try {
+      console.log("MEALLLLLL!!!!!!!!!!!!!!!!!!!!!!!", meal);
       let resMeal;
       if (meal.user_meal) {
+        // After Meal is saved it doesn't keep the same id
         const currMealSelected = JSON.parse(
           localStorage.getItem("currentMealSelected")
         );
+        console.log("currMealSelected", currMealSelected);
         if (currMealSelected._id.toString() === meal._id.toString()) {
           throw new Error("Can't add the same ingredient to itself");
         }
@@ -240,9 +255,6 @@ class MealModificationForm extends Form {
         resMeal = data.foods[0];
         console.log("resMeal", resMeal);
       }
-      const ingredients_added = [...this.state.ingredients_added];
-      ingredients_added.push(resMeal);
-      this.setState({ ingredients_added });
 
       const ingredientObj = {
         serving_weight: resMeal.serving_weight_grams,
@@ -253,13 +265,12 @@ class MealModificationForm extends Form {
         created_meal: resMeal.created_meal,
       };
 
-      console.log("ingredientObj", ingredientObj);
-      //Call the nutritionix server if nutritionix meal
       const ingredientsArr = [...this.state.meal_ingredients];
       ingredientsArr.push(ingredientObj);
       this.setState({ meal_ingredients: ingredientsArr });
       this.handleCloseSearchMealsDisplayModal();
     } catch (error) {
+      this.handleCloseSearchMealsDisplayModal();
       console.log(error);
       toast.error("Unable to add ingredient");
     }
@@ -293,7 +304,7 @@ class MealModificationForm extends Form {
             <strong>Fat (g)</strong>
           </small>
           {this.renderInput("nf_total_fat", "Fat/Serving (g)", "number")}
-          {this.state.data.sub_recipe.length > 0 ? (
+          {this.state.meal_ingredients.length > 0 ? (
             <div className="mb-3">
               <small className="ml-3 d-flex justify-content-between mb-3">
                 <strong>Ingredients</strong>
@@ -376,6 +387,10 @@ class MealModificationForm extends Form {
             <IngredientInputForm
               handleClose={this.handleCloseIngredientInputModal}
               ingredientList={this.state.meal_ingredients}
+              setIngredientList={(arr) => {
+                console.log("arr", arr);
+                this.setState({ meal_ingredients: arr });
+              }}
               pushSmallIngredient={true}
             />
           </Modal.Body>

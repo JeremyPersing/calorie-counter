@@ -176,6 +176,10 @@ router.post("/", auth, async (req, res) => {
   const result = validateRequest(req.body);
   if (result.error) return res.status(400).send(result.error.message);
 
+  const potentialMeal = await getMealByName(req.user._id, req.body.food_name);
+  if (potentialMeal)
+    return res.status(409).send("Meal Already Exists, choose a different name");
+
   var id = mongoose.Types.ObjectId();
 
   let meal = {

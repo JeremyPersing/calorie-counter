@@ -2,7 +2,7 @@ import React from "react";
 import "../styles/IncreaseDecreaseInput.css";
 
 function IncreaseDecreaseInput(props) {
-  const { inputValue, setInputValue, className } = props;
+  const { inputValue, setInputValue, className, onChange } = props;
 
   const decreaseValue = () => {
     let value = inputValue;
@@ -24,7 +24,13 @@ function IncreaseDecreaseInput(props) {
       <button className="value-button" id="decrease" onClick={decreaseValue}>
         -
       </button>
-      <input className="servings-input" size={1} value={inputValue} />
+      <input
+        className="servings-input"
+        size={1}
+        value={inputValue}
+        onChange={onChange}
+        type="text"
+      />
       <button className="value-button" id="increase" onClick={increaseValue}>
         +
       </button>

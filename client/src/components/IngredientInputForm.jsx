@@ -4,6 +4,7 @@ import Form from "./Form";
 import { postUserMeal, pushLocalUserMeal } from "../services/mealService";
 import SearchImageModal from "./SearchImageModal";
 import DeleteIcon from "./DeleteIcon";
+import { toast } from "react-toastify";
 
 class IngredientInputForm extends Form {
   // props for this class are meal, ingredientList, handleClose
@@ -39,6 +40,12 @@ class IngredientInputForm extends Form {
     nf_total_carbohydrate: Joi.number().min(0).required().label("Carbs"),
     nf_total_fat: Joi.number().min(0).required().label("Fat"),
     thumb: Joi.string().allow(""),
+  };
+
+  setPropsIngredients = (obj) => {
+    let ingredientsArr = [...this.props.ingredientList];
+    ingredientsArr.push(obj);
+    this.props.setIngredientList(ingredientsArr);
   };
 
   handleSubmit = async () => {
@@ -85,12 +92,25 @@ class IngredientInputForm extends Form {
           serving_unit: data.serving_unit,
           created_meal: data.created_meal,
         };
-        this.props.ingredientList.push(obj);
-      } else this.props.ingredientList.push(data);
+        this.setPropsIngredients(obj);
+        console.log(
+          "Sould be pushing this object to the ingredient input form",
+          obj
+        );
+      } // Pushing a full meal
+      else this.setPropsIngredients(data);
 
       this.props.handleClose();
     } catch (error) {
       console.log(error);
+      if (error.response.status === 409) {
+        this.props.handleClose();
+        toast.error(
+          "A meal with that name already exists. Try changing the name or searching for that meal."
+        );
+      } else {
+        toast.error("Unable to add ingredient");
+      }
     }
   };
 

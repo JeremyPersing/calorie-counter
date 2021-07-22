@@ -32,7 +32,7 @@ function MealCard(props) {
   const handleShow = () => setShow(true);
 
   const handleClick = () => {
-    console.log(meal);
+    console.log("mealCard clicked", meal);
     const mealName = meal.food_name;
     let pathName = "/meals/" + mealName; // Generic meal
 
@@ -211,14 +211,14 @@ function MealCard(props) {
 
   const handleDelete = async () => {
     handleClose();
-    console.log("Deleting");
     const originalProds = [...products];
     const prods = [...products];
     const originalMeal = { ...currMeal };
     const tempMeal = { ...currMeal };
 
+    /// CHECK FOR USER_MEAL
+
     if (tempMeal.created_meal) {
-      console.log("meal that is a created_meal");
       const index = prods.findIndex((m) => m._id === tempMeal._id);
 
       if (index > -1) {

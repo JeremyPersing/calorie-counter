@@ -3,6 +3,7 @@ import Modal from "react-bootstrap/Modal";
 
 function DeleteMealModal(props) {
   const { show, currMeal, handleClose, handleDelete } = props;
+
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header>

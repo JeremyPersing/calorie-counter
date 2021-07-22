@@ -17,6 +17,7 @@ import {
   pushLocalUserMeal,
   deleteMealById,
   deleteLocalUserMealById,
+  getUserMealById,
 } from "../services/mealService";
 import nutritionixService from "../services/nutritionixService";
 import UncontrolledLottie from "../components/UncontrolledLottie";
@@ -82,11 +83,13 @@ function SpecificMeal(props) {
       console.log("MEALLLLLLLL", meal);
       if (!meal) meal = JSON.parse(localStorage.getItem("currentMealSelected"));
       console.log("meal after", meal);
+
       // User created meal and the back button has not been hit
       if (
         meal.created_meal &&
         (mealId[0] === meal.food_name || mealId === meal.food_name)
       ) {
+        console.log("USER CREATED MEAL !!!!!!!!!!!");
         // A user created ingredient is clicked
         meal = await getSpecificUserMeal(mealId);
       } else {
@@ -101,8 +104,11 @@ function SpecificMeal(props) {
 
       // Set the current meal to localStorage in case the user refreshes the page
       localStorage.setItem("currentMealSelected", JSON.stringify(meal));
+
       setThumb(meal.photo.thumb); // Get an error that meal.photo.thumb doesn't exist if try directly in jsx
       setMeal(meal);
+
+      console.log("meal displaying in specificMeal", meal);
 
       // See if the meal is editable or not
       const arr = getLocalUserMeals();
@@ -112,6 +118,7 @@ function SpecificMeal(props) {
       );
       console.log("index", index);
       if (index !== -1) setLocalUserMeal(true);
+      else setLocalUserMeal(false);
 
       setPlayLottie(false);
     }
@@ -181,11 +188,26 @@ function SpecificMeal(props) {
       console.log(error);
     }
   };
+
   const handleDelete = async () => {
     try {
-      const response = await deleteMealById(meal._id);
-      if (response.status === 200) deleteLocalUserMealById(meal._id);
+      console.log("meal in handleDelete", meal);
+      let response, mealId;
+      if (meal._id) {
+        response = await deleteMealById(meal._id);
+        mealId = meal._id;
+      } else {
+        let res = await getUserMealByNameAndBrand(
+          meal.food_name,
+          meal.brand_name
+        );
 
+        res = res.data;
+        mealId = res._id;
+        response = await deleteMealById(res._id);
+      }
+      if (response.status === 200) deleteLocalUserMealById(mealId);
+      handleCloseDeleteModal();
       history.goBack();
     } catch (error) {
       toast.error("Please add this meal to delete it");
@@ -319,7 +341,7 @@ function SpecificMeal(props) {
             >
               Add to Consumed Items
             </button>
-            {localUserMeal ? (
+            {meal.user_meal || localUserMeal ? (
               <div>
                 {meal.created_meal && (
                   <button
@@ -399,7 +421,10 @@ function SpecificMeal(props) {
           <Modal.Body>
             <MealModificationForm
               meal={meal}
-              setMeal={setMeal}
+              setMeal={(meal) => {
+                setMeal(meal);
+                setThumb(meal.photo.thumb);
+              }}
               handleClose={handleCloseEdit}
             />
           </Modal.Body>

@@ -4,6 +4,7 @@ import Form from "../components/Form";
 import ConditionalModal from "../components/ConditionalModal";
 import DeleteIcon from "../components/DeleteIcon";
 import {
+  getUserMealById,
   deleteUserMeal,
   postUserMeal,
   pushLocalUserMeal,
@@ -85,23 +86,20 @@ class AddMeal extends Form {
     }
 
     try {
-      const totalCalories = this.sumNutrientField(
+      const totalCalories = sumNutrientField(
         this.state.ingredients,
         "nf_calories"
       );
-      const totalProtein = this.sumNutrientField(
+      const totalProtein = sumNutrientField(
         this.state.ingredients,
         "nf_protein"
       );
-      const totalCarbs = this.sumNutrientField(
+      const totalCarbs = sumNutrientField(
         this.state.ingredients,
         "nf_total_carbohydrate"
       );
-      const totalFat = this.sumNutrientField(
-        this.state.ingredients,
-        "nf_total_fat"
-      );
-      const totalServingWeight = this.sumNutrientField(
+      const totalFat = sumNutrientField(this.state.ingredients, "nf_total_fat");
+      const totalServingWeight = sumNutrientField(
         this.state.ingredients,
         "serving_weight_grams"
       );
@@ -128,7 +126,6 @@ class AddMeal extends Form {
         created_meal: true,
         user_meal: true,
       };
-      console.log("serverObj in AddMeal", serverObj);
 
       const response = await postUserMeal(serverObj);
       console.log("data", response.data);
@@ -136,6 +133,11 @@ class AddMeal extends Form {
 
       this.props.history.push("/meals/mine");
     } catch (error) {
+      if (error.response.status === 409) {
+        toast.error(
+          "A meal with that name already exists. Try changing the name or searching for that meal."
+        );
+      }
       console.log(error);
     }
   };
@@ -169,16 +171,37 @@ class AddMeal extends Form {
   };
 
   handleMealClicked = async (meal) => {
-    const res = await nutritionixService.getMealDetails(meal.food_name);
-    const obj = res.data.foods[0];
-    console.log(obj);
+    console.log("meal click in AddMeal", meal);
+    try {
+      let res;
+      if (meal.user_meal) {
+        console.log("user_meal");
+        res = await getUserMealById(meal._id);
+        res = res.data;
+      } // Ingredient tied to specific brand
+      else if (meal.nix_item_id) {
+        console.log("Meal.nix_item_id");
+        res = await nutritionixService.getMealByNixItemId(meal.nix_item_id);
+        res = res.data.foods[0];
+      } // Generic ingredient
+      else {
+        console.log("No nix_item_id");
+        res = await nutritionixService.getMealDetails(meal.food_name);
+        res = res.data.foods[0];
+      }
+      console.log("res", res);
 
-    let ingredientsArr = [...this.state.ingredients];
-    ingredientsArr.push(obj);
+      let ingredientsArr = [...this.state.ingredients];
+      ingredientsArr.push(res);
 
-    this.setState({ ingredients: ingredientsArr });
+      this.setState({ ingredients: ingredientsArr });
 
-    this.handleClose();
+      this.handleClose();
+    } catch (error) {
+      toast.error("Unable to add meal");
+      this.handleClose();
+      console.log(error);
+    }
   };
 
   handleImageClicked = (imgUrl) => {
@@ -247,7 +270,7 @@ class AddMeal extends Form {
 
                   <p className="pt-3">
                     <span className="font-weight-bold">Calories</span>:{" "}
-                    {this.sumNutrientField("nf_calories")}
+                    {sumNutrientField(this.state.ingredients, "nf_calories")}
                   </p>
                 </div>
               ) : null}
@@ -293,6 +316,7 @@ class AddMeal extends Form {
             headerOne="Search for Your Ingredient"
             headerTwo="Input Your Ingredient"
             ingredientList={this.state.ingredients}
+            setIngredientList={(arr) => this.setState({ ingredients: arr })}
             setProducts={this.setProducts}
             products={this.state.products}
           />

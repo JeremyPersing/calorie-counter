@@ -17,6 +17,8 @@ function MyAccount(props) {
           Logout
         </button>
         <h3 className="text-center mt-3">Account</h3>
+        <div>Modify Daily Caloric Intake</div>
+        <div>Change Diet Plan</div>
       </Page>
     </>
   );

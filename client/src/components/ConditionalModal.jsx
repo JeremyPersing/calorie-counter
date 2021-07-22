@@ -11,6 +11,7 @@ function ConditionalModal(props) {
     headerOne,
     headerTwo,
     ingredientList,
+    setIngredientList,
     setProducts,
     products,
     onMealClick,
@@ -41,6 +42,7 @@ function ConditionalModal(props) {
             <IngredientInputForm
               handleClose={handleClose}
               ingredientList={ingredientList}
+              setIngredientList={setIngredientList}
             />
           )}
         </Modal.Body>
