@@ -99,7 +99,7 @@ class MealModificationForm extends Form {
     const priorMeal = this.state.priorMeal;
     const meal = this.state.data;
 
-    console.log("priorMeal._id", priorMeal._id);
+    console.log("priorMeal", priorMeal);
 
     meal.food_name = priorMeal.food_name;
     meal.serving_qty = priorMeal.serving_qty;
@@ -107,9 +107,9 @@ class MealModificationForm extends Form {
     meal.serving_weight_grams = priorMeal.serving_weight_grams;
     meal.nix_item_id = priorMeal.nix_item_id;
     meal.liked = priorMeal.liked;
+    meal._id = priorMeal._id;
     meal.created_meal = priorMeal.created_meal;
     meal.user_meal = priorMeal.user_meal;
-    meal._id = priorMeal._id; ////////////////////////////////////////////////// Unable to set currently
     meal.nf_calories = Number(meal.nf_calories);
     meal.nf_protein = Number(meal.nf_protein);
     meal.nf_total_carbohydrate = Number(meal.nf_total_carbohydrate);

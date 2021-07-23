@@ -10,14 +10,13 @@ import { toast } from "react-toastify";
 import "../styles/SpecificMeal.css";
 import {
   getUserMealByNameAndBrand,
+  updateLocalSearchedMeal,
   getLocalUserMeals,
   getUserMealByName,
-  postSearchedMeal,
   postUserMeal,
   pushLocalUserMeal,
   deleteMealById,
   deleteLocalUserMealById,
-  getUserMealById,
 } from "../services/mealService";
 import nutritionixService from "../services/nutritionixService";
 import UncontrolledLottie from "../components/UncontrolledLottie";
@@ -181,6 +180,7 @@ function SpecificMeal(props) {
       setLocalUserMeal(true);
       const response = await postUserMeal(serverObj);
       if (response.status === 200) pushLocalUserMeal(response.data);
+      updateLocalSearchedMeal(response.data);
 
       setMeal(response.data);
     } catch (error) {
@@ -207,6 +207,8 @@ function SpecificMeal(props) {
         response = await deleteMealById(res._id);
       }
       if (response.status === 200) deleteLocalUserMealById(mealId);
+
+      updateLocalSearchedMeal(meal);
       handleCloseDeleteModal();
       history.goBack();
     } catch (error) {

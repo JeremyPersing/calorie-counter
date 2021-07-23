@@ -1,10 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Page from "../components/Page";
 import MealsTab from "../components/MealsTab";
 import SearchMealsDisplay from "../components/SearchMealsDisplay";
 
 function Meals(props) {
   const [products, setProducts] = useState([]);
+  useEffect(() => {
+    const meals = JSON.parse(localStorage.getItem("searchedMeals"));
+    if (!meals) return;
+    setProducts(meals);
+
+    console.log("products in Meals", meals);
+  }, []);
 
   return (
     <Page>

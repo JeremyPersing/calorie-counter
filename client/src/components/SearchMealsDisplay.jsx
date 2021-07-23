@@ -34,25 +34,12 @@ function SearchMealsDisplay(props) {
         return alert("Only select either search or getUserMeals. Not both");
 
       let meals;
+      // Meals.jsx
       if (search) {
+        console.log("In search");
         const prevSearchQuery = localStorage.getItem("searchQuery");
 
         if (prevSearchQuery) setSearchQuery(prevSearchQuery);
-
-        if (products.length === 0) {
-          meals = JSON.parse(localStorage.getItem("searchedMeals"));
-
-          if (!meals) return; // only show the table if something we have meals
-        } else {
-          meals = products;
-        }
-      } else if (getUserMeals) {
-        if (products.length === 0) {
-          meals = JSON.parse(localStorage.getItem("userMeals"));
-          if (!meals) return;
-        } else {
-          meals = products;
-        }
       }
 
       setProducts(meals);
@@ -141,8 +128,9 @@ function SearchMealsDisplay(props) {
         placeholder="Search by Name or Brand"
       />
       {playLottie ? <UncontrolledLottie animationData={animationData} /> : null}
-      {displayVisible && (
+      {products && displayVisible && (
         <PaginatedMealDisplay
+          getUserMeals={getUserMeals}
           onMealClick={onClick}
           addMealSearch={addMealSearch}
           products={products}

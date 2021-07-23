@@ -22,6 +22,7 @@ function Pagination(props) {
     gotoPage(1);
   }, []);
 
+
   const pageLimit = typeof props.pageLimit === "number" ? props.pageLimit : 10;
 
   const totalRecords =

@@ -9,14 +9,16 @@ import {
   postUserMeal,
   putUserMeal,
   deleteUserMeal,
+  deleteLocalUserMealById,
 } from "../services/mealService";
 import DeleteMealModal from "./DeleteMealModal";
+import { pushLocalUserMeal } from "./../services/mealService";
 
 function MealCard(props) {
   // props allows the user to pass an onClick function, and allows to specify if the
   // curr meals are being displayed due to a search from user creating a meal
   let history = useHistory();
-  const { meal, products, setProducts } = props;
+  const { meal, products, setProducts, getUserMeals } = props;
   const [currMeal, setCurrMeal] = useState(meal);
   const [show, setShow] = useState(false);
 
@@ -199,6 +201,7 @@ function MealCard(props) {
       setCurrMeal(data);
       setProducts(prods);
 
+      pushLocalUserMeal(data);
       return localStorage.setItem("searchedMeals", JSON.stringify(prods));
     } catch (error) {
       console.error(error);
@@ -231,23 +234,33 @@ function MealCard(props) {
       setCurrMeal(null);
       localStorage.setItem("searchedMeals", JSON.stringify(prods));
     } else {
+      console.log("Not a created Meal and we are deleting");
       if (tempMeal.liked) tempMeal.liked = !tempMeal.liked;
 
       const index = prods.findIndex((m) => m._id === tempMeal._id);
-      tempMeal.user_meal = false;
-      prods[index] = tempMeal;
-      console.log("index", index);
-      console.log("tempMeal that was not created", tempMeal);
-
-      setCurrMeal(tempMeal);
-      setProducts(prods);
-
-      console.log(prods);
+      if (getUserMeals) {
+        console.log("In the get UserMeals page");
+        console.log("index", index);
+        if (index > -1) {
+          prods.splice(index, 1);
+        }
+        console.log("Array after splice", prods);
+        setProducts(prods);
+        setCurrMeal(null);
+      } else {
+        tempMeal.user_meal = false;
+        prods[index] = tempMeal;
+        console.log("index", index);
+        console.log("tempMeal that was not created", tempMeal);
+        setCurrMeal(tempMeal);
+        setProducts(prods);
+      }
       localStorage.setItem("searchedMeals", JSON.stringify(prods));
     }
 
     try {
       await deleteUserMeal(currMeal);
+      deleteLocalUserMealById(currMeal._id);
     } catch (error) {
       console.error(error);
       toast.error("Unable to delete meal");

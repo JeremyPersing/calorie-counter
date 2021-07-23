@@ -217,6 +217,7 @@ router.post("/", auth, async (req, res) => {
 
 // To edit a meal the meal must be part of the user's meals and therefore has an _id key
 router.put("/:id", auth, async (req, res) => {
+  if (req.body._id) delete req.body._id
   const result = validateRequest(req.body);
   if (result.error) return res.status(400).send(result.error.message);
 

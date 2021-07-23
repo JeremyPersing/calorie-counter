@@ -50,6 +50,20 @@ export function updateLocalUserMeal(meal) {
   setLocalUserMeals(arr);
 }
 
+// Finds a meal in the searched meal array with the same name and brand as the argument
+// then updates that meal in the array, used in Specific Meal when a meal is added
+export function updateLocalSearchedMeal(meal) {
+  const searchedMeals = JSON.parse(localStorage.getItem("searchedMeals"));
+  const index = searchedMeals.findIndex((m) => m.food_name === meal.food_name);
+
+  console.log("INDEX OF MEAL IN UPDATELOCALSEARCHEDMEAL", index);
+  if (index > -1) {
+    searchedMeals[index] = meal;
+    localStorage.setItem("searchedMeals", JSON.stringify(searchedMeals));
+  }
+  return;
+}
+
 export function pushLocalUserMeal(meal) {
   let arr = JSON.parse(localStorage.getItem("userMeals") || "[]");
   arr.push(meal);
@@ -59,7 +73,7 @@ export function pushLocalUserMeal(meal) {
 export function deleteLocalUserMealById(id) {
   let arr = JSON.parse(localStorage.getItem("userMeals") || "[]");
   arr = arr.filter((m) => m._id !== id);
-  setLocalUserMeals(arr);
+  setLocalUserMeals(JSON.stringify(arr));
 }
 
 export function getUserMeals() {
@@ -105,7 +119,7 @@ export function deleteMealById(id) {
 export function putUserMeal(meal) {
   http.setJwt(getJwt());
   const id = meal._id;
-  delete meal._id;
+
   return http.put(apiUrl + "/usermeals/" + id, meal);
 }
 

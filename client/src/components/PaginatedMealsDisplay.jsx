@@ -13,6 +13,7 @@ function PaginatedMealsDisplay(props) {
     pageNeighbors,
     onMealClick,
     addMealSearch,
+    getUserMeals,
   } = props;
 
   const onPageChanged = (data) => {
@@ -38,10 +39,12 @@ function PaginatedMealsDisplay(props) {
       <div className="row d-flex flex-row">
         <div className="w-100 px-4 py-2 mb-3 d-flex flex-row flex-wrap align-items-center justify-content-between">
           <div className="d-flex flex-row align-items-center">
-            <h2 className={headerClass}>
-              <strong className="text-secondary">{products.length}</strong>{" "}
-              Meals
-            </h2>
+            {products && (
+              <h2 className={headerClass}>
+                <strong className="text-secondary">{products.length}</strong>{" "}
+                Meals
+              </h2>
+            )}
             {currPage ? (
               <span className="current-page d-inline-block h-100 pl-4 text-secondary">
                 Page <span className="font-weight-bold">{currPage}</span> /{" "}
@@ -54,6 +57,7 @@ function PaginatedMealsDisplay(props) {
         </div>
         {currProducts.map((item) => (
           <MealCard
+            getUserMeals={getUserMeals}
             onMealClick={onMealClick}
             addMealSearch={addMealSearch}
             key={item.food_name}

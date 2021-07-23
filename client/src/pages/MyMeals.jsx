@@ -44,7 +44,7 @@ function MyMeals(props) {
               setProducts={setProducts}
             />
           ) : (
-            <div>
+            <div className="mt-2">
               <p>
                 Create items specific to your needs. If we don't have the food{" "}
                 <br /> option you're looking for, feel free to create it.
