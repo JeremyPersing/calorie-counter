@@ -18,7 +18,7 @@ function Hero(props) {
           className="display-3 font-weight-light text-center"
           style={{ marginBottom: "5%", color: "#150A02" }}
         >
-          Lagom
+          CalorieBalance
         </h1>
         <div className="center">
           <SkinnyLogo

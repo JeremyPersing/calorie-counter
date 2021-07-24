@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MealCard from "./MealCard";
 import Pagination from "./Pagination";
 
@@ -13,6 +13,8 @@ function PaginatedMealsDisplay(props) {
     pageNeighbors,
     onMealClick,
     addMealSearch,
+    searchMeals,
+    likedMeals,
     getUserMeals,
   } = props;
 
@@ -20,9 +22,10 @@ function PaginatedMealsDisplay(props) {
     const { currentPage, totalPages, pageLimit } = data;
 
     const offset = (currentPage - 1) * pageLimit;
-    const currProducts = products.slice(offset, offset + pageLimit);
 
-    setCurrProducts(currProducts);
+    const currentProducts = products.slice(offset, offset + pageLimit);
+
+    setCurrProducts(currentProducts);
     setCurrPage(currentPage);
     setTotalPages(totalPages);
   };
@@ -51,16 +54,17 @@ function PaginatedMealsDisplay(props) {
                 <span className="font-weight-bold">{totalPages}</span>
               </span>
             ) : (
-              "no current page"
+              "No Current Page"
             )}
           </div>
         </div>
         {currProducts.map((item) => (
           <MealCard
+            likedMeals={likedMeals}
+            searchMeals={searchMeals}
             getUserMeals={getUserMeals}
             onMealClick={onMealClick}
             addMealSearch={addMealSearch}
-            key={item.food_name}
             meal={item}
             products={products}
             setProducts={setProducts}

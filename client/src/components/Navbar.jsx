@@ -36,10 +36,14 @@ function Navbar({ toggled, setToggled, toggleSideBar, getTextClasses }) {
           className="sidebar-brand d-flex align-items-center justify-content-center"
           to="/"
         >
-          <div className="sidebar-brand-icon">
-            <SkinnyLogo width="40px" className="filter-white" />
+          <div>
+            <div className="sidebar-brand-icon">
+              <SkinnyLogo width="40px" className="filter-white" />
+            </div>
+            <div className="sidebar-brand-text">
+              <small>CalorieBalance</small>
+            </div>
           </div>
-          <div className="sidebar-brand-text mx-3">Lagom</div>
         </Link>
         <hr className="sidebar-divider my-0" />
 

@@ -17,7 +17,8 @@ function SearchMealsDisplay(props) {
   const {
     setProducts,
     products,
-    search, // Purpose of the display is to search for new meals
+    likedMeals, // For meals on LikedMeals page
+    searchMeals, // Purpose of the display is to search for new meals
     getUserMeals, // Purpose of the display is to filter current user meals
     // Not necessary props below this point
     addMealSearch, // When the user shouldn't have the option to like/delete meals
@@ -30,19 +31,17 @@ function SearchMealsDisplay(props) {
 
   useEffect(() => {
     async function getMeals() {
-      if (search && getUserMeals)
+      if (searchMeals && getUserMeals)
         return alert("Only select either search or getUserMeals. Not both");
 
-      let meals;
       // Meals.jsx
-      if (search) {
+      if (searchMeals) {
         console.log("In search");
         const prevSearchQuery = localStorage.getItem("searchQuery");
 
         if (prevSearchQuery) setSearchQuery(prevSearchQuery);
       }
 
-      setProducts(meals);
       setdisplayVisible(true);
     }
     getMeals();
@@ -60,7 +59,7 @@ function SearchMealsDisplay(props) {
       setdisplayVisible(false); // A new search should allow for a new loading logo & table
       setPlayLottie(true);
 
-      if (search) {
+      if (searchMeals) {
         const { data: usersMeals } = await filterCreatedMeals(searchQuery);
         console.log(usersMeals);
         let possibleMeals = [...usersMeals];
@@ -111,7 +110,7 @@ function SearchMealsDisplay(props) {
         toast.warning("Input a value into the search field");
         return;
       }
-      if (search) localStorage.setItem("searchQuery", searchQuery);
+      if (searchMeals) localStorage.setItem("searchQuery", searchQuery);
       getProducts();
     } catch (error) {
       toast.error("Something's gone wrong ...");
@@ -130,6 +129,8 @@ function SearchMealsDisplay(props) {
       {playLottie ? <UncontrolledLottie animationData={animationData} /> : null}
       {products && displayVisible && (
         <PaginatedMealDisplay
+          likedMeals={likedMeals}
+          searchMeals={searchMeals}
           getUserMeals={getUserMeals}
           onMealClick={onClick}
           addMealSearch={addMealSearch}

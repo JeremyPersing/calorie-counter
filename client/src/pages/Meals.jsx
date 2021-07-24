@@ -3,8 +3,9 @@ import Page from "../components/Page";
 import MealsTab from "../components/MealsTab";
 import SearchMealsDisplay from "../components/SearchMealsDisplay";
 
-function Meals(props) {
+function Meals() {
   const [products, setProducts] = useState([]);
+
   useEffect(() => {
     const meals = JSON.parse(localStorage.getItem("searchedMeals"));
     if (!meals) return;
@@ -17,7 +18,7 @@ function Meals(props) {
     <Page>
       <MealsTab className="mt-2 mb-2 center" />
       <SearchMealsDisplay
-        search={true}
+        searchMeals={true}
         setProducts={setProducts}
         products={products}
       />

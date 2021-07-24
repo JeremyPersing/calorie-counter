@@ -1,11 +1,12 @@
-html, body {
+html,
+body {
   height: 100%;
   padding: 0;
   margin: 0;
 }
 
 body {
-  font-family: 'Roboto', Helvetica, sans-serif;
+  font-family: "Roboto", Helvetica, sans-serif;
 }
 
 .thumb {
@@ -14,26 +15,27 @@ body {
 }
 
 .filter-white {
-  filter: invert(99%) sepia(0%) saturate(463%) hue-rotate(357deg) brightness(114%) contrast(100%);
+  filter: invert(99%) sepia(0%) saturate(463%) hue-rotate(357deg)
+    brightness(114%) contrast(100%);
 }
 
 .mb-sm-0,
 .my-sm-0 {
-    margin-bottom: 0 !important;
-  }
+  margin-bottom: 0 !important;
+}
 
 .bg-gradient-primary {
-    background-color: #4e73df;
-    background-image: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
-    background-size: cover;
-  }
+  background-color: #4e73df;
+  background-image: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
+  background-size: cover;
+}
 
 .border-0 {
-    border: 0 !important;
+  border: 0 !important;
 }
 
 .shadow-lg {
-    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
 }
 
 .mt-5,
@@ -50,14 +52,14 @@ body {
   border: 1px solid lightgray;
   font-size: 0.8rem;
   border-radius: 10rem;
-  padding: .5rem .5rem;
+  padding: 0.5rem 0.5rem;
   margin-top: -12px;
   margin-bottom: -5px;
 }
 
 select {
-  border:0px;
-   outline:0px;
+  border: 0px;
+  outline: 0px;
 }
 
 .select-text {
@@ -67,34 +69,31 @@ select {
   color: "gray";
 }
 
-
-  
 .form-user .form-control-user {
-    margin-top: .5rem;
-    margin-bottom: .5rem;
-    font-size: 0.8rem;
-    border-radius: 10rem;
-    padding: 1.5rem 1rem;
-  }
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+  border-radius: 10rem;
+  padding: 1.5rem 1rem;
+}
 
-  .form-control-user {
-    font-size: 2rem;
-    border-radius: 10rem;
-    padding: 1.5rem 1rem;
-  }
+.form-control-user {
+  font-size: 2rem;
+  border-radius: 10rem;
+  padding: 1.5rem 1rem;
+}
 
 .btn-nav {
-    font-size: 0.8rem;
-    border-radius: 10rem;
-    padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  border-radius: 10rem;
+  padding: 0.75rem 1rem;
 }
 
 .btn-non-main {
   font-size: 0.8rem;
-    border-radius: 10rem;
-    padding: 0.75rem 1rem;
-    background: transparent;
-    
+  border-radius: 10rem;
+  padding: 0.75rem 1rem;
+  background: transparent;
 }
 
 .btn-non-main:hover {
@@ -105,66 +104,67 @@ select {
 .small-font {
   font-size: 0.8rem;
 }
-  
-.form-user .btn-user {
-    font-size: 0.8rem;
-    border-radius: 10rem;
-    padding: 0.75rem 1rem;
-  }
 
+.form-user .btn-user {
+  font-size: 0.8rem;
+  border-radius: 10rem;
+  padding: 0.75rem 1rem;
+}
 
 .btn-google {
-    color: #fff;
-    background-color: #ea4335;
-    border-color: #fff;
-  }
-  
-  .btn-google:hover {
-    color: #fff;
-    background-color: #e12717;
-    border-color: #e6e6e6;
-  }
-  
-  .btn-google:focus, .btn-google.focus {
-    color: #fff;
-    background-color: #e12717;
-    border-color: #e6e6e6;
-    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.5);
-  }
+  color: #fff;
+  background-color: #ea4335;
+  border-color: #fff;
+}
 
-  .btn-facebook {
-    color: #fff;
-    background-color: #3b5998;
-    border-color: #fff;
-  }
-  
-  .btn-facebook:hover {
-    color: #fff;
-    background-color: #30497c;
-    border-color: #e6e6e6;
-  }
-  
-  .btn-facebook:focus, .btn-facebook.focus {
-    color: #fff;
-    background-color: #30497c;
-    border-color: #e6e6e6;
-    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.5);
-  }
+.btn-google:hover {
+  color: #fff;
+  background-color: #e12717;
+  border-color: #e6e6e6;
+}
 
-  .btn-block {
-    display: block;
-    width: 100%;
-  }
-  
-  .btn-block + .btn-block {
-    margin-top: 0.5rem;
-  }
-  
-  input[type="submit"].btn-block,
-  input[type="reset"].btn-block,
-  input[type="button"].btn-block {
-    width: 100%;
-  }
+.btn-google:focus,
+.btn-google.focus {
+  color: #fff;
+  background-color: #e12717;
+  border-color: #e6e6e6;
+  box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.5);
+}
+
+.btn-facebook {
+  color: #fff;
+  background-color: #3b5998;
+  border-color: #fff;
+}
+
+.btn-facebook:hover {
+  color: #fff;
+  background-color: #30497c;
+  border-color: #e6e6e6;
+}
+
+.btn-facebook:focus,
+.btn-facebook.focus {
+  color: #fff;
+  background-color: #30497c;
+  border-color: #e6e6e6;
+  box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.5);
+}
+
+.btn-block {
+  display: block;
+  width: 100%;
+}
+
+.btn-block + .btn-block {
+  margin-top: 0.5rem;
+}
+
+input[type="submit"].btn-block,
+input[type="reset"].btn-block,
+input[type="button"].btn-block {
+  width: 100%;
+}
 
 h1 {
   font-weight: normal !important;
@@ -225,7 +225,6 @@ h5 {
   padding-right: 7em;
 }
 
-
 .create-meal-form {
   width: 75%;
 }
@@ -249,14 +248,10 @@ h5 {
 
 .ingredient:hover {
   cursor: pointer;
-  color: lightgray
+  color: lightgray;
 }
 
-
-
 @media screen and (min-width: 768px) {
-  
-
   .create-meal-form {
     width: 60%;
   }
@@ -282,7 +277,7 @@ h5 {
 }
 
 .diet-card {
-  text-align: center; 
+  text-align: center;
   padding-top: 3em;
   padding-bottom: 4em;
   margin-left: 1em;
@@ -290,7 +285,7 @@ h5 {
 }
 
 .diet-cards-container {
-  padding-top: 15vh; 
+  padding-top: 15vh;
 }
 
 .login-form {
@@ -315,8 +310,7 @@ h5 {
   text-decoration: none;
 }
 
-.navbar-link:hover
- {
+.navbar-link:hover {
   color: #343a40;
   text-decoration: underline;
 }
@@ -339,8 +333,9 @@ h5 {
   color: gray;
 }
 
-.list-group-link-active, .list-group-link:hover {
-  color: black;
+.list-group-link-active,
+.list-group-link:hover {
+  color: #4e73df;
 }
 
 .liked-active {
@@ -348,12 +343,12 @@ h5 {
 }
 
 .delete-icon:hover {
-  cursor:pointer;
+  cursor: pointer;
   color: red;
 }
 
 .meal-card-icon:hover {
-  opacity: .7;
+  opacity: 0.7;
 }
 
 .delete-icon:hover {
@@ -372,7 +367,7 @@ h5 {
 
 .ingredient-img:hover {
   cursor: pointer;
-  opacity: 0.8
+  opacity: 0.8;
 }
 
 .my-masonry-grid {
@@ -387,15 +382,20 @@ h5 {
 }
 
 /* Style your items */
-.my-masonry-grid_column > div { /* change div to reference your elements you put in <Masonry> */
+.my-masonry-grid_column > div {
+  /* change div to reference your elements you put in <Masonry> */
   margin-bottom: 30px;
 }
 
-.img-container { position: relative; }
-.img-container img { display: block; }
+.img-container {
+  position: relative;
+}
+.img-container img {
+  display: block;
+}
 .img-container .img-delete-icon {
-  position: absolute; 
-  top: 0; 
+  position: absolute;
+  top: 0;
   right: 0;
 }
 
@@ -440,7 +440,7 @@ h5 {
   .my-masonry-grid {
     display: -webkit-box; /* Not needed if autoprefixing */
     display: -ms-flexbox; /* Not needed if autoprefixing */
-    display: flex; 
+    display: flex;
     width: auto;
   }
 }
@@ -449,7 +449,7 @@ h5 {
   .my-masonry-grid {
     display: -webkit-box; /* Not needed if autoprefixing */
     display: -ms-flexbox; /* Not needed if autoprefixing */
-    display: flex; 
+    display: flex;
     width: auto;
   }
   .my-masonry-grid_column {

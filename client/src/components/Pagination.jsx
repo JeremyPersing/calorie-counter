@@ -16,12 +16,11 @@ const range = (from, to, step = 1) => {
 };
 
 function Pagination(props) {
-  //   const { totalRecords = null, pageLimit = 30, pageNeighbors = 0 } = props;
   const [currPage, setCurrPage] = useState(1);
-  useEffect(() => {
-    gotoPage(1);
-  }, []);
 
+  useEffect(() => {
+    gotoPage(currPage);
+  }, [props.totalRecords]);
 
   const pageLimit = typeof props.pageLimit === "number" ? props.pageLimit : 10;
 
@@ -39,19 +38,26 @@ function Pagination(props) {
 
   const gotoPage = (page) => {
     const { onPageChanged = (f) => f } = props;
-    const currentPage = Math.max(0, Math.min(page, totalPages));
+
+    let currentPage = Math.max(0, Math.min(page, totalPages));
+    if (currentPage === 0) currentPage = 1; // compoonent not updating with async call of the parent's data
+
+    if (currPage !== page) {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+
     const paginationData = {
       currentPage,
       totalPages,
       pageLimit,
       totalRecords,
     };
+
     setCurrPage(currentPage);
     onPageChanged(paginationData);
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
   };
 
   const handleClick = (page) => (evt) => {

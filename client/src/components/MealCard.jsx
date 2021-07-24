@@ -18,16 +18,20 @@ function MealCard(props) {
   // props allows the user to pass an onClick function, and allows to specify if the
   // curr meals are being displayed due to a search from user creating a meal
   let history = useHistory();
-  const { meal, products, setProducts, getUserMeals } = props;
-  const [currMeal, setCurrMeal] = useState(meal);
+
+  // Has additional props of onMealClick and addMealSearch
+  const { meal, products, setProducts, getUserMeals, searchMeals, likedMeals } =
+    props;
+
+  // const [currMeal, setCurrMeal] = useState(meal);
   const [show, setShow] = useState(false);
 
   // When the user deletes a created meal, currMeal state gets set to null
   // and nothing gets returned
-  if (currMeal === null) return null;
+  if (meal === null) return null;
 
   const img = {
-    backgroundImage: `url(${currMeal.photo.thumb})`,
+    backgroundImage: `url(${meal.photo.thumb})`,
   };
 
   const handleClose = () => setShow(false);
@@ -44,8 +48,6 @@ function MealCard(props) {
     if (meal.created_meal)
       pathName = "/meals/" + meal.food_name + "/" + meal.brand_name;
 
-    console.log(pathName);
-
     const location = {
       pathname: pathName,
       meal: meal,
@@ -54,27 +56,44 @@ function MealCard(props) {
     history.push(location);
   };
 
+  const updateLocalSearchedMeals = (products) => {
+    if (searchMeals)
+      localStorage.setItem("searchedMeals", JSON.stringify(products));
+  };
+
+  const updateMealInSearchedMeals = (meal) => {
+    const searchedMeals = JSON.parse(localStorage.getItem("searchedMeals"));
+
+    const index = searchedMeals.findIndex(
+      (m) => m.food_name === meal.food_name
+    );
+
+    if (index > -1) {
+      searchedMeals[index] = meal;
+      localStorage.setItem("searchedMeals", JSON.stringify(searchedMeals));
+    }
+  };
+
   const handleLike = async () => {
-    console.log("handling like");
     const originalProds = [...products];
     const prods = [...products];
-    const originalMeal = { ...currMeal };
-    const tempMeal = { ...currMeal };
+    const originalMeal = { ...meal };
+    const tempMeal = { ...meal };
 
-    const index = prods.findIndex((m) => m.food_name === currMeal.food_name);
-    console.log("index when liked", index);
+    const index = prods.findIndex((m) => m.food_name === meal.food_name);
+
     tempMeal.liked = !tempMeal.liked;
     prods[index] = tempMeal;
     tempMeal.user_meal = true;
 
+    if (likedMeals) prods.splice(index, 1);
+
     setProducts(prods);
-    setCurrMeal(tempMeal);
 
     try {
       // The meal already fits the required schema and is in the user's meals
 
       if (originalMeal._id && originalMeal.user_meal) {
-        console.log("originalMeal._id && originalMeal.user_meal");
         let serverObj = {
           food_name: tempMeal.food_name,
           brand_name: tempMeal.brand_name,
@@ -95,7 +114,9 @@ function MealCard(props) {
         };
 
         await putUserMeal(serverObj);
-        return localStorage.setItem("searchedMeals", JSON.stringify(prods));
+        updateLocalSearchedMeals(prods);
+        updateMealInSearchedMeals(tempMeal);
+        return;
       }
 
       // The meal doesn't fit the required schema and isn't in the user's meals
@@ -135,24 +156,24 @@ function MealCard(props) {
       const { data } = await postUserMeal(serverObj);
 
       prods[index] = data;
-      setCurrMeal(data);
+
       setProducts(prods);
 
-      return localStorage.setItem("searchedMeals", JSON.stringify(prods));
+      updateLocalSearchedMeals(prods);
+      return;
     } catch (error) {
       console.error(error);
       toast.error("An unexpected error has occurred");
-      setCurrMeal(originalMeal);
+
       setProducts(originalProds);
-      localStorage.setItem("searchedMeals", JSON.stringify(originalProds));
+      updateLocalSearchedMeals(originalProds);
     }
   };
 
   const handleAdd = async () => {
     const originalProds = [...products];
-    const originalMeal = { ...meal };
     const prods = [...products];
-    const index = prods.indexOf(currMeal);
+    const index = prods.indexOf(meal);
     const tempMeal = { ...meal };
 
     if (tempMeal.user_meal) tempMeal.user_meal = !tempMeal.user_meal;
@@ -160,7 +181,6 @@ function MealCard(props) {
 
     prods[index] = tempMeal;
     setProducts(prods);
-    setCurrMeal(tempMeal);
 
     try {
       // This meal is not a user meal yet so you have to call nutritionix
@@ -173,7 +193,6 @@ function MealCard(props) {
         tempMeal = await nutritionixService.getMealDetails(meal.food_name);
       }
       tempMeal = tempMeal.data.foods[0];
-      console.log("rempMeal res after handleAdd", tempMeal);
 
       let serverObj = {
         food_name: tempMeal.food_name,
@@ -188,27 +207,24 @@ function MealCard(props) {
         nix_item_id: tempMeal.nix_item_id,
         thumb: tempMeal.photo.thumb,
         sub_recipe: tempMeal.sub_recipe ? tempMeal.sub_recipe : [],
-        liked: currMeal.liked,
+        liked: meal.liked,
         created_meal: false,
         user_meal: true,
       };
 
-      console.log("serverObj", serverObj);
-
       const { data } = await postUserMeal(serverObj);
 
       prods[index] = data;
-      setCurrMeal(data);
       setProducts(prods);
 
       pushLocalUserMeal(data);
-      return localStorage.setItem("searchedMeals", JSON.stringify(prods));
+      updateLocalSearchedMeals(prods);
     } catch (error) {
       console.error(error);
       toast.error("Unable to add meal");
       setProducts(originalProds);
-      setCurrMeal(originalMeal);
-      localStorage.setItem("searchedMeals", JSON.stringify(originalProds));
+
+      updateLocalSearchedMeals(originalProds);
     }
   };
 
@@ -216,57 +232,45 @@ function MealCard(props) {
     handleClose();
     const originalProds = [...products];
     const prods = [...products];
-    const originalMeal = { ...currMeal };
-    const tempMeal = { ...currMeal };
-
-    /// CHECK FOR USER_MEAL
+    const tempMeal = { ...meal };
 
     if (tempMeal.created_meal) {
       const index = prods.findIndex((m) => m._id === tempMeal._id);
 
-      if (index > -1) {
-        console.log(index);
-
-        prods.splice(index, 1);
-      } else return;
+      if (index > -1) prods.splice(index, 1);
+      else return;
 
       setProducts(prods);
-      setCurrMeal(null);
-      localStorage.setItem("searchedMeals", JSON.stringify(prods));
+
+      updateLocalSearchedMeals(prods);
     } else {
-      console.log("Not a created Meal and we are deleting");
       if (tempMeal.liked) tempMeal.liked = !tempMeal.liked;
 
       const index = prods.findIndex((m) => m._id === tempMeal._id);
-      if (getUserMeals) {
-        console.log("In the get UserMeals page");
-        console.log("index", index);
+      if (getUserMeals || likedMeals) {
         if (index > -1) {
           prods.splice(index, 1);
         }
-        console.log("Array after splice", prods);
+
         setProducts(prods);
-        setCurrMeal(null);
       } else {
         tempMeal.user_meal = false;
         prods[index] = tempMeal;
-        console.log("index", index);
-        console.log("tempMeal that was not created", tempMeal);
-        setCurrMeal(tempMeal);
+
         setProducts(prods);
       }
-      localStorage.setItem("searchedMeals", JSON.stringify(prods));
+      updateLocalSearchedMeals(prods);
     }
 
     try {
-      await deleteUserMeal(currMeal);
-      deleteLocalUserMealById(currMeal._id);
+      await deleteUserMeal(meal);
+      deleteLocalUserMealById(meal._id);
     } catch (error) {
       console.error(error);
       toast.error("Unable to delete meal");
-      setCurrMeal(originalMeal);
+
       setProducts(originalProds);
-      localStorage.setItem("searchedMeals", JSON.stringify(originalProds));
+      updateLocalSearchedMeals(originalProds);
     }
   };
 
@@ -279,31 +283,29 @@ function MealCard(props) {
             <div
               className="media align-items-center"
               onClick={
-                props.onMealClick
-                  ? () => props.onMealClick(currMeal)
-                  : handleClick
+                props.onMealClick ? () => props.onMealClick(meal) : handleClick
               }
             >
               <span style={img} className="avatar avatar-xl mr-3"></span>
               <div className="media-body overflow-hidden">
                 <p className="card-text mb-0 text-capitalize">
-                  {currMeal.brand_name
-                    ? currMeal.brand_name + " " + currMeal.food_name
-                    : currMeal.food_name}
+                  {meal.brand_name
+                    ? meal.brand_name + " " + meal.food_name
+                    : meal.food_name}
                 </p>
                 <p className="card-text mt-2">
-                  {currMeal.nf_calories && currMeal.nf_calories + " cals"}
+                  {meal.nf_calories && meal.nf_calories + " cals"}
                 </p>
               </div>
             </div>
             {!props.addMealSearch && (
               <div className="d-flex justify-content-end">
                 <div>
-                  <LikeIcon liked={currMeal.liked} onClick={handleLike} />
+                  <LikeIcon liked={meal.liked} onClick={handleLike} />
                   <MealAddedIcon
                     className="mr-2 ml-4"
-                    added={currMeal.user_meal}
-                    onClick={currMeal.user_meal ? handleShow : handleAdd}
+                    added={meal.user_meal}
+                    onClick={meal.user_meal ? handleShow : handleAdd}
                   />
                 </div>
               </div>
@@ -314,7 +316,7 @@ function MealCard(props) {
       <DeleteMealModal
         show={show}
         handleClose={handleClose}
-        currMeal={currMeal}
+        currMeal={meal}
         handleDelete={handleDelete}
       />
     </>

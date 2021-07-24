@@ -11,7 +11,6 @@ import {
 
 function MyMeals(props) {
   const [products, setProducts] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     async function getMeals() {
@@ -51,7 +50,6 @@ function MyMeals(props) {
               </p>
             </div>
           )}
-          <div></div>
         </div>
       </Page>
     </>
