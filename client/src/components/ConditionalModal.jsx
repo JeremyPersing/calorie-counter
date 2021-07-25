@@ -31,7 +31,7 @@ function ConditionalModal(props) {
         <Modal.Body>
           {condition && show ? (
             <SearchMealsDisplay
-              search={true}
+              searchMeals={true}
               setProducts={setProducts}
               products={products}
               pageLimit={6}

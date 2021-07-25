@@ -22,17 +22,11 @@ function LikedMeals() {
     <>
       <Page>
         <MealsTab className="mt-2 mb-2 center" />
-        {products.length > 0 ? (
-          <SearchMealsDisplay
-            products={products}
-            setProducts={setProducts}
-            likedMeals={true}
-          />
-        ) : (
-          <div className="mt-5">
-            <h5 className="text-center">You have no liked meals</h5>
-          </div>
-        )}
+        <SearchMealsDisplay
+          products={products}
+          setProducts={setProducts}
+          likedMeals={true}
+        />
       </Page>
     </>
   );

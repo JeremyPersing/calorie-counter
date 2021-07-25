@@ -11,11 +11,11 @@ import "../styles/SpecificMeal.css";
 import {
   getUserMealByNameAndBrand,
   updateLocalSearchedMeal,
-  getLocalUserMeals,
   getUserMealByName,
   postUserMeal,
   pushLocalUserMeal,
   deleteMealById,
+  getUserMeals,
   deleteLocalUserMealById,
 } from "../services/mealService";
 import nutritionixService from "../services/nutritionixService";
@@ -55,7 +55,6 @@ function SpecificMeal(props) {
 
       let meal;
       if (mealId.match(nixIdRegex)) {
-        console.log("matches ");
         meal = await nutritionixService.getMealByNixItemId(mealId);
       } else {
         meal = await nutritionixService.getMealDetails(mealId);
@@ -110,13 +109,11 @@ function SpecificMeal(props) {
       console.log("meal displaying in specificMeal", meal);
 
       // See if the meal is editable or not
-      const arr = getLocalUserMeals();
-      const index = arr.findIndex(
-        (m) =>
-          m.food_name === meal.food_name && m.brand_name === meal.brand_name
-      );
+      let arr = await getUserMeals();
+      arr = arr.data;
+      const index = arr.findIndex((m) => m.food_name === meal.food_name);
       console.log("index", index);
-      if (index !== -1) setLocalUserMeal(true);
+      if (index > -1) setLocalUserMeal(true);
       else setLocalUserMeal(false);
 
       setPlayLottie(false);
@@ -133,6 +130,7 @@ function SpecificMeal(props) {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
   const handleAddToConsumedMeals = async () => {
     if (servings <= 0) {
       return toast.error("Please enter a valid input");
@@ -152,6 +150,7 @@ function SpecificMeal(props) {
     userData.setMealConsumed(obj); // Post to the server
     history.push("/");
   };
+
   const handleCloseEdit = () => setShowEdit(false);
   const handleShowEdit = () => setShowEdit(true);
   const handleShowDeleteModal = () => setShowDeleteModal(true);
@@ -343,7 +342,7 @@ function SpecificMeal(props) {
             >
               Add to Consumed Items
             </button>
-            {meal.user_meal || localUserMeal ? (
+            {localUserMeal ? (
               <div>
                 {meal.created_meal && (
                   <button

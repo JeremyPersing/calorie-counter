@@ -74,6 +74,18 @@ function MealCard(props) {
     }
   };
 
+  const deleteMealInLocalSearchedMeals = (meal) => {
+    const searchedMeals = JSON.parse(localStorage.getItem("searchedMeals"));
+
+    const index = searchedMeals.findIndex(
+      (m) => m.food_name === meal.food_name
+    );
+
+    searchedMeals.splice(index, 1);
+    localStorage.setItem("searchedMeals", JSON.stringify(searchedMeals));
+  };
+
+  // Can be done on Meals.jsx, MyMeals.jsx, and LikedMeals.jsx
   const handleLike = async () => {
     const originalProds = [...products];
     const prods = [...products];
@@ -170,6 +182,7 @@ function MealCard(props) {
     }
   };
 
+  // Meals can only be added on the search page (Meals.jsx)
   const handleAdd = async () => {
     const originalProds = [...products];
     const prods = [...products];
@@ -228,12 +241,14 @@ function MealCard(props) {
     }
   };
 
+  // Can be done on Meals.jsx, MyMeals.jsx, and LikedMeals.jsx
   const handleDelete = async () => {
     handleClose();
     const originalProds = [...products];
     const prods = [...products];
     const tempMeal = { ...meal };
 
+    // User created meal
     if (tempMeal.created_meal) {
       const index = prods.findIndex((m) => m._id === tempMeal._id);
 
@@ -243,6 +258,8 @@ function MealCard(props) {
       setProducts(prods);
 
       updateLocalSearchedMeals(prods);
+      // When a user created meal gets deleted it gets removed from db so completely delete it from localStorage
+      deleteMealInLocalSearchedMeals(tempMeal);
     } else {
       if (tempMeal.liked) tempMeal.liked = !tempMeal.liked;
 
@@ -260,6 +277,9 @@ function MealCard(props) {
         setProducts(prods);
       }
       updateLocalSearchedMeals(prods);
+      // Non user created meals still reside in the nutrtitionix database so they should still show up
+      tempMeal.user_meal = false;
+      updateMealInSearchedMeals(tempMeal);
     }
 
     try {

@@ -3,6 +3,8 @@ import { toast } from "react-toastify";
 import animationData from "../lotties/lf30_editor_2nt0sohi.json";
 import {
   filterCreatedMeals,
+  getLocalLikedMeals,
+  filterLocalLikedMeals,
   getLocalUserMeals,
   filterLocalUserMeals,
 } from "../services/mealService";
@@ -30,28 +32,46 @@ function SearchMealsDisplay(props) {
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    async function getMeals() {
-      if (searchMeals && getUserMeals)
-        return alert("Only select either search or getUserMeals. Not both");
+    if (searchMeals && getUserMeals)
+      return alert("Only select either search or getUserMeals. Not both");
 
-      // Meals.jsx
-      if (searchMeals) {
-        console.log("In search");
-        const prevSearchQuery = localStorage.getItem("searchQuery");
+    // Meals.jsx
+    if (searchMeals) {
+      const prevSearchQuery = localStorage.getItem("searchQuery");
 
-        if (prevSearchQuery) setSearchQuery(prevSearchQuery);
-      }
-
-      setdisplayVisible(true);
+      if (prevSearchQuery) setSearchQuery(prevSearchQuery);
     }
-    getMeals();
+
+    setdisplayVisible(true);
   }, []);
 
   const handleChange = (e) => {
     setSearchQuery(e.target.value);
     if (getUserMeals) {
-      getProducts();
+      getHandleGetUserMealsChangedProducts(e.target.value);
+    } else if (likedMeals) {
+      getHandleLikedMealsChangedProducts(e.target.value);
     }
+  };
+
+  const getHandleGetUserMealsChangedProducts = (searchPhrase) => {
+    if (searchPhrase === "") {
+      let products = getLocalUserMeals();
+      setProducts(products);
+      return;
+    }
+    const filtered = filterLocalUserMeals(searchPhrase);
+    setProducts(filtered);
+  };
+
+  const getHandleLikedMealsChangedProducts = (searchPhrase) => {
+    if (searchPhrase === "") {
+      let products = getLocalLikedMeals();
+      setProducts(products);
+      return;
+    }
+    const filtered = filterLocalLikedMeals(searchPhrase);
+    setProducts(filtered);
   };
 
   const getProducts = async () => {
@@ -61,10 +81,8 @@ function SearchMealsDisplay(props) {
 
       if (searchMeals) {
         const { data: usersMeals } = await filterCreatedMeals(searchQuery);
-        console.log(usersMeals);
         let possibleMeals = [...usersMeals];
 
-        console.log(possibleMeals);
         let result = await nutritionixService.getMealsByName(searchQuery);
         result = [...result.data.common, ...result.data.branded];
 
@@ -88,9 +106,7 @@ function SearchMealsDisplay(props) {
         localStorage.setItem("searchedMeals", JSON.stringify(possibleMeals));
 
         setProducts(possibleMeals);
-      } else if (getUserMeals) {
-        if (searchQuery === "") return getLocalUserMeals();
-
+      } else if (getUserMeals || likedMeals) {
         const filtered = filterLocalUserMeals(searchQuery);
         setProducts(filtered);
       }
@@ -105,6 +121,7 @@ function SearchMealsDisplay(props) {
   };
 
   const handleClick = () => {
+    console.log("clicked");
     try {
       if (searchQuery === "") {
         toast.warning("Input a value into the search field");

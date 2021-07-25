@@ -8,7 +8,6 @@ import {
   deleteUserMeal,
   postUserMeal,
   pushLocalUserMeal,
-  deleteLocalUserMealById,
 } from "../services/mealService";
 import { sumNutrientField } from "../utils/sumNutrientField";
 import nutritionixService from "../services/nutritionixService";

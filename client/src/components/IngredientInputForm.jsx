@@ -1,7 +1,7 @@
 import React from "react";
 import Joi from "joi-browser";
 import Form from "./Form";
-import { postUserMeal, pushLocalUserMeal } from "../services/mealService";
+import { postUserMeal } from "../services/mealService";
 import SearchImageModal from "./SearchImageModal";
 import DeleteIcon from "./DeleteIcon";
 import { toast } from "react-toastify";

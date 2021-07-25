@@ -13,9 +13,39 @@ export function getLocalUserMeals() {
   return arr;
 }
 
+export function getLocalLikedMeals() {
+  let arr =  JSON.parse(localStorage.getItem("userMeals") || "[]");
+  arr = arr.filter(m => m.liked === true)
+  console.log("liked meals", arr)
+  return arr
+}
+
 export function filterLocalUserMeals(filterCriteria) {
   let arr = JSON.parse(localStorage.getItem("userMeals"));
-  console.log("arr in localUserMeals", arr);
+  if (arr.length === 0) return;
+
+  let arrayWithFiltered = [];
+  for (const i in arr) {
+    // brand_name can be null so check before comparing
+    if (arr[i].food_name && arr[i].brand_name) {
+      if (
+        arr[i].food_name.toLowerCase().includes(filterCriteria.toLowerCase()) ||
+        arr[i].brand_name.toLowerCase().includes(filterCriteria.toLowerCase())
+      ) {
+        arrayWithFiltered.push(arr[i]);
+      }
+    } else if (
+      arr[i].food_name.toLowerCase().includes(filterCriteria.toLowerCase())
+    ) {
+      arrayWithFiltered.push(arr[i]);
+    }
+  }
+
+  return arrayWithFiltered;
+}
+
+export function filterLocalLikedMeals(filterCriteria) {
+  let arr = getLocalLikedMeals();
   if (arr.length === 0) return;
 
   let arrayWithFiltered = [];
@@ -66,7 +96,9 @@ export function updateLocalSearchedMeal(meal) {
 
 export function pushLocalUserMeal(meal) {
   let arr = JSON.parse(localStorage.getItem("userMeals") || "[]");
-  arr.push(meal);
+  // Make sure the meal doesn't already exist in the user's meals
+  const index = arr.findIndex((m) => m.food_name === meal.food_name)
+  if (index === -1) arr.push(meal);
   setLocalUserMeals(arr);
 }
 
