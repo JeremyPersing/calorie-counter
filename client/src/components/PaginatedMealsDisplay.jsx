@@ -53,9 +53,7 @@ function PaginatedMealsDisplay(props) {
                 Page <span className="font-weight-bold">{currPage}</span> /{" "}
                 <span className="font-weight-bold">{totalPages}</span>
               </span>
-            ) : (
-              "No Current Page"
-            )}
+            ) : null}
           </div>
         </div>
         {currProducts.map((item) => (

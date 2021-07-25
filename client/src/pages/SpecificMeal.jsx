@@ -17,12 +17,12 @@ import {
   deleteMealById,
   getUserMeals,
   deleteLocalUserMealById,
+  postConsumedMeal,
 } from "../services/mealService";
 import nutritionixService from "../services/nutritionixService";
 import UncontrolledLottie from "../components/UncontrolledLottie";
 import animationData from "../lotties/lf30_editor_2nt0sohi.json";
-
-import userData from "../services/getUserDataService";
+import ReadOnlyInput from "../components/ReadOnlyInput";
 import MealModificationForm from "../components/MealModificationForm";
 
 function SpecificMeal(props) {
@@ -31,6 +31,8 @@ function SpecificMeal(props) {
   const [servings, setServings] = useState(1);
   const [localUserMeal, setLocalUserMeal] = useState(false); // Allows user to edit/delete meal
   const [meal, setMeal] = useState({});
+  // consumedMeal shows correct calories for user's serving consumed w/out changing the original meals data
+  const [consumedMeal, setConsumedMeal] = useState({});
   const [thumb, setThumb] = useState("");
   const [playLottie, setPlayLottie] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -69,6 +71,7 @@ function SpecificMeal(props) {
 
   useEffect(() => {
     async function getMeal() {
+      console.log("IN USE EFFECT IN GETMEAL()");
       let urlArray = props.location.pathname.split("/");
       let mealId;
 
@@ -105,6 +108,7 @@ function SpecificMeal(props) {
 
       setThumb(meal.photo.thumb); // Get an error that meal.photo.thumb doesn't exist if try directly in jsx
       setMeal(meal);
+      setConsumedMeal(meal);
 
       console.log("meal displaying in specificMeal", meal);
 
@@ -128,27 +132,47 @@ function SpecificMeal(props) {
     return meal.food_name;
   };
 
-  const handleClose = () => setShow(false);
+  const handleClose = () => {
+    handleServingsChange(1);
+    setShow(false);
+  };
   const handleShow = () => setShow(true);
 
   const handleAddToConsumedMeals = async () => {
-    if (servings <= 0) {
-      return toast.error("Please enter a valid input");
-    }
-    handleClose();
-    const obj = {
-      food_name: meal.food_name,
-      brand_name: meal.brand_name,
-      sub_recipe: meal.sub_recipe || [],
-      nf_calories: meal.nf_calories,
-      nf_total_fat: meal.nf_total_fat,
-      nf_total_carbohydrate: meal.nf_total_carbohydrate,
-      nf_protein: meal.nf_protein,
-      servings: Number(servings),
+    const serverObj = {
+      food_name: consumedMeal.food_name,
+      brand_name: consumedMeal.brand_name,
+      serving_unit: consumedMeal.serving_unit,
+      serving_weight_grams: consumedMeal.serving_weight_grams,
+      nf_calories: consumedMeal.nf_calories,
+      nf_protein: consumedMeal.nf_protein,
+      nf_total_carbohydrate: consumedMeal.nf_total_carbohydrate,
+      nf_total_fat: consumedMeal.nf_total_fat,
+      nix_item_id: consumedMeal.nix_item_id, // can help identify if the user created the meal or not
+      sub_recipe: consumedMeal.sub_recipe,
     };
 
-    userData.setMealConsumed(obj); // Post to the server
-    history.push("/");
+    !consumedMeal.liked ? (serverObj.liked = false) : (serverObj.liked = true);
+    !consumedMeal.created_meal
+      ? (serverObj.created_meal = false)
+      : (serverObj.created_meal = true);
+    !consumedMeal.user_meal
+      ? (serverObj.user_meal = false)
+      : (serverObj.user_meal = true);
+    if (consumedMeal._id) serverObj._id = consumedMeal._id;
+    serverObj.serving_qty = Number(servings);
+    serverObj.thumb = consumedMeal.photo.thumb;
+
+    console.log(serverObj);
+    handleClose();
+
+    try {
+      await postConsumedMeal(serverObj);
+      history.push("/");
+    } catch (error) {
+      console.log(error);
+      toast.error("An error occurred adding a meal");
+    }
   };
 
   const handleCloseEdit = () => setShowEdit(false);
@@ -182,6 +206,7 @@ function SpecificMeal(props) {
       updateLocalSearchedMeal(response.data);
 
       setMeal(response.data);
+      setConsumedMeal(response.data);
     } catch (error) {
       setLocalUserMeal(false);
       console.log(error);
@@ -236,6 +261,23 @@ function SpecificMeal(props) {
   const getGrams = (num) => {
     if (num === 1) return num + " gram";
     return num + " grams";
+  };
+
+  const handleServingsChange = (value) => {
+    setServings(value);
+
+    const tempMeal = { ...meal };
+    tempMeal.nf_calories *= value;
+    tempMeal.nf_protein *= value;
+    tempMeal.nf_total_carbohydrate *= value;
+    tempMeal.nf_total_fat *= value;
+
+    setConsumedMeal(tempMeal);
+  };
+
+  const roundTwoDecimalPlaces = (value) => {
+    if (value) return value.toFixed(2);
+    return value;
   };
 
   return (
@@ -340,7 +382,7 @@ function SpecificMeal(props) {
               className="btn btn-primary btn-sm shadow-sm"
               onClick={handleShow}
             >
-              Add to Consumed Items
+              Add to Consumed Meals
             </button>
             {localUserMeal ? (
               <div>
@@ -370,42 +412,76 @@ function SpecificMeal(props) {
           </div>
         </div>
         {/* Modal for added the meal to consumed meals */}
-        <Modal show={show} onHide={handleClose}>
-          <Modal.Header>
-            <Modal.Title>Enter the Number of Servings You Had</Modal.Title>
+        {consumedMeal && (
+          <Modal show={show} onHide={handleClose}>
+            <Modal.Header>
+              <Modal.Title>Enter the Number of Servings You Had</Modal.Title>
+              <i
+                className="fa fa-times exit"
+                aria-hidden="true"
+                onClick={handleClose}
+              ></i>
+            </Modal.Header>
+            <Modal.Body className="d-flex justify-content-center">
+              <div className="form-user">
+                <small className="ml-3">
+                  <strong>Total Calories</strong>
+                </small>
+                <ReadOnlyInput
+                  value={roundTwoDecimalPlaces(consumedMeal.nf_calories)}
+                />
+                <small className="ml-3">
+                  <strong>Total Protein (g)</strong>
+                </small>
+                <ReadOnlyInput
+                  value={roundTwoDecimalPlaces(consumedMeal.nf_protein)}
+                />
+                <small className="ml-3">
+                  <strong>Total Carbohydrates (g)</strong>
+                </small>
+                <ReadOnlyInput
+                  value={roundTwoDecimalPlaces(
+                    consumedMeal.nf_total_carbohydrate
+                  )}
+                />
+                <small className="ml-3">
+                  <strong>Total Fat (g)</strong>
+                </small>
+                <ReadOnlyInput
+                  value={roundTwoDecimalPlaces(consumedMeal.nf_total_fat)}
+                />
+                <small className="ml-3">
+                  <strong>Servings</strong>
+                </small>
+                <input
+                  className="form-control form-control-user"
+                  type="number"
+                  plaveholder="Servings"
+                  value={servings}
+                  min="0"
+                  onChange={(e) => handleServingsChange(e.target.value)}
+                />
+              </div>
+            </Modal.Body>
 
-            <i
-              className="fa fa-times exit"
-              aria-hidden="true"
-              onClick={handleClose}
-            ></i>
-          </Modal.Header>
-          <Modal.Body className="d-flex justify-content-center">
-            <input
-              className="form-control"
-              type="number"
-              value={servings}
-              min="0"
-              onChange={(e) => setServings(e.target.value)}
-            />
-          </Modal.Body>
-
-          <Modal.Footer>
-            <button
-              className="btn btn-secondary btn-sm shadow-sm"
-              onClick={handleClose}
-            >
-              Close
-            </button>
-            <button
-              className="btn btn-primary btn-sm shadow-sm"
-              onClick={handleAddToConsumedMeals}
-            >
-              Add
-            </button>
-          </Modal.Footer>
-        </Modal>
-        {/* Modal for the consumed meals */}
+            <Modal.Footer>
+              <button
+                disabled={Number(servings) === 0 ? true : false}
+                className="btn btn-primary btn-sm shadow-sm"
+                onClick={handleAddToConsumedMeals}
+              >
+                Add
+              </button>
+              <button
+                className="btn btn-secondary btn-sm shadow-sm"
+                onClick={handleClose}
+              >
+                Close
+              </button>
+            </Modal.Footer>
+          </Modal>
+        )}
+        {/* Modal for editing meal */}
         <Modal
           show={showEdit}
           onHide={handleCloseEdit}
@@ -424,6 +500,7 @@ function SpecificMeal(props) {
               meal={meal}
               setMeal={(meal) => {
                 setMeal(meal);
+                setConsumedMeal(meal);
                 setThumb(meal.photo.thumb);
               }}
               handleClose={handleCloseEdit}

@@ -62,10 +62,6 @@ router.post("/", auth, async (req, res) => {
       gender: req.body.gender,
       height: req.body.height,
       maintenanceCalories: req.body.maintenanceCalories,
-      dailyStats: {
-        mealsConsumed: [],
-        totalCaloriesConsumed: 0,
-      },
     },
   });
 
@@ -78,25 +74,8 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
-const validateDailyStats = (user) => {
-  const schema = Joi.object({
-    age: Joi.number().required().min(1),
-    bodyWeight: Joi.number().required().min(1),
-    gender: Joi.string().trim().required(),
-    height: Joi.number().required(),
-    exerciseLevel: Joi.string().trim().required(),
-    maintenanceCalories: Joi.number().required(),
-    currentCalories: Joi.number().required(),
-    dietPlan: Joi.string().required(),
-    mealsConsumed: Joi.array().required(),
-    totalCaloriesConsumed: Joi.number().required(),
-  });
-
-  return schema.validate(user);
-};
-
 router.put("/dailystats", auth, async (req, res) => {
-  const result = validateDailyStats(req.body);
+  const result = validateRequest(req.body);
   if (result.error) {
     return res.status(400).send(result.error.message);
   }
@@ -113,10 +92,6 @@ router.put("/dailystats", auth, async (req, res) => {
         gender: req.body.gender,
         height: req.body.height,
         maintenanceCalories: req.body.maintenanceCalories,
-        dailyStats: {
-          mealsConsumed: req.body.mealsConsumed,
-          totalCaloriesConsumed: req.body.totalCaloriesConsumed,
-        },
       },
     },
     {

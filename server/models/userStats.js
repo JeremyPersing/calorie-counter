@@ -13,10 +13,6 @@ const userStatsSchema = new mongoose.Schema({
     maintenanceCalories: { type: Number, required: true },
     currentCalories: { type: Number, required: true },
     dietPlan: { type: String, required: true },
-    dailyStats: {
-      mealsConsumed: Array,
-      totalCaloriesConsumed: Number,
-    },
   },
 });
 

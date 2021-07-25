@@ -2,6 +2,8 @@ import http from "./httpService";
 import { apiUrl } from "../config.json";
 import { getJwt } from "./authService";
 
+const currUrl = apiUrl + "/usermeals"
+
 // Useful for the Specific Meal page and not having to call the server
 export function createUserMealsDocument() {
   http.setJwt(getJwt());
@@ -108,56 +110,85 @@ export function deleteLocalUserMealById(id) {
   setLocalUserMeals(JSON.stringify(arr));
 }
 
+// End of local functions
+
 export function getUserMeals() {
   http.setJwt(getJwt());
-  return http.get(apiUrl + "/usermeals");
+  return http.get(currUrl);
+}
+
+export function getConsumedMeals() {
+  http.setJwt(getJwt());
+  return http.get(currUrl + "/consumedmeals");
 }
 
 export function getUserMealById(mealId) {
   http.setJwt(getJwt());
-  return http.get(apiUrl + "/usermeals/id/" + mealId);
+  return http.get(currUrl + "/id/" + mealId);
 }
 
 export function getUserMealByName(mealName) {
   http.setJwt(getJwt());
-  return http.get(apiUrl + "/usermeals/" + mealName);
+  return http.get(currUrl + "/" + mealName);
 }
 
 export function getLikedMeals() {
   http.setJwt(getJwt());
-  return http.get(apiUrl + "/usermeals/liked");
+  return http.get(currUrl + "/liked");
 }
 
 export function getUserMealByNameAndBrand(name, brand) {
   http.setJwt(getJwt());
-  return http.get(apiUrl + "/usermeals/" + name + "/" + brand);
+  return http.get(currUrl + "/" + name + "/" + brand);
 }
 
 export function filterCreatedMeals(query) {
   http.setJwt(getJwt());
-  return http.get(apiUrl + "/usermeals/search/" + query);
+  return http.get(currUrl + "/search/" + query);
 }
 
 export function deleteUserMeal(meal) {
   http.setJwt(getJwt());
-  return http.delete(apiUrl + "/usermeals/" + meal._id);
+  return http.delete(currUrl + "/" + meal._id);
 }
 
 export function deleteMealById(id) {
   http.setJwt(getJwt());
-  return http.delete(apiUrl + "/usermeals/" + id);
+  return http.delete(currUrl + "/" + id);
+}
+
+export function deleteConsumedMeal(meal) {
+  http.setJwt(getJwt());
+  return http.delete(currUrl + "/consumedmeals/" + meal._id);
+}
+
+export function deleteConsumedMealById(id) {
+  http.setJwt(getJwt());
+  return http.delete(currUrl + "/consumedmeals/" + id);
 }
 
 export function putUserMeal(meal) {
   http.setJwt(getJwt());
   const id = meal._id;
 
-  return http.put(apiUrl + "/usermeals/" + id, meal);
+  return http.put(currUrl + "/" + id, meal);
+}
+
+export function putConsumedMeal(meal) {
+  http.setJwt(getJwt());
+  const id = meal._id;
+
+  return http.put(currUrl + "/consumedmeals" + id, meal)
 }
 
 export function postUserMeal(meal) {
   http.setJwt(getJwt());
-  return http.post(apiUrl + "/usermeals", meal);
+  return http.post(currUrl + "/", meal);
+}
+
+export function postConsumedMeal(meal) {
+  http.setJwt(getJwt());
+  return http.post(currUrl + "/consumedmeals", meal);
 }
 
 export default {

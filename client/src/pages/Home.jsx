@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import Page from "../components/Page";
 import Heading from "../components/Heading";
 import InformationCard from "../components/InformationCard";
-import * as userData from "../services/getUserDataService";
+import { getConsumedMeals } from "../services/mealService";
 import { getUserStats } from "../services/userStatsService";
 import "../styles/Home.css";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import Card from "../components/Card";
+import Dropdown from "react-bootstrap/Dropdown";
 
 function Home(props) {
   const [dailyCalories, setDailyCalories] = useState(null);
@@ -18,13 +19,18 @@ function Home(props) {
     async function getStats() {
       try {
         const { data } = await getUserStats();
+        let consumedMeals = await getConsumedMeals();
+        consumedMeals = consumedMeals.data;
 
-        console.log(data.userStats);
         setDailyCalories(data.userStats.currentCalories);
-        setMealsConsumed(data.userStats.dailyStats.mealsConsumed);
-        setTotalCaloriesConsumed(
-          Math.round(userData.getTotalDailyCaloriesConsumed())
-        );
+        setMealsConsumed(consumedMeals);
+        ///////////////////////////////////////////////////// Change with a call to get the users consumed meals
+        let caloriesConsumed = 0;
+        for (const i in consumedMeals) {
+          caloriesConsumed += consumedMeals[i].nf_calories;
+        }
+
+        setTotalCaloriesConsumed(Math.round(caloriesConsumed));
       } catch (error) {
         console.log(error);
       }
@@ -35,6 +41,75 @@ function Home(props) {
   const caloriePercentageConsumed = Math.round(
     (totalCaloriesConsumed / dailyCalories) * 100
   );
+
+  const editMealIcon = () => {
+    const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
+      <div
+        ref={ref}
+        onClick={(e) => {
+          e.preventDefault();
+          console.log("onClick(e)", e);
+          console.log(e.target);
+          onClick(e);
+        }}
+      >
+        {children}
+      </div>
+    ));
+
+    const CustomMenu = React.forwardRef(
+      ({ children, style, className, "aria-labelledby": labeledBy }, ref) => {
+        const [value, setValue] = useState("");
+
+        return (
+          <div
+            ref={ref}
+            style={style}
+            className={className}
+            aria-labelledby={labeledBy}
+          >
+            <ul className="list-unstyled">
+              {React.Children.toArray(children).filter(
+                (child) =>
+                  !value ||
+                  child.props.children
+                    .toLowerCase()
+                    .startsWith(this.state.value)
+              )}
+            </ul>
+          </div>
+        );
+      }
+    );
+
+    return (
+      <Dropdown>
+        <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
+          <span className="edit-meal">&#8230;</span>
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu as={CustomMenu}>
+          <Dropdown.Item
+            eventKey="1"
+            onClick={() => {
+              console.log("handle edit");
+            }}
+          >
+            Edit Meal
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(e) => {
+              console.log("e", e.target);
+              console.log("handle delete");
+            }}
+            eventKey="2"
+          >
+            Delete Meal
+          </Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
+    );
+  };
 
   return (
     <Page>
@@ -87,12 +162,20 @@ function Home(props) {
           text="Meals Consumed"
           body={
             mealsConsumed.length > 0 ? (
-              mealsConsumed.map((item) => (
-                <li key={item._id}>
-                  {item.brand_name ? item.brand_name + " " : null}
-                  {item.item_name} ({item.servings})
-                </li>
-              ))
+              <div>
+                <div className="form-row">
+                  <span className="col-8 font-weight-bold">Meal Name</span>
+                  <span className="col-4 font-weight-bold">Calories</span>
+                </div>
+                <hr />
+                {mealsConsumed.map((item) => (
+                  <div key={item._id} className="form-row my-2">
+                    <span className="col-8">{item.food_name}</span>
+                    <span className="col-3">{item.nf_calories}</span>
+                    <span className="col-1">{editMealIcon()}</span>
+                  </div>
+                ))}
+              </div>
             ) : (
               <div className="d-flex align-items-center flex-column">
                 <div className="h4 mb-0 font-weight-bold text-gray-800">

@@ -68,6 +68,11 @@ router.get("/", auth, async (req, res) => {
   res.send(meals);
 });
 
+router.get("/consumedmeals", auth, async(req, res) => {
+  const {consumed_meals} = await UserMeals.findOne({user_id: req.user._id});
+  res.send(consumed_meals)
+})
+
 // Works
 router.get("/liked", auth, async (req, res) => {
   const userAccount = await UserMeals.findOne({ user_id: req.user._id });
@@ -155,23 +160,6 @@ router.get("/:mealname/:mealbrand", auth, async (req, res) => {
   }
 });
 
-// Works Create the object to hold the user's data once, then put to that object
-router.post("/createaccount", auth, async (req, res) => {
-  const userMeals = new UserMeals({
-    user_id: req.user._id,
-    meals: [],
-    _id: req.user._id,
-  });
-
-  try {
-    const meals = await userMeals.save();
-    res.send(meals);
-  } catch (error) {
-    res.status(500).send("Internal Server Error");
-  }
-});
-
-// Works
 router.post("/", auth, async (req, res) => {
   const result = validateRequest(req.body);
   if (result.error) return res.status(400).send(result.error.message);
@@ -210,10 +198,66 @@ router.post("/", auth, async (req, res) => {
     );
 
     res.send(meal);
-  } catch (meal) {
+  } catch (error) {
     res.status(500).send("Internal Server Error");
   }
 });
+
+// Works Create the object to hold the user's data once, then put to that object
+router.post("/createaccount", auth, async (req, res) => {
+  const userMeals = new UserMeals({
+    user_id: req.user._id,
+    meals: [],
+    consumed_meals: [],
+    _id: req.user._id,
+  });
+
+  try {
+    const meals = await userMeals.save();
+    res.send(meals);
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+router.post("/consumedmeals", auth, async (req, res) => {
+  const result = validateRequest(req.body)
+  console.log(result)
+  if (result.error) return res.status(400).send(result.error.message);
+
+
+  let meal = {
+    food_name: req.body.food_name,
+    brand_name: req.body.brand_name || null,
+    serving_qty: req.body.serving_qty,
+    serving_unit: req.body.serving_unit || "meal",
+    serving_weight_grams: req.body.serving_weight_grams,
+    nf_calories: req.body.nf_calories,
+    nf_protein: req.body.nf_protein,
+    nf_total_carbohydrate: req.body.nf_total_carbohydrate,
+    nf_total_fat: req.body.nf_total_fat,
+    nix_item_id: req.body.nix_item_id,
+    photo: {
+      thumb: req.body.thumb,
+    },
+    sub_recipe: req.body.sub_recipe,
+    liked: req.body.liked,
+    created_meal: req.body.created_meal,
+    user_meal: req.body.user_meal,
+    _id: req.body._id
+  };
+
+  try {
+    await UserMeals.findOneAndUpdate(
+      { user_id: req.user._id },
+      { $addToSet: { consumed_meals: meal } }
+    );
+
+    res.send(meal)
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
+  }
+})
 
 // To edit a meal the meal must be part of the user's meals and therefore has an _id key
 router.put("/:id", auth, async (req, res) => {
@@ -269,6 +313,58 @@ router.put("/:id", auth, async (req, res) => {
   }
 });
 
+router.put("/consumedmeals/:id", auth, async(req, res) => {
+  if (res.body._id) delete req.body._id
+  const result = validateRequest(req.body)
+  if (result.error) return res.status(400).send(result.error.message)
+
+  let meal = {
+    food_name: req.body.food_name,
+    brand_name: req.body.brand_name,
+    serving_qty: req.body.serving_qty,
+    serving_unit: req.body.serving_unit,
+    serving_weight_grams: req.body.serving_weight_grams,
+    nf_calories: req.body.nf_calories,
+    nf_protein: req.body.nf_protein,
+    nf_total_carbohydrate: req.body.nf_total_carbohydrate,
+    nf_total_fat: req.body.nf_total_fat,
+    nix_item_id: req.body.nix_item_id,
+    photo: {
+      thumb: req.body.thumb,
+    },
+    sub_recipe: req.body.sub_recipe,
+    liked: req.body.liked,
+    created_meal: req.body.created_meal,
+    user_meal: req.body.user_meal,
+    servings: req.body.servings
+  };
+
+  try {
+    let userObj = await UserMeals.findById(req.user._id);
+
+    const meals = userObj.meals;
+
+    let index = -1;
+    for (const i in meals) {
+      let idString = meals[i]._id.toString();
+      if (idString === req.params.id) {
+        index = i;
+        meal._id = meals[i]._id;
+        break;
+      }
+    }
+
+    if (index === -1) return res.status(404).send("404: Not Found");
+    console.log("index", index);
+    userObj.meals[index] = meal;
+
+    const updatedUserObj = await userObj.save();
+    res.send(updatedUserObj);
+  } catch (error) {
+    return res.status(404).send("404: Not Found");
+  }
+})
+
 router.delete("/:id", auth, async (req, res) => {
   try {
     const meal = await getMealById(req.user._id, req.params.id);
@@ -289,5 +385,25 @@ router.delete("/:id", auth, async (req, res) => {
     return res.status(500).send("500: Internal Server Error");
   }
 });
+
+router.delete("/consumedmeals/:id", auth, async(req,res) => {
+  try {
+    const meal = await getMealById(req.user._id, req.params.id);
+    if (!meal) return res.status(404).send(`404: Not found`);
+
+    const userMeal = await UserMeals.updateOne(
+      {user_id: req.user._id},
+      {
+        $pull: {consumed_meals: meal}
+      }
+    )
+
+    if (!userMeal) return res.status(404).send(`404: Not found`);
+
+    res.send(userMeal);
+  } catch (error) {
+    return res.status(500).send("500: Internal Server Error");
+  }
+})
 
 module.exports = router;

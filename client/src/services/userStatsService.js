@@ -48,7 +48,5 @@ export const putUserDailyStats = (dailyStats) => {
     maintenanceCalories: dailyStats.maintenanceCalories,
     currentCalories: dailyStats.currentCalories,
     dietPlan: dailyStats.dietPlan,
-    mealsConsumed: dailyStats.mealsConsumed,
-    totalCaloriesConsumed: dailyStats.totalCaloriesConsumed,
   });
 };
