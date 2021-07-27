@@ -1,7 +1,9 @@
 const dotenv = require("dotenv").config();
+const {UserMeals} = require("./models/userMeals");
 const Joi = require("Joi");
 Joi.objectId = require("joi-objectid")(Joi);
 const mongoose = require("mongoose");
+const cron = require("node-cron");
 const express = require("express");
 const cors = require("cors");
 const userMeals = require("./routes/userMeals");
@@ -33,6 +35,16 @@ app.use("/api/users", users);
 app.use("/api/auth", auth);
 app.use("/api/userstats", userStats);
 app.use("/api/pixabay", pixabay);
+
+cron.schedule('0 0 * * *', async () => {
+  try {
+    await UserMeals.updateMany({}, {$set: {consumed_meals: []}});
+    console.log("All deleted")
+  }
+  catch (error) {
+    console.log("error in deleting conumed meals for the day", error)
+  }
+})
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => {

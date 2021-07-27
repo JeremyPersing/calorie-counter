@@ -51,6 +51,25 @@ const getMealById = async (userId, mealId) => {
   return meal;
 };
 
+const getConsumedMealById = async (userId, mealId) => {
+  let res = await UserMeals.findById(userId).set("food_name");
+  const meals = res.consumed_meals;
+
+  if (meals.length === 0) return;
+
+  let meal;
+  for (let i in meals) {
+    let currId = meals[i]._id.toString();
+
+    if (currId === mealId) {
+      meal = meals[i];
+      break;
+    }
+  }
+
+  return meal;
+}
+
 const getMealByName = async (userId, mealName) => {
   let { meals } = await UserMeals.findOne({ user_id: userId }).set("food_name");
 
@@ -221,6 +240,7 @@ router.post("/createaccount", auth, async (req, res) => {
 });
 
 router.post("/consumedmeals", auth, async (req, res) => {
+  if (req.body.sub_recipe === null) req.body.sub_recipe = [];
   const result = validateRequest(req.body)
   console.log(result)
   if (result.error) return res.status(400).send(result.error.message);
@@ -314,9 +334,11 @@ router.put("/:id", auth, async (req, res) => {
 });
 
 router.put("/consumedmeals/:id", auth, async(req, res) => {
-  if (res.body._id) delete req.body._id
+  if (req.body._id) delete req.body._id
   const result = validateRequest(req.body)
+  console.log(result)
   if (result.error) return res.status(400).send(result.error.message)
+
 
   let meal = {
     food_name: req.body.food_name,
@@ -342,7 +364,7 @@ router.put("/consumedmeals/:id", auth, async(req, res) => {
   try {
     let userObj = await UserMeals.findById(req.user._id);
 
-    const meals = userObj.meals;
+    const meals = userObj.consumed_meals;
 
     let index = -1;
     for (const i in meals) {
@@ -355,8 +377,8 @@ router.put("/consumedmeals/:id", auth, async(req, res) => {
     }
 
     if (index === -1) return res.status(404).send("404: Not Found");
-    console.log("index", index);
-    userObj.meals[index] = meal;
+ 
+    userObj.consumed_meals[index] = meal;
 
     const updatedUserObj = await userObj.save();
     res.send(updatedUserObj);
@@ -388,7 +410,7 @@ router.delete("/:id", auth, async (req, res) => {
 
 router.delete("/consumedmeals/:id", auth, async(req,res) => {
   try {
-    const meal = await getMealById(req.user._id, req.params.id);
+    const meal = await getConsumedMealById(req.user._id, req.params.id);
     if (!meal) return res.status(404).send(`404: Not found`);
 
     const userMeal = await UserMeals.updateOne(
