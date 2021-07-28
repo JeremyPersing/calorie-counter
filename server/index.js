@@ -39,7 +39,7 @@ app.use("/api/pixabay", pixabay);
 cron.schedule('0 0 * * *', async () => {
   try {
     await UserMeals.updateMany({}, {$set: {consumed_meals: []}});
-    console.log("All deleted")
+    console.log("Consumed Meals All deleted")
   }
   catch (error) {
     console.log("error in deleting conumed meals for the day", error)

@@ -13,6 +13,10 @@ const userStatsSchema = new mongoose.Schema({
     maintenanceCalories: { type: Number, required: true },
     currentCalories: { type: Number, required: true },
     dietPlan: { type: String, required: true },
+    dietStartDate: {type: Date, required: true},
+    dietThreeWeekDate: {type: Date, required: true},
+    dietSixWeekDate: {type: Date, required: true},
+    dietNineWeekDate: {type: Date, required: true},
   },
 });
 
