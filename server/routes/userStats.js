@@ -86,35 +86,6 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
-router.put("/dailystats", auth, async (req, res) => {
-  const result = validateRequest(req.body);
-  if (result.error) {
-    return res.status(400).send(result.error.message);
-  }
-
-  const userStats = await UserStats.findByIdAndUpdate(
-    req.user._id,
-    {
-      userStats: {
-        age: req.body.age,
-        bodyWeight: req.body.bodyWeight,
-        currentCalories: req.body.currentCalories,
-        dietPlan: req.body.dietPlan,
-        exerciseLevel: req.body.exerciseLevel,
-        gender: req.body.gender,
-        height: req.body.height,
-        maintenanceCalories: req.body.maintenanceCalories,
-      },
-    },
-    {
-      new: true,
-    }
-  );
-
-  if (!userStats) return res.status(404).send(`404: Not found`);
-
-  res.send(userStats);
-});
 
 router.put("/newdiet", auth, async (req, res) => {
   const result = validateRequest(req.body);
