@@ -5,6 +5,7 @@ import Page from "../components/Page";
 import Heading from "../components/Heading";
 import InformationCard from "../components/InformationCard";
 import Card from "../components/Card";
+import EditConsumedMealModal from "../components/EditConsumedMealModal";
 import DeleteMealModal from "../components/DeleteMealModal";
 import { toast } from "react-toastify";
 import "../styles/SpecificMeal.css";
@@ -22,7 +23,6 @@ import {
 import nutritionixService from "../services/nutritionixService";
 import UncontrolledLottie from "../components/UncontrolledLottie";
 import animationData from "../lotties/lf30_editor_2nt0sohi.json";
-import ReadOnlyInput from "../components/ReadOnlyInput";
 import MealModificationForm from "../components/MealModificationForm";
 
 function SpecificMeal(props) {
@@ -71,56 +71,68 @@ function SpecificMeal(props) {
 
   useEffect(() => {
     async function getMeal() {
-      console.log("IN USE EFFECT IN GETMEAL()");
-      let urlArray = props.location.pathname.split("/");
-      let mealId;
+      try {
+        let urlArray = props.location.pathname.split("/");
+        let mealId;
 
-      // user created meal
-      if (urlArray.length === 4) mealId = [urlArray[2], urlArray[3]];
-      else mealId = urlArray[2]; // Can either be a name or 24 char string
+        // user created meal
+        if (urlArray.length === 4) mealId = [urlArray[2], urlArray[3]];
+        else mealId = urlArray[2]; // Can either be a name or 24 char string
 
-      setPlayLottie(true);
-      let meal = props.location.meal;
-      console.log("MEALLLLLLLL", meal);
-      if (!meal) meal = JSON.parse(localStorage.getItem("currentMealSelected"));
-      console.log("meal after", meal);
+        setPlayLottie(true);
+        let meal = props.location.meal;
+        console.log("MEALLLLLLLL", meal);
+        if (!meal)
+          meal = JSON.parse(localStorage.getItem("currentMealSelected"));
+        console.log("meal after", meal);
 
-      // User created meal and the back button has not been hit
-      if (
-        meal.created_meal &&
-        (mealId[0] === meal.food_name || mealId === meal.food_name)
-      ) {
-        console.log("USER CREATED MEAL !!!!!!!!!!!");
-        // A user created ingredient is clicked
-        meal = await getSpecificUserMeal(mealId);
-      } else {
-        // When clicking on the back button
-        if (mealId[0] !== meal.food_name || mealId !== meal.food_name) {
-          // User created meal
-          if (Array.isArray(mealId)) meal = await getSpecificUserMeal(mealId);
-          // nutritionix meal
-          else meal = await getSpecificNutritionixMeal(mealId);
+        // User created meal and the back button has not been hit
+        if (
+          meal.created_meal &&
+          (mealId[0] === meal.food_name || mealId === meal.food_name)
+        ) {
+          console.log("USER CREATED MEAL !!!!!!!!!!!");
+          // A user created ingredient is clicked
+          meal = await getSpecificUserMeal(mealId);
+        } else {
+          // When clicking on the back button
+          if (mealId[0] !== meal.food_name || mealId !== meal.food_name) {
+            // User created meal
+            if (Array.isArray(mealId)) {
+              console.log("Is an array in the else statement");
+              meal = await getSpecificUserMeal(mealId);
+            }
+            // nutritionix meal
+            else {
+              console.log("In the else of the else statement");
+              console.log(mealId);
+              meal = await getSpecificNutritionixMeal(mealId);
+            }
+          }
         }
+        console.log("Meal after all ifs and elses", meal);
+
+        // Set the current meal to localStorage in case the user refreshes the page
+        localStorage.setItem("currentMealSelected", JSON.stringify(meal));
+
+        setThumb(meal.photo.thumb); // Get an error that meal.photo.thumb doesn't exist if try directly in jsx
+        setMeal(meal);
+        setConsumedMeal(meal);
+
+        console.log("meal displaying in specificMeal", meal);
+
+        // See if the meal is editable or not
+        let arr = await getUserMeals();
+        arr = arr.data;
+        const index = arr.findIndex((m) => m.food_name === meal.food_name);
+        console.log("index", index);
+        if (index > -1) setLocalUserMeal(true);
+        else setLocalUserMeal(false);
+
+        setPlayLottie(false);
+      } catch (error) {
+        toast.error("An unexpected error has occurred");
       }
-
-      // Set the current meal to localStorage in case the user refreshes the page
-      localStorage.setItem("currentMealSelected", JSON.stringify(meal));
-
-      setThumb(meal.photo.thumb); // Get an error that meal.photo.thumb doesn't exist if try directly in jsx
-      setMeal(meal);
-      setConsumedMeal(meal);
-
-      console.log("meal displaying in specificMeal", meal);
-
-      // See if the meal is editable or not
-      let arr = await getUserMeals();
-      arr = arr.data;
-      const index = arr.findIndex((m) => m.food_name === meal.food_name);
-      console.log("index", index);
-      if (index > -1) setLocalUserMeal(true);
-      else setLocalUserMeal(false);
-
-      setPlayLottie(false);
     }
     getMeal();
   }, [props.location.pathname]);
@@ -149,9 +161,11 @@ function SpecificMeal(props) {
       nf_total_carbohydrate: consumedMeal.nf_total_carbohydrate,
       nf_total_fat: consumedMeal.nf_total_fat,
       nix_item_id: consumedMeal.nix_item_id, // can help identify if the user created the meal or not
-      sub_recipe: consumedMeal.sub_recipe,
     };
 
+    !consumedMeal.sub_recipe
+      ? (serverObj.sub_recipe = [])
+      : (serverObj.sub_recipe = consumedMeal.sub_recipe);
     !consumedMeal.liked ? (serverObj.liked = false) : (serverObj.liked = true);
     !consumedMeal.created_meal
       ? (serverObj.created_meal = false)
@@ -275,11 +289,6 @@ function SpecificMeal(props) {
     setConsumedMeal(tempMeal);
   };
 
-  const roundTwoDecimalPlaces = (value) => {
-    if (value) return value.toFixed(2);
-    return value;
-  };
-
   return (
     <div>
       <Page>
@@ -311,7 +320,7 @@ function SpecificMeal(props) {
               title="Serving Size"
               text={
                 meal.serving_qty && meal.serving_unit
-                  ? meal.serving_qty + " " + meal.serving_unit
+                  ? meal.serving_qty.toFixed(2) + " " + meal.serving_unit
                   : meal.serving_weight_grams
                   ? getGrams(meal.serving_weight_grams)
                   : "1 meal"
@@ -413,73 +422,14 @@ function SpecificMeal(props) {
         </div>
         {/* Modal for added the meal to consumed meals */}
         {consumedMeal && (
-          <Modal show={show} onHide={handleClose}>
-            <Modal.Header>
-              <Modal.Title>Enter the Number of Servings You Had</Modal.Title>
-              <i
-                className="fa fa-times exit"
-                aria-hidden="true"
-                onClick={handleClose}
-              ></i>
-            </Modal.Header>
-            <Modal.Body className="d-flex justify-content-center">
-              <div className="form-user">
-                <small className="ml-3">
-                  <strong>Total Calories</strong>
-                </small>
-                <ReadOnlyInput
-                  value={roundTwoDecimalPlaces(consumedMeal.nf_calories)}
-                />
-                <small className="ml-3">
-                  <strong>Total Protein (g)</strong>
-                </small>
-                <ReadOnlyInput
-                  value={roundTwoDecimalPlaces(consumedMeal.nf_protein)}
-                />
-                <small className="ml-3">
-                  <strong>Total Carbohydrates (g)</strong>
-                </small>
-                <ReadOnlyInput
-                  value={roundTwoDecimalPlaces(
-                    consumedMeal.nf_total_carbohydrate
-                  )}
-                />
-                <small className="ml-3">
-                  <strong>Total Fat (g)</strong>
-                </small>
-                <ReadOnlyInput
-                  value={roundTwoDecimalPlaces(consumedMeal.nf_total_fat)}
-                />
-                <small className="ml-3">
-                  <strong>Servings</strong>
-                </small>
-                <input
-                  className="form-control form-control-user"
-                  type="number"
-                  plaveholder="Servings"
-                  value={servings}
-                  min="0"
-                  onChange={(e) => handleServingsChange(e.target.value)}
-                />
-              </div>
-            </Modal.Body>
-
-            <Modal.Footer>
-              <button
-                disabled={Number(servings) === 0 ? true : false}
-                className="btn btn-primary btn-sm shadow-sm"
-                onClick={handleAddToConsumedMeals}
-              >
-                Add
-              </button>
-              <button
-                className="btn btn-secondary btn-sm shadow-sm"
-                onClick={handleClose}
-              >
-                Close
-              </button>
-            </Modal.Footer>
-          </Modal>
+          <EditConsumedMealModal
+            show={show}
+            handleClose={handleClose}
+            handleAdd={handleAddToConsumedMeals}
+            consumedMeal={consumedMeal}
+            servings={servings}
+            onChange={(e) => handleServingsChange(e.target.value)}
+          />
         )}
         {/* Modal for editing meal */}
         <Modal

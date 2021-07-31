@@ -6,6 +6,7 @@ import {
   faUtensils,
   faTachometerAlt,
   faHome,
+  faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
 function Navbar({ toggled, setToggled, toggleSideBar, getTextClasses }) {
@@ -70,9 +71,22 @@ function Navbar({ toggled, setToggled, toggleSideBar, getTextClasses }) {
         <li className={getLiClassName("/myaccount")}>
           <NavLink className="nav-link" exact={true} to="/myaccount">
             <FontAwesomeIcon icon={faTachometerAlt} />
-            <span className={getTextClasses()}>Dashboard</span>
+            <span className={getTextClasses()}>My Account</span>
           </NavLink>
         </li>
+
+        <li className={getLiClassName("/logout")}>
+          <NavLink
+            onClick={() => localStorage.clear()}
+            className="nav-link"
+            exact={true}
+            to="/logout"
+          >
+            <FontAwesomeIcon icon={faSignOutAlt} />
+            <span className={getTextClasses()}>Logout</span>
+          </NavLink>
+        </li>
+
         <hr className="sidebar-divider my-0" />
 
         <div className="text-center d-none d-md-inline">

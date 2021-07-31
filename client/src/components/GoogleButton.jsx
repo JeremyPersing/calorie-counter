@@ -9,6 +9,7 @@ import {
   getLocalUserMeals,
 } from "../services/mealService";
 import { useHistory } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function GoogleButton(props) {
   let history = useHistory();
@@ -44,6 +45,9 @@ function GoogleButton(props) {
 
       history.push("/");
     } catch (error) {
+      toast.error(
+        "Error Logging in with Google. Make sure that your account is registered."
+      );
       console.log(error);
     }
   };

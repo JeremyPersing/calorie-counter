@@ -25,6 +25,7 @@
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
     "mongoose": "^5.12.13",
+    "node-cron": "^3.0.0",
     "react-chartjs-2": "^3.0.3",
     "react-circular-progressbar": "^2.0.4",
     "react-facebook-login": "^4.1.1",

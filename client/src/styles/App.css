@@ -365,7 +365,7 @@ h5 {
   border-radius: 2px;
 }
 
-.ingredient-img:hover {
+.F-img:hover {
   cursor: pointer;
   opacity: 0.8;
 }
@@ -460,5 +460,5 @@ h5 {
 
 .edit-meal:hover {
   cursor: pointer;
-  color: lightgray;
+  color: black;
 }

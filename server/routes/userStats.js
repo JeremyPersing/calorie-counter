@@ -32,6 +32,10 @@ router.put("/", auth, async (req, res) => {
         gender: req.body.gender,
         height: req.body.height,
         maintenanceCalories: req.body.maintenanceCalories,
+        dietStartDate: req.body.dietStartDate,
+        dietThreeWeekDate: req.body.dietThreeWeekDate,
+        dietSixWeekDate: req.body.dietSixWeekDate,
+        dietNineWeekDate: req.body.dietNineWeekDate,
       },
     },
     {

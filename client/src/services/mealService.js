@@ -178,7 +178,7 @@ export function putConsumedMeal(meal) {
   http.setJwt(getJwt());
   const id = meal._id;
 
-  return http.put(currUrl + "/consumedmeals" + id, meal)
+  return http.put(currUrl + "/consumedmeals/" + id, meal)
 }
 
 export function postUserMeal(meal) {

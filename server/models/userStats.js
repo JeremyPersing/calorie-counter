@@ -32,6 +32,10 @@ const validateRequest = (user) => {
     maintenanceCalories: Joi.number().required(),
     currentCalories: Joi.number().required(),
     dietPlan: Joi.string().required(),
+    dietStartDate: Joi.date(),
+    dietThreeWeekDate: Joi.date(),
+    dietSixWeekDate: Joi.date(),
+    dietNineWeekDate: Joi.date()
   });
 
   return schema.validate(user);

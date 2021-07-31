@@ -3,6 +3,27 @@ const convertPoundsToKiloGrams = (pounds) => {
   return pounds * 0.453592;
 };
 
+export const kiloGramsToPounds = (kilos) => {
+  kilos = Number(kilos);
+  return kilos * 2.20462
+}
+
+export const metersToFeet = (height) => {
+  height = Number(height);
+  return height * 0.0328084;
+}
+
+export const getImperialHeight = (cm) => {
+  cm = Number(cm);
+  let feet = metersToFeet(cm);
+  let remainder = feet % 1;
+  let inches = remainder * 12;
+  
+  feet = Math.floor(feet)
+  inches = Math.round(inches)
+  return feet + " feet " + inches + " in";
+}
+
 const convertFeetToCentimeters = (feet) => {
   feet = Number(feet);
   return feet * 30.48;

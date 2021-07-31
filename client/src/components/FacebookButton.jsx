@@ -14,7 +14,6 @@ import { toast } from "react-toastify";
 function FacebookButton(props) {
   let history = useHistory();
   const facebookResponse = async (res) => {
-    console.log(res);
     try {
       const serverObj = {
         name: res.name,
@@ -52,7 +51,6 @@ function FacebookButton(props) {
 
   return (
     <FacebookLogin
-      //Test Appid
       appId="859542941576183"
       autoLoad={false}
       fields="name,email"

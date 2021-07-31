@@ -34,19 +34,23 @@ export const putUserStats = (userStats) => {
     maintenanceCalories: userStats.maintenanceCalories,
     currentCalories: userStats.currentCalories,
     dietPlan: userStats.dietPlan,
+    dietStartDate: userStats.dietStartDate,
+    dietThreeWeekDate: userStats.dietThreeWeekDate,
+    dietSixWeekDate: userStats.dietSixWeekDate,
+    dietNineWeekDate: userStats.dietNineWeekDate,
   });
 };
 
-export const putUserDailyStats = (dailyStats) => {
+export const updateUserDietPlan = (userStats) => {
   http.setJwt(getJwt());
-  return http.put(apiEndpoint + "/dailystats", {
-    age: dailyStats.age,
-    bodyWeight: dailyStats.bodyWeight,
-    gender: dailyStats.gender,
-    height: dailyStats.height,
-    exerciseLevel: dailyStats.exerciseLevel,
-    maintenanceCalories: dailyStats.maintenanceCalories,
-    currentCalories: dailyStats.currentCalories,
-    dietPlan: dailyStats.dietPlan,
+  return http.put(apiEndpoint + "/newdiet", {
+    age: userStats.age,
+    bodyWeight: userStats.bodyWeight,
+    gender: userStats.gender,
+    height: userStats.height,
+    exerciseLevel: userStats.exerciseLevel,
+    maintenanceCalories: userStats.maintenanceCalories,
+    currentCalories: userStats.currentCalories,
+    dietPlan: userStats.dietPlan,
   });
-};
+}

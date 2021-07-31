@@ -8,11 +8,7 @@ import SearchImageModal from "./SearchImageModal";
 import SearchMealsDisplay from "./SearchMealsDisplay";
 import Dropdown from "react-bootstrap/Dropdown";
 import Modal from "react-bootstrap/Modal";
-import {
-  getUserMealById,
-  putUserMeal,
-  updateLocalUserMeal,
-} from "../services/mealService";
+import { getUserMealById, putUserMeal } from "../services/mealService";
 import { toast } from "react-toastify";
 import {
   getMealByNixItemId,

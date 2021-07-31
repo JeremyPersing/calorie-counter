@@ -13,7 +13,6 @@ import DietInformation from "./pages/DietInformation";
 import ChooseDiet from "./pages/ChooseDiet";
 import Plan from "./pages/Plan";
 import SpecificMeal from "./pages/SpecificMeal";
-import ThingsToRemember from "./pages/ThingsToRemember";
 import Meals from "./pages/Meals";
 import LikedMeals from "./pages/LikedMeals";
 import NotFound from "./pages/NotFound";
@@ -32,10 +31,6 @@ function App() {
             <ProtectedRoute path="/meals/mine" component={MyMeals} />
             <ProtectedRoute path="/meals/search" component={Meals} />
             <ProtectedRoute path="/meals/:id" component={SpecificMeal} />
-            <ProtectedRoute
-              path="/thingstoremember"
-              component={ThingsToRemember}
-            />
             <ProtectedRoute path="/plan" component={Plan} />
             <ProtectedRoute path="/choosediet" component={ChooseDiet} />
             <ProtectedRoute
