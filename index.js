@@ -19,10 +19,11 @@ if (!process.env.jwtPrivateKey) {
   console.log("FATAL ERROR jwtPrivateKey is not defined");
   process.exit(1);
 }
+
 const localDBUri = "mongodb://localhost/calorie-counter"
-console.log(process.env.MONGODB_URI)
+
 mongoose
-  .connect(process.env.MONGODB_URI, {
+  .connect(process.env.MONGODB_URI || localDBUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
@@ -38,7 +39,6 @@ app.use("/api/auth", auth);
 app.use("/api/userstats", userStats);
 app.use("/api/pixabay", pixabay);
 
-app.use(express.static(path.join(__dirname, "client", "build")))
 
 cron.schedule('0 0 * * *', async () => {
   try {
@@ -50,11 +50,17 @@ cron.schedule('0 0 * * *', async () => {
   }
 })
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "client", "build", "index.html"));
-})
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("client/build"))
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "client", "build", "index.html"));
+  })
+}
 
 const port = process.env.PORT || 3001;
+
 app.listen(port, () => {
   console.log("Listening on port " + port);
 });
