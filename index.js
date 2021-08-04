@@ -11,6 +11,7 @@ const users = require("./routes/users");
 const auth = require("./routes/auth");
 const userStats = require("./routes/userStats");
 const pixabay = require("./routes/pixabay");
+const path = require("path");
 const app = express();
 
 
@@ -18,9 +19,10 @@ if (!process.env.jwtPrivateKey) {
   console.log("FATAL ERROR jwtPrivateKey is not defined");
   process.exit(1);
 }
-
+const localDBUri = "mongodb://localhost/calorie-counter"
+console.log(process.env.MONGODB_URI)
 mongoose
-  .connect("mongodb://localhost/calorie-counter", {
+  .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
@@ -36,6 +38,8 @@ app.use("/api/auth", auth);
 app.use("/api/userstats", userStats);
 app.use("/api/pixabay", pixabay);
 
+app.use(express.static(path.join(__dirname, "client", "build")))
+
 cron.schedule('0 0 * * *', async () => {
   try {
     await UserMeals.updateMany({}, {$set: {consumed_meals: []}});
@@ -44,6 +48,10 @@ cron.schedule('0 0 * * *', async () => {
   catch (error) {
     console.log("error in deleting conumed meals for the day", error)
   }
+})
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "build", "index.html"));
 })
 
 const port = process.env.PORT || 3001;
