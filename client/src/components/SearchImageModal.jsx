@@ -65,10 +65,7 @@ function SearchImageModal(props) {
         </Masonry>
       </Modal.Body>
       <Modal.Footer>
-        <button
-          className="btn btn-secondary btn-sm shadow-sm"
-          onClick={handleClose}
-        >
+        <button className="btn btn-secondary" onClick={handleClose}>
           Close
         </button>
       </Modal.Footer>

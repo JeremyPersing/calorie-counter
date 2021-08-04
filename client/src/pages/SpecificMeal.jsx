@@ -299,7 +299,7 @@ function SpecificMeal(props) {
           <div className="d-sm-flex align-items-center justify-content-between mb-4 mt-5">
             <Heading className="text-capitalize" text={displayHeader()} />
             <button
-              className="mt-3-sm d-sm-inline-block btn btn-secondary btn-sm shadow-sm"
+              className="mt-3-sm d-sm-inline-block btn btn-secondary"
               onClick={() => history.goBack()}
             >
               Back
@@ -387,24 +387,21 @@ function SpecificMeal(props) {
           )}
 
           <div className="d-flex justify-content-around mb-3">
-            <button
-              className="btn btn-primary btn-sm shadow-sm"
-              onClick={handleShow}
-            >
+            <button className="btn btn-primary" onClick={handleShow}>
               Add to Consumed Meals
             </button>
             {localUserMeal ? (
               <div>
                 {meal.created_meal && (
                   <button
-                    className="btn btn-secondary btn-sm shadow-sm ml-3 mr-3"
+                    className="btn btn-secondary ml-3 mr-3"
                     onClick={handleShowEdit}
                   >
                     Edit
                   </button>
                 )}
                 <button
-                  className="btn btn-danger btn-sm shadow-sm ml-3"
+                  className="btn btn-danger ml-3"
                   onClick={handleShowDeleteModal}
                 >
                   Delete
@@ -412,7 +409,7 @@ function SpecificMeal(props) {
               </div>
             ) : (
               <button
-                className="btn btn-secondary btn-sm shadow-sm"
+                className="btn btn-secondary"
                 onClick={handleAddToMyMeals}
               >
                 Add to Your Meals
@@ -457,10 +454,7 @@ function SpecificMeal(props) {
             />
           </Modal.Body>
           <Modal.Footer>
-            <button
-              className="btn btn-secondary btn-sm shadow-sm"
-              onClick={handleCloseEdit}
-            >
+            <button className="btn btn-secondary" onClick={handleCloseEdit}>
               Close
             </button>
           </Modal.Footer>

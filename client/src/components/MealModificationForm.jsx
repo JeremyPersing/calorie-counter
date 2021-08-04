@@ -392,7 +392,7 @@ class MealModificationForm extends Form {
           </Modal.Body>
           <Modal.Footer>
             <button
-              className="btn btn-sm shadow-sm btn-secondary"
+              className="btn btn-secondary"
               onClick={this.handleCloseIngredientInputModal}
             >
               Close
@@ -415,13 +415,14 @@ class MealModificationForm extends Form {
               setProducts={this.setProducts}
               products={this.state.products}
               pageLimit={6}
+              searchMeals={true}
               addMealSearch={true}
               onClick={this.handleSearchMealsDisplayMealClick}
             />
           </Modal.Body>
           <Modal.Footer>
             <button
-              className="btn btn-sm shadow-sm btn-secondary"
+              className="btn btn-secondary"
               onClick={this.handleCloseSearchMealsDisplayModal}
             >
               Close

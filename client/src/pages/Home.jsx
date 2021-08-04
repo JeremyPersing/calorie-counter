@@ -310,7 +310,7 @@ function Home(props) {
       <div className="d-sm-flex align-items-center justify-content-between mb-4 mt-5">
         <Heading text="Daily Progress" />
         <button
-          className="mt-3-sm d-sm-inline-block btn btn-sm btn-primary shadow-sm"
+          className="mt-3-sm d-sm-inline-block btn btn-primary "
           onClick={() => props.history.push("/meals/search")}
         >
           Add Meal
@@ -386,7 +386,7 @@ function Home(props) {
                   No Meals Consumed
                 </div>
                 <button
-                  className="d-sm-inline-block btn btn-sm btn-primary shadow-sm mt-3"
+                  className="d-sm-inline-block btn btn-primary mt-3"
                   onClick={() => props.history.push("/meals/search")}
                 >
                   Add Meal

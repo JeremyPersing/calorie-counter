@@ -1,21 +1,57 @@
 import React from "react";
 import Form from "../components/Form";
 import Joi from "joi-browser";
+import { putUserStats } from "../services/userStatsService";
 import * as conversions from "../services/calorieConversionService";
+import {
+  getHeightFeet,
+  getHeightInches,
+  kiloGramsToPounds,
+} from "../services/calorieConversionService";
+import { toast } from "react-toastify";
+
+// convert the units for userstats depending on the units
 
 class DietInformation extends Form {
   state = {
-    data: {
-      age: "",
-      bodyWeight: "",
-      gender: "",
-      feet: "",
-      inches: "",
-      centimeters: "",
-      exerciseLevel: "",
-    },
-    units: "Imperial",
+    data: !this.props.location.state
+      ? {
+          age: "",
+          bodyWeight: "",
+          gender: "",
+          feet: "",
+          inches: "",
+          centimeters: "",
+          exerciseLevel: "",
+        }
+      : this.props.location.state.userstats.units === "Imperial"
+      ? {
+          age: this.props.location.state.userstats.age,
+          bodyWeight: Math.round(
+            kiloGramsToPounds(this.props.location.state.userstats.bodyWeight)
+          ),
+          gender: this.props.location.state.userstats.gender,
+          feet: getHeightFeet(this.props.location.state.userstats.height),
+          inches: getHeightInches(this.props.location.state.userstats.height),
+          centimeters: "",
+          exerciseLevel: this.props.location.state.userstats.exerciseLevel,
+        }
+      : {
+          age: this.props.location.state.userstats.age,
+          bodyWeight: Math.round(
+            this.props.location.state.userstats.bodyWeight
+          ),
+          gender: this.props.location.state.userstats.gender,
+          feet: "",
+          inches: "",
+          centimeters: this.props.location.state.userstats.height,
+          exerciseLevel: this.props.location.state.userstats.exerciseLevel,
+        },
+    units: this.props.location.state
+      ? this.props.location.state.userstats.units
+      : "Imperial",
     errors: {},
+    update: false,
   };
 
   genders = [
@@ -34,6 +70,15 @@ class DietInformation extends Form {
       name: "Extremely Active (Manual labor work or multiple workouts per day",
     },
   ];
+
+  componentDidMount() {
+    console.log("props", this.props);
+    if (this.props.location.state && this.props.location.state.updatestats) {
+      console.log(this.props.location.state);
+      console.log("update === true");
+      this.setState({ update: true });
+    }
+  }
 
   getSchema = (units) => {
     if (units === "Imperial")
@@ -54,9 +99,9 @@ class DietInformation extends Form {
     return {
       age: Joi.number().min(1).required().label("Age"),
       bodyWeight: Joi.number().min(10).max(400).required().label("Bodyweight"),
-      gender: Joi.string().required().label("Gender"),
       feet: Joi.string().allow(""),
       inches: Joi.string().allow(""),
+      gender: Joi.string().required().label("Gender"),
       centimeters: Joi.number().required().min(20),
       exerciseLevel: Joi.string().required().label("Exercise Level"),
     };
@@ -66,10 +111,39 @@ class DietInformation extends Form {
 
   getUnits = (unit) => {
     if (unit === this.state.units) return "btn-nav btn-primary active";
-    return "btn btn-sm small-font";
+    return "btn small-font";
   };
 
   swapUnits = (units) => {
+    let data;
+    if (this.props.location.state && this.props.location.state.userstats) {
+      if (units === "Imperial") {
+        data = {
+          age: this.props.location.state.userstats.age,
+          bodyWeight: Math.round(
+            kiloGramsToPounds(this.props.location.state.userstats.bodyWeight)
+          ),
+          gender: this.props.location.state.userstats.gender,
+          feet: getHeightFeet(this.props.location.state.userstats.height),
+          inches: getHeightInches(this.props.location.state.userstats.height),
+          centimeters: "",
+          exerciseLevel: this.props.location.state.userstats.exerciseLevel,
+        };
+      } else if (units === "Metric") {
+        data = {
+          age: this.props.location.state.userstats.age,
+          bodyWeight: Math.round(
+            this.props.location.state.userstats.bodyWeight
+          ),
+          gender: this.props.location.state.userstats.gender,
+          feet: "",
+          inches: "",
+          centimeters: this.props.location.state.userstats.height,
+          exerciseLevel: this.props.location.state.userstats.exerciseLevel,
+        };
+      }
+      this.setState({ data });
+    }
     this.setState({ units });
     this.schema = this.getSchema(units);
   };
@@ -99,31 +173,73 @@ class DietInformation extends Form {
       ? (weight = conversions.convertPoundsToKiloGrams(bodyWeight))
       : (weight = Number(bodyWeight));
 
+    console.log("Going into calculateCalories: age", age);
+    console.log("Typeof age", typeof age);
+    console.log("Going into calculateCalories: weight", weight);
+    console.log("Typeof weight", typeof weight);
+    console.log("Going into calculateCalories: heightInCm", heightInCm);
+    console.log("Typeof heightInCm", typeof heightInCm);
+    console.log("Going into calculateCalories: exerciseLevel", exerciseLevel);
+    console.log("Typeof exerciseLevel", typeof exerciseLevel);
+    console.log("Going into calculateCalories: gender", gender);
+    console.log("Typeof gender", typeof gender);
+
+    let levelOfExercisesIndex = this.exerciseLevels.findIndex(
+      (i) => i.name === exerciseLevel
+    );
+    console.log("levelOfExercisesIndex", levelOfExercisesIndex);
+
     let maintenanceCalories = conversions.calculateCalories(
       age,
       weight,
       heightInCm,
-      exerciseLevel,
+      levelOfExercisesIndex,
       gender
     );
+    console.log("Maintenance Calories");
+    console.log("Gender in getDietInfo", gender);
+    console.log("ExerciseLevel in getDietInfo", exerciseLevel);
+
     maintenanceCalories = Math.floor(maintenanceCalories);
 
     return {
       age: age,
       bodyWeight: weight,
-      gender: this.genders[gender].name,
+      gender,
+      units: this.state.units,
       height: heightInCm,
-      exerciseLevel: this.exerciseLevels[exerciseLevel].name,
+      exerciseLevel,
       maintenanceCalories,
     };
   };
 
   doSubmit = async () => {
-    if (!this.validate())
-      this.props.history.push({
-        pathname: "/choosediet",
-        state: this.getDietInfo(),
-      });
+    if (this.state.update) {
+      if (!this.validate()) {
+        const { userstats } = this.props.location.state;
+        console.log("userStats", userstats);
+
+        const data = this.getDietInfo();
+        data.dietPlan = userstats.dietPlan;
+        data.currentCalories = userstats.currentCalories;
+        data.maintenanceCalories =
+          this.props.location.state.userstats.maintenanceCalories;
+
+        try {
+          await putUserStats(data);
+          this.props.history.push("/myaccount");
+        } catch (error) {
+          console.log(error.response);
+          toast.error("Error updating your stats");
+        }
+      }
+    } else {
+      if (!this.validate())
+        this.props.history.push({
+          pathname: "/choosediet",
+          state: this.getDietInfo(),
+        });
+    }
   };
 
   render() {
@@ -221,15 +337,27 @@ class DietInformation extends Form {
                           Intense: elevated heart rate for 30+ minutes
                         </div>
                       </small>
-                      <button
-                        onClick={() => this.doSubmit()}
-                        disabled={this.validate()}
-                        className="btn btn-primary btn-user btn-block"
-                        type="submit"
-                        style={{ marginTop: "10px" }}
-                      >
-                        Submit
-                      </button>
+                      {!this.state.update ? (
+                        <button
+                          onClick={() => this.doSubmit()}
+                          disabled={this.validate()}
+                          className="btn btn-primary btn-user btn-block"
+                          type="submit"
+                          style={{ marginTop: "10px" }}
+                        >
+                          Submit
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => this.doSubmit()}
+                          disabled={this.validate()}
+                          className="btn btn-primary btn-user btn-block"
+                          type="submit"
+                          style={{ marginTop: "10px" }}
+                        >
+                          Update
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>

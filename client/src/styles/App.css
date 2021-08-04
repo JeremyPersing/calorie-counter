@@ -462,3 +462,7 @@ h5 {
   cursor: pointer;
   color: black;
 }
+
+.nav-link:hover {
+  cursor: pointer;
+}

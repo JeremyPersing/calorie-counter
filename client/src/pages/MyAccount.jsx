@@ -25,6 +25,37 @@ function MyAccount(props) {
   let date = new Date(user.dietStartDate);
   date = date.toDateString();
 
+  const updateStats = () => {
+    props.history.push({
+      pathname: "/dietinformation",
+      state: { updatestats: true, userstats: user },
+    });
+  };
+
+  const updateMealPlan = () => {
+    console.log(user);
+    props.history.push({
+      pathname: "/choosediet",
+      state: {
+        age: user.age,
+        bodyWeight: user.bodyWeight,
+        gender: user.gender,
+        units: user.units,
+        height: user.height,
+        exerciseLevel: user.exerciseLevel,
+        maintenanceCalories: user.maintenanceCalories,
+        updateDiet: true,
+      },
+    });
+  };
+
+  const updateBoth = () => {
+    props.history.push({
+      pathname: "/dietinformation",
+      state: { userstats: user },
+    });
+  };
+
   return (
     <>
       <Page>
@@ -44,13 +75,21 @@ function MyAccount(props) {
               className="col-sm-4 mb-4"
               color="dark"
               title="Height"
-              text={getImperialHeight(user.height)}
+              text={
+                user.units === "Imperial"
+                  ? getImperialHeight(user.height)
+                  : user.height + " cm"
+              }
             />
             <InformationCard
               className="col-sm-4 mb-4"
               color="dark"
               title="Weight"
-              text={Math.round(kiloGramsToPounds(user.bodyWeight)) + " lbs"}
+              text={
+                user.units === "Imperial"
+                  ? Math.round(kiloGramsToPounds(user.bodyWeight)) + " lbs"
+                  : user.bodyWeight + " kg"
+              }
             />
           </div>
           <div className="row">
@@ -89,15 +128,11 @@ function MyAccount(props) {
           variant="secondary"
           title="Update"
         >
-          <Dropdown.Item onClick={() => props.history.push("/dietinformation")}>
-            Update Stats
-          </Dropdown.Item>
-          <Dropdown.Item onClick={() => props.history.push("/choosediet")}>
+          <Dropdown.Item onClick={updateStats}>Update Stats</Dropdown.Item>
+          <Dropdown.Item onClick={updateMealPlan}>
             Update Meal Plan
           </Dropdown.Item>
-          <Dropdown.Item onClick={() => props.history.push("/dietinformation")}>
-            Update Both
-          </Dropdown.Item>
+          <Dropdown.Item onClick={updateBoth}>Update Both</Dropdown.Item>
         </DropdownButton>
       </Page>
     </>

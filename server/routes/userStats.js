@@ -14,11 +14,20 @@ router.get("/", auth, async (req, res) => {
   res.send(userStats);
 });
 
-router.put("/", auth, async (req, res) => {
+router.put("/", auth, async(req, res) => {
   const result = validateRequest(req.body);
   if (result.error) {
     return res.status(400).send(result.error.message);
   }
+
+  const dateOne = new Date();
+  const dateThree = new Date();
+  const dateSix = new Date();
+  const dateNine = new Date();
+  dateThree.setDate(dateThree.getDate() + 3 * 7);
+  dateSix.setDate(dateSix.getDate() + 6 * 7);
+  dateNine.setDate(dateNine.getDate() + 9 * 7);
+
 
   const userStats = await UserStats.findByIdAndUpdate(
     req.user._id,
@@ -29,13 +38,56 @@ router.put("/", auth, async (req, res) => {
         currentCalories: req.body.currentCalories,
         dietPlan: req.body.dietPlan,
         exerciseLevel: req.body.exerciseLevel,
+        units: req.body.units,
         gender: req.body.gender,
         height: req.body.height,
         maintenanceCalories: req.body.maintenanceCalories,
-        dietStartDate: req.body.dietStartDate,
-        dietThreeWeekDate: req.body.dietThreeWeekDate,
-        dietSixWeekDate: req.body.dietSixWeekDate,
-        dietNineWeekDate: req.body.dietNineWeekDate,
+        dietStartDate: dateOne.toString(),
+        dietThreeWeekDate: dateThree.toString(),
+        dietSixWeekDate: dateSix.toString(),
+        dietNineWeekDate: dateNine.toString(),
+      },
+    },
+    {
+      new: true,
+    }
+  );
+
+  if (!userStats) return res.status(404).send(`404: Not found`);
+
+  res.send(userStats);
+})
+
+router.put("/updatestats", auth, async (req, res) => {
+  const result = validateRequest(req.body);
+  if (result.error) {
+    return res.status(400).send(result.error.message);
+  }
+
+  const prior = await UserStats.findById(req.user._id)
+  console.log(prior)
+  const dietStartDate = prior.userStats.dietStartDate;
+  const dietThreeWeekDate = prior.userStats.dietThreeWeekDate;
+  const dietSixWeekDate = prior.userStats.dietSixWeekDate;
+  const dietNineWeekDate = prior.userStats.dietNineWeekDate;
+  
+  const userStats = await UserStats.findByIdAndUpdate(
+    req.user._id,
+    {
+      userStats: {
+        age: req.body.age,
+        bodyWeight: req.body.bodyWeight,
+        currentCalories: prior.userStats.currentCalories,
+        dietPlan: req.body.dietPlan,
+        exerciseLevel: req.body.exerciseLevel,
+        units: req.body.units,
+        gender: req.body.gender,
+        height: req.body.height,
+        maintenanceCalories: req.body.maintenanceCalories,
+        dietStartDate,
+        dietThreeWeekDate,
+        dietSixWeekDate,
+        dietNineWeekDate,
       },
     },
     {
@@ -49,6 +101,7 @@ router.put("/", auth, async (req, res) => {
 });
 
 router.post("/", auth, async (req, res) => {
+  console.log(req.body)
   const result = validateRequest(req.body);
 
   if (result.error) {
@@ -71,6 +124,7 @@ router.post("/", auth, async (req, res) => {
       currentCalories: req.body.currentCalories,
       dietPlan: req.body.dietPlan,
       exerciseLevel: req.body.exerciseLevel,
+      units: req.body.units,
       gender: req.body.gender,
       height: req.body.height,
       maintenanceCalories: req.body.maintenanceCalories,
@@ -106,8 +160,6 @@ router.put("/newdiet", auth, async (req, res) => {
   dateNine.setDate(dateNine.getDate() + 9 * 7);
 
 
-
-
   const userStats = await UserStats.findByIdAndUpdate(
     req.user._id,
     {
@@ -117,6 +169,7 @@ router.put("/newdiet", auth, async (req, res) => {
         currentCalories: req.body.currentCalories,
         dietPlan: req.body.dietPlan,
         exerciseLevel: req.body.exerciseLevel,
+        units: req.body.units,
         gender: req.body.gender,
         height: req.body.height,
         maintenanceCalories: req.body.maintenanceCalories,

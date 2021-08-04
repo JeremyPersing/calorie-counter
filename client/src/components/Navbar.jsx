@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import SkinnyLogo from "./SkinnyLogo";
 import { NavLink, Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -9,7 +9,13 @@ import {
   faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
-function Navbar({ toggled, setToggled, toggleSideBar, getTextClasses }) {
+function Navbar({
+  toggled,
+  setToggled,
+  toggleSideBar,
+  getTextClasses,
+  handleShow,
+}) {
   useEffect(() => {
     let itemToggled = JSON.parse(localStorage.getItem("toggled"));
     if (itemToggled !== null && itemToggled !== undefined) {
@@ -76,15 +82,10 @@ function Navbar({ toggled, setToggled, toggleSideBar, getTextClasses }) {
         </li>
 
         <li className={getLiClassName("/logout")}>
-          <NavLink
-            onClick={() => localStorage.clear()}
-            className="nav-link"
-            exact={true}
-            to="/logout"
-          >
+          <div onClick={handleShow} className="nav-link">
             <FontAwesomeIcon icon={faSignOutAlt} />
             <span className={getTextClasses()}>Logout</span>
-          </NavLink>
+          </div>
         </li>
 
         <hr className="sidebar-divider my-0" />

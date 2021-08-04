@@ -64,15 +64,12 @@ function EditConsumedMealModal(props) {
       <Modal.Footer>
         <button
           disabled={Number(servings) === 0 ? true : false}
-          className="btn btn-primary btn-sm shadow-sm"
+          className="btn btn-primary"
           onClick={handleAdd}
         >
           {props.edit ? "Edit" : "Add"}
         </button>
-        <button
-          className="btn btn-secondary btn-sm shadow-sm"
-          onClick={handleClose}
-        >
+        <button className="btn btn-secondary" onClick={handleClose}>
           Close
         </button>
       </Modal.Footer>

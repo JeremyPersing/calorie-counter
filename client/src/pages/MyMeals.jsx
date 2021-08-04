@@ -32,9 +32,7 @@ function MyMeals(props) {
         <div className="text-center mt-3">
           <h5>Create Your Own Meals</h5>
           <Link to="/meals/add">
-            <button className="btn btn-primary btn-sm shadow-sm mt-3">
-              Create a Meal
-            </button>
+            <button className="btn btn-primary mt-3">Create a Meal</button>
           </Link>
           {getLocalUserMeals().length > 0 ? (
             <SearchMealsDisplay

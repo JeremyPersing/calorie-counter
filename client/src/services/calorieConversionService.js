@@ -13,6 +13,22 @@ export const metersToFeet = (height) => {
   return height * 0.0328084;
 }
 
+export const getHeightFeet = (cm) => {
+  cm = Number(cm);
+  let feet = metersToFeet(cm);
+  feet = Math.floor(feet)
+  return feet;
+}
+
+export const getHeightInches = (cm) => {
+  cm = Number(cm);
+  let feet = metersToFeet(cm);
+  let remainder = feet % 1;
+  let inches = remainder * 12;
+  inches = Math.round(inches)
+  return inches;
+}
+
 export const getImperialHeight = (cm) => {
   cm = Number(cm);
   let feet = metersToFeet(cm);
@@ -86,4 +102,5 @@ export {
   convertFeetToCentimeters,
   convertInchesToCentimeters,
   calculateCalories,
+  
 };

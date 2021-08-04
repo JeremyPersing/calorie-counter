@@ -20,16 +20,10 @@ function DeleteMealModal(props) {
           : "Are you sure you want to delete this item from your meals?"}
       </Modal.Body>
       <Modal.Footer>
-        <button
-          className="btn btn-danger btn-sm shadow-sm"
-          onClick={handleDelete}
-        >
+        <button className="btn btn-danger " onClick={handleDelete}>
           Delete
         </button>
-        <button
-          className="btn btn-secondary btn-sm shadow-sm"
-          onClick={handleClose}
-        >
+        <button className="btn btn-secondary " onClick={handleClose}>
           Cancel
         </button>
       </Modal.Footer>

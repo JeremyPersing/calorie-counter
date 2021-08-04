@@ -13,21 +13,21 @@ function Hero(props) {
 
   return (
     <div className="hero vh-100 d-flex flex-column">
-      <div className="my-auto justify-content-center align-self-center">
-        <h1
-          className="display-3 font-weight-light text-center"
-          style={{ marginBottom: "5%", color: "#150A02" }}
-        >
-          CalorieBalance
-        </h1>
+      <div className="my-auto justify-content-center align-self-center content-container">
         <div className="center">
           <SkinnyLogo
             width="auto"
             style={{ marginBottom: "5%", height: "125px", color: "#150A02" }}
           />
         </div>
+        <h1
+          className="display-5 font-weight-light text-center"
+          style={{ marginBottom: "5%", color: "#150A02" }}
+        >
+          CalorieBalance
+        </h1>
         <h5
-          className="text-center font-weight-bold"
+          className="text-center font-weight-light"
           style={{ marginBottom: "5%", color: "#150A02" }}
         >
           Find a balance between looking good and eating delicious foods

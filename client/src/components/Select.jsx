@@ -2,7 +2,8 @@ import React, { Component } from "react";
 
 class Select extends Component {
   render() {
-    const { name, label, error, itemsList, ...rest } = this.props;
+    const { name, label, error, itemsList, value, ...rest } = this.props;
+
     return (
       <div>
         <div className="form-control-select">
@@ -17,16 +18,34 @@ class Select extends Component {
               color: "gray",
               width: "100%",
             }}
-            {...rest} // name and value
+            {...rest}
           >
-            <option value="" disabled defaultValue>
-              {label}
-            </option>
-            {itemsList.map((g) => (
-              <option key={g._id} value={g._id}>
-                {g.name}
+            {!value && (
+              <option value="" selected disabled defaultValue>
+                {label}
               </option>
-            ))}
+            )}
+
+            {!value
+              ? itemsList.map((g) => (
+                  <option key={g._id} value={g.name}>
+                    {g.name}
+                  </option>
+                ))
+              : itemsList.map((g) => {
+                  if (value === g.name)
+                    return (
+                      <option key={g._id} value={g.name} selected>
+                        {g.name}
+                      </option>
+                    );
+
+                  return (
+                    <option key={g._id} value={g.name}>
+                      {g.name}
+                    </option>
+                  );
+                })}
           </select>
         </div>
         {error && <div className="alert alert-danger">{error}</div>}

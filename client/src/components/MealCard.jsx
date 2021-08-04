@@ -64,25 +64,28 @@ function MealCard(props) {
   const updateMealInSearchedMeals = (meal) => {
     const searchedMeals = JSON.parse(localStorage.getItem("searchedMeals"));
 
-    const index = searchedMeals.findIndex(
-      (m) => m.food_name === meal.food_name
-    );
+    if (searchedMeals) {
+      const index = searchedMeals.findIndex(
+        (m) => m.food_name === meal.food_name
+      );
 
-    if (index > -1) {
-      searchedMeals[index] = meal;
-      localStorage.setItem("searchedMeals", JSON.stringify(searchedMeals));
+      if (index > -1) {
+        searchedMeals[index] = meal;
+        localStorage.setItem("searchedMeals", JSON.stringify(searchedMeals));
+      }
     }
   };
 
   const deleteMealInLocalSearchedMeals = (meal) => {
     const searchedMeals = JSON.parse(localStorage.getItem("searchedMeals"));
+    if (searchedMeals) {
+      const index = searchedMeals.findIndex(
+        (m) => m.food_name === meal.food_name
+      );
 
-    const index = searchedMeals.findIndex(
-      (m) => m.food_name === meal.food_name
-    );
-
-    searchedMeals.splice(index, 1);
-    localStorage.setItem("searchedMeals", JSON.stringify(searchedMeals));
+      searchedMeals.splice(index, 1);
+      localStorage.setItem("searchedMeals", JSON.stringify(searchedMeals));
+    }
   };
 
   // Can be done on Meals.jsx, MyMeals.jsx, and LikedMeals.jsx

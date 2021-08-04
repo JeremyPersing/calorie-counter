@@ -1,11 +1,25 @@
-import React, { useState } from "react";
-import { postUserStats, putUserStats } from "../services/userStatsService";
+import React, { useState, useEffect } from "react";
+import {
+  postUserStats,
+  putNewDiet,
+  putUserStatsAndDiet,
+} from "../services/userStatsService";
 import Modal from "react-bootstrap/Modal";
 import "../styles/App.css";
+import { toast } from "react-toastify";
 
 function ChooseDiet(props) {
   const [show, setShow] = useState(false);
-  const nextPageEndpoint = "/";
+  const [updateDiet, setUpdateDiet] = useState(false);
+  let nextPageEndpoint = props.location.state.updateDiet ? "/myaccount" : "/";
+
+  useEffect(() => {
+    console.log("props", props);
+    if (props.location.state.updateDiet) {
+      console.log("Setting update diet to true");
+      setUpdateDiet(true);
+    }
+  }, []);
 
   const maintenanceCalories = props.location.state.maintenanceCalories;
   const cuttingCalories = maintenanceCalories - 500;
@@ -28,17 +42,28 @@ function ChooseDiet(props) {
 
   const handleSubmit = async (plan, calories) => {
     let userStats = props.location.state;
+    console.log(props.location.state.units);
     userStats.dietPlan = plan;
     userStats.currentCalories = calories;
 
-    try {
-      await postUserStats(userStats);
-    } catch (error) {
-      if (error.response.status === 500) {
-        // User already selected a plan went bakc and then selected a new plan
-        await putUserStats(userStats);
+    if (updateDiet) {
+      console.log("UPDATING DIET");
+      try {
+        await putNewDiet(userStats);
+      } catch (error) {
+        toast.error("An error occurred updating your diet plan");
+        console.log(error.response);
       }
-      console.log(error.response);
+    } else {
+      try {
+        await postUserStats(userStats);
+      } catch (error) {
+        if (error.response.status === 500) {
+          // User already selected a plan went bakc and then selected a new plan
+          await putUserStatsAndDiet(userStats);
+        }
+        console.log(error.response);
+      }
     }
   };
 
@@ -180,10 +205,7 @@ function ChooseDiet(props) {
             advice and advice for trying a new diet.
           </Modal.Body>
           <Modal.Footer>
-            <button
-              className="btn btn-primary shadow-sm btn-sm"
-              onClick={handleClose}
-            >
+            <button className="btn btn-primary " onClick={handleClose}>
               Okay
             </button>
           </Modal.Footer>
