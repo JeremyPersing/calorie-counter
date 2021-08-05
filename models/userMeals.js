@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Joi = require("Joi");
+const Joi = require("joi");
 
 const validateRequest = (meal) => {
   const mealSchema = Joi.object({

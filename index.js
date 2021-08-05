@@ -1,6 +1,6 @@
 const dotenv = require("dotenv").config();
 const {UserMeals} = require("./models/userMeals");
-const Joi = require("Joi");
+const Joi = require("joi");
 Joi.objectId = require("joi-objectid")(Joi);
 const mongoose = require("mongoose");
 const cron = require("node-cron");
