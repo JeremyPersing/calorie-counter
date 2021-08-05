@@ -2,7 +2,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
-const Joi = require("joi");
+const Joi = require("Joi");
 
 const googleUserSchema = new mongoose.Schema({
   name: { type: String, required: true, minlength: 1, maxlength: 50 },

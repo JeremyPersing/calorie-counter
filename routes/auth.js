@@ -8,7 +8,7 @@ const _ = require("lodash");
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const Joi = require("joi");
+const Joi = require("Joi");
 
 router.post("/", async (req, res) => {
   const result = validateRequest(req.body);
