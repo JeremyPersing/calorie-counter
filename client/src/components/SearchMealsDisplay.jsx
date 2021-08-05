@@ -76,14 +76,12 @@ function SearchMealsDisplay(props) {
 
   const getProducts = async () => {
     try {
-      console.log("In get products");
       setdisplayVisible(false); // A new search should allow for a new loading logo & table
       setPlayLottie(true);
 
       if (searchMeals) {
         const { data: usersMeals } = await filterCreatedMeals(searchQuery);
         let possibleMeals = [...usersMeals];
-        console.log("possibleMeals", possibleMeals);
 
         let result = await nutritionixService.getMealsByName(searchQuery);
 
@@ -118,20 +116,17 @@ function SearchMealsDisplay(props) {
       setdisplayVisible(true);
     } catch (error) {
       toast.error("An error has occurred");
-      console.log(error.response);
       setPlayLottie(false);
     }
   };
 
   const handleClick = () => {
-    console.log("clicked");
     try {
       if (searchQuery === "") {
         toast.warning("Input a value into the search field");
         return;
       }
       if (searchMeals) localStorage.setItem("searchQuery", searchQuery);
-      console.log("Getting products");
       getProducts();
     } catch (error) {
       toast.error("Something's gone wrong ...");

@@ -8,7 +8,7 @@ function IncreaseDecreaseInput(props) {
     let value = inputValue;
     if (value > 0.25) {
       value -= 0.25;
-      console.log("Value", value);
+
       setInputValue(value);
     }
   };

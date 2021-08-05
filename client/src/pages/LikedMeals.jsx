@@ -10,7 +10,6 @@ function LikedMeals() {
   useEffect(() => {
     async function likify() {
       const { data } = await getLikedMeals();
-      console.log("Liked Meals: ", data);
 
       setProducts(data);
     }

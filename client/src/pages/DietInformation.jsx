@@ -72,10 +72,7 @@ class DietInformation extends Form {
   ];
 
   componentDidMount() {
-    console.log("props", this.props);
     if (this.props.location.state && this.props.location.state.updatestats) {
-      console.log(this.props.location.state);
-      console.log("update === true");
       this.setState({ update: true });
     }
   }
@@ -173,21 +170,9 @@ class DietInformation extends Form {
       ? (weight = conversions.convertPoundsToKiloGrams(bodyWeight))
       : (weight = Number(bodyWeight));
 
-    console.log("Going into calculateCalories: age", age);
-    console.log("Typeof age", typeof age);
-    console.log("Going into calculateCalories: weight", weight);
-    console.log("Typeof weight", typeof weight);
-    console.log("Going into calculateCalories: heightInCm", heightInCm);
-    console.log("Typeof heightInCm", typeof heightInCm);
-    console.log("Going into calculateCalories: exerciseLevel", exerciseLevel);
-    console.log("Typeof exerciseLevel", typeof exerciseLevel);
-    console.log("Going into calculateCalories: gender", gender);
-    console.log("Typeof gender", typeof gender);
-
     let levelOfExercisesIndex = this.exerciseLevels.findIndex(
       (i) => i.name === exerciseLevel
     );
-    console.log("levelOfExercisesIndex", levelOfExercisesIndex);
 
     let maintenanceCalories = conversions.calculateCalories(
       age,
@@ -196,9 +181,6 @@ class DietInformation extends Form {
       levelOfExercisesIndex,
       gender
     );
-    console.log("Maintenance Calories");
-    console.log("Gender in getDietInfo", gender);
-    console.log("ExerciseLevel in getDietInfo", exerciseLevel);
 
     maintenanceCalories = Math.floor(maintenanceCalories);
 
@@ -217,7 +199,6 @@ class DietInformation extends Form {
     if (this.state.update) {
       if (!this.validate()) {
         const { userstats } = this.props.location.state;
-        console.log("userStats", userstats);
 
         const data = this.getDietInfo();
         data.dietPlan = userstats.dietPlan;
@@ -229,7 +210,6 @@ class DietInformation extends Form {
           await putUserStats(data);
           this.props.history.push("/myaccount");
         } catch (error) {
-          console.log(error.response);
           toast.error("Error updating your stats");
         }
       }

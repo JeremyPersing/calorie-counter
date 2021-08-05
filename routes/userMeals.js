@@ -46,7 +46,6 @@ const getMealById = async (userId, mealId) => {
     }
   }
 
-  console.log("MEAL", meal);
 
   return meal;
 };
@@ -148,10 +147,8 @@ router.get("/search/:query", auth, async (req, res) => {
         : (brand_name = "");
 
       if (item_name.includes(query)) {
-        console.log("pushing meal", meals[i]);
         matches.push(meals[i]);
       } else if (brand_name.includes(query)) {
-        console.log("pushing meal due to brand name", meals[i]);
         matches.push(meals[i]);
       }
     }
@@ -242,7 +239,6 @@ router.post("/createaccount", auth, async (req, res) => {
 router.post("/consumedmeals", auth, async (req, res) => {
   if (req.body.sub_recipe === null) req.body.sub_recipe = [];
   const result = validateRequest(req.body)
-  console.log(result)
   if (result.error) return res.status(400).send(result.error.message);
 
 
@@ -323,7 +319,6 @@ router.put("/:id", auth, async (req, res) => {
     }
 
     if (index === -1) return res.status(404).send("404: Not Found");
-    console.log("index", index);
     userObj.meals[index] = meal;
 
     const updatedUserObj = await userObj.save();
@@ -336,7 +331,6 @@ router.put("/:id", auth, async (req, res) => {
 router.put("/consumedmeals/:id", auth, async(req, res) => {
   if (req.body._id) delete req.body._id
   const result = validateRequest(req.body)
-  console.log(result)
   if (result.error) return res.status(400).send(result.error.message)
 
 
@@ -399,7 +393,6 @@ router.delete("/:id", auth, async (req, res) => {
       }
     );
 
-    console.log("userMeal", userMeal);
     if (!userMeal) return res.status(404).send(`404: Not found`);
 
     res.send(userMeal);

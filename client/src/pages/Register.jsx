@@ -122,7 +122,9 @@ class Register extends Form {
                       <hr />
                       <div>
                         <GoogleButton />
-                        <FacebookButton />
+                        <div className="mt-2">
+                          <FacebookButton />
+                        </div>
                       </div>
                     </div>
                     <hr />

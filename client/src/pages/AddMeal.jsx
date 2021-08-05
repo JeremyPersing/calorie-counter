@@ -62,7 +62,6 @@ class AddMeal extends Form {
     const errors = this.validate();
     if (errors) {
       this.setState({ errors });
-      console.log(errors);
       return;
     }
 
@@ -127,7 +126,6 @@ class AddMeal extends Form {
       };
 
       const response = await postUserMeal(serverObj);
-      console.log("data", response.data);
       if (response.status === 200) pushLocalUserMeal(response.data);
 
       this.props.history.push("/meals/mine");
@@ -137,7 +135,6 @@ class AddMeal extends Form {
           "A meal with that name already exists. Try changing the name or searching for that meal."
         );
       }
-      console.log(error);
     }
   };
 
@@ -151,7 +148,6 @@ class AddMeal extends Form {
 
     currIngredients = currIngredients.filter((m) => m !== meal);
     this.setState({ ingredients: currIngredients });
-    console.log(currIngredients);
 
     // Deletes only the meals created from input because those get pushed to the db
     if (meal.created_meal) {
@@ -170,25 +166,20 @@ class AddMeal extends Form {
   };
 
   handleMealClicked = async (meal) => {
-    console.log("meal click in AddMeal", meal);
     try {
       let res;
       if (meal.user_meal) {
-        console.log("user_meal");
         res = await getUserMealById(meal._id);
         res = res.data;
       } // Ingredient tied to specific brand
       else if (meal.nix_item_id) {
-        console.log("Meal.nix_item_id");
         res = await nutritionixService.getMealByNixItemId(meal.nix_item_id);
         res = res.data.foods[0];
       } // Generic ingredient
       else {
-        console.log("No nix_item_id");
         res = await nutritionixService.getMealDetails(meal.food_name);
         res = res.data.foods[0];
       }
-      console.log("res", res);
 
       let ingredientsArr = [...this.state.ingredients];
       ingredientsArr.push(res);
@@ -199,7 +190,6 @@ class AddMeal extends Form {
     } catch (error) {
       toast.error("Unable to add meal");
       this.handleClose();
-      console.log(error);
     }
   };
 

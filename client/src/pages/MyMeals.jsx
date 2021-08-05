@@ -16,7 +16,6 @@ function MyMeals(props) {
     async function getMeals() {
       const meals = await getUserMeals();
       const { data } = meals;
-      console.log("meals in MyMeals", data);
 
       setLocalUserMeals(data);
       setProducts(data);

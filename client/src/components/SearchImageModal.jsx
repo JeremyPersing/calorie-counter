@@ -18,7 +18,6 @@ function SearchImageModal(props) {
   const handleSearchClick = async () => {
     try {
       const res = await getImagesByQuery(searchQuery);
-      console.log("res", res);
       if (res.data.hits.length === 0) toast("No results could be found");
       setImages(res.data.hits);
     } catch (error) {

@@ -42,10 +42,13 @@ function FacebookButton(props) {
 
       history.push("/");
     } catch (error) {
-      console.log(error.response);
-
-      if (error.response.data) return toast.error(error.response.data);
-      return toast.error("An unexpected error has occured");
+      props.login
+        ? toast.error(
+            "An unexpected error has occured logging in with Facebook"
+          )
+        : toast.error(
+            "An unexpected error has occured registering in with Facebook"
+          );
     }
   };
 
@@ -58,7 +61,7 @@ function FacebookButton(props) {
       textButton={
         props.login ? "Login with Facebook" : "Register with Facebook"
       }
-      cssClass="btn-facebook btn-user btn-block"
+      cssClass="btn-block btn-user btn-f"
       icon="fab fa-facebook-f fa-fw "
     />
   );

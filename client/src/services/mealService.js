@@ -18,7 +18,6 @@ export function getLocalUserMeals() {
 export function getLocalLikedMeals() {
   let arr =  JSON.parse(localStorage.getItem("userMeals") || "[]");
   arr = arr.filter(m => m.liked === true)
-  console.log("liked meals", arr)
   return arr
 }
 
@@ -88,7 +87,6 @@ export function updateLocalSearchedMeal(meal) {
   const searchedMeals = JSON.parse(localStorage.getItem("searchedMeals"));
   const index = searchedMeals.findIndex((m) => m.food_name === meal.food_name);
 
-  console.log("INDEX OF MEAL IN UPDATELOCALSEARCHEDMEAL", index);
   if (index > -1) {
     searchedMeals[index] = meal;
     localStorage.setItem("searchedMeals", JSON.stringify(searchedMeals));

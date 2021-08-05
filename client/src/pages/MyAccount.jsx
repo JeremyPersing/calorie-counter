@@ -16,7 +16,6 @@ function MyAccount(props) {
   useEffect(() => {
     async function getStats() {
       const res = await getUserStats();
-      console.log(res.data);
       setUser(res.data.userStats);
     }
     getStats();
@@ -33,7 +32,6 @@ function MyAccount(props) {
   };
 
   const updateMealPlan = () => {
-    console.log(user);
     props.history.push({
       pathname: "/choosediet",
       state: {

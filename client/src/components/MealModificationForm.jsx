@@ -52,7 +52,6 @@ class MealModificationForm extends Form {
 
   componentDidMount() {
     let currSelected = JSON.parse(localStorage.getItem("currentMealSelected"));
-    console.log("currSelected", currSelected);
 
     // Makes sure that when the user refreshes the page, the most recent version of the updated
     // meal is being displayed
@@ -91,11 +90,8 @@ class MealModificationForm extends Form {
       return;
     }
 
-    console.log("SUBMITTTIIIIIIIINGGGGGG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     const priorMeal = this.state.priorMeal;
     const meal = this.state.data;
-
-    console.log("priorMeal", priorMeal);
 
     meal.food_name = priorMeal.food_name;
     meal.serving_qty = priorMeal.serving_qty;
@@ -118,10 +114,9 @@ class MealModificationForm extends Form {
         "https://d2eawub7utcl6.cloudfront.net/images/nix-apple-grey.png";
     }
 
-    console.log("meal before put", meal);
     try {
       const response = await putUserMeal(meal);
-      console.log("response from put", response);
+
       if (response.status === 200) {
         // This will be used in AddMeal.jsx removeIngredient()
         // to call the server to delete meal from db
@@ -133,8 +128,6 @@ class MealModificationForm extends Form {
         };
         delete meal.thumb;
 
-        console.log("submitting the MealModificationForm");
-        console.log("setting meal to ", meal);
         this.props.setMeal(meal);
         localStorage.setItem("currentMealSelected", JSON.stringify(meal));
         this.props.handleClose();
@@ -228,28 +221,25 @@ class MealModificationForm extends Form {
 
   handleSearchMealsDisplayMealClick = async (meal) => {
     try {
-      console.log("MEALLLLLL!!!!!!!!!!!!!!!!!!!!!!!", meal);
+     
       let resMeal;
       if (meal.user_meal) {
         // After Meal is saved it doesn't keep the same id
         const currMealSelected = JSON.parse(
           localStorage.getItem("currentMealSelected")
         );
-        console.log("currMealSelected", currMealSelected);
+       
         if (currMealSelected._id.toString() === meal._id.toString()) {
           throw new Error("Can't add the same ingredient to itself");
         }
         const { data } = await getUserMealById(meal._id);
         resMeal = data;
-        console.log("resMeal", resMeal);
       } else if (meal.nix_item_id) {
         const { data } = await getMealByNixItemId(meal.nix_item_id);
         resMeal = data.foods[0];
-        console.log("resMeal", resMeal);
       } else {
         const { data } = await getMealDetails(meal.food_name);
         resMeal = data.foods[0];
-        console.log("resMeal", resMeal);
       }
 
       const ingredientObj = {
@@ -267,7 +257,6 @@ class MealModificationForm extends Form {
       this.handleCloseSearchMealsDisplayModal();
     } catch (error) {
       this.handleCloseSearchMealsDisplayModal();
-      console.log(error);
       toast.error("Unable to add ingredient");
     }
   };
@@ -384,7 +373,6 @@ class MealModificationForm extends Form {
               handleClose={this.handleCloseIngredientInputModal}
               ingredientList={this.state.meal_ingredients}
               setIngredientList={(arr) => {
-                console.log("arr", arr);
                 this.setState({ meal_ingredients: arr });
               }}
               pushSmallIngredient={true}

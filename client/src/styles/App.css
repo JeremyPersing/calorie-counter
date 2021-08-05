@@ -131,6 +131,24 @@ select {
   box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.5);
 }
 
+.btn-f {
+  background-color: #3b5998;
+  color: #fff;
+  border-color: #fff;
+}
+
+.btn-f:hover {
+  background-color: #30497c;
+  border-color: #e6e6e6;
+}
+
+.btn-f:focus,
+.btn-f.focus {
+  background-color: #30497c;
+  border-color: #e6e6e6;
+  box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.5);
+}
+
 .btn-facebook {
   color: #fff;
   background-color: #3b5998;
@@ -138,14 +156,12 @@ select {
 }
 
 .btn-facebook:hover {
-  color: #fff;
   background-color: #30497c;
   border-color: #e6e6e6;
 }
 
 .btn-facebook:focus,
 .btn-facebook.focus {
-  color: #fff;
   background-color: #30497c;
   border-color: #e6e6e6;
   box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.5);

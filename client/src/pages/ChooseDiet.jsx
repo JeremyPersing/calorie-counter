@@ -14,9 +14,7 @@ function ChooseDiet(props) {
   let nextPageEndpoint = props.location.state.updateDiet ? "/myaccount" : "/";
 
   useEffect(() => {
-    console.log("props", props);
     if (props.location.state.updateDiet) {
-      console.log("Setting update diet to true");
       setUpdateDiet(true);
     }
   }, []);
@@ -42,17 +40,14 @@ function ChooseDiet(props) {
 
   const handleSubmit = async (plan, calories) => {
     let userStats = props.location.state;
-    console.log(props.location.state.units);
     userStats.dietPlan = plan;
     userStats.currentCalories = calories;
 
     if (updateDiet) {
-      console.log("UPDATING DIET");
       try {
         await putNewDiet(userStats);
       } catch (error) {
         toast.error("An error occurred updating your diet plan");
-        console.log(error.response);
       }
     } else {
       try {
@@ -62,7 +57,6 @@ function ChooseDiet(props) {
           // User already selected a plan went bakc and then selected a new plan
           await putUserStatsAndDiet(userStats);
         }
-        console.log(error.response);
       }
     }
   };

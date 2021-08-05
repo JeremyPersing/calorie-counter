@@ -46,7 +46,6 @@ function SpecificMeal(props) {
 
       return meal.data;
     } catch (error) {
-      console.log(error);
       toast.error("Could not retrieve meal");
     }
   };
@@ -64,7 +63,6 @@ function SpecificMeal(props) {
 
       return meal.data.foods[0];
     } catch (error) {
-      console.log(error);
       toast.error("Could not retrieve meal");
     }
   };
@@ -81,17 +79,14 @@ function SpecificMeal(props) {
 
         setPlayLottie(true);
         let meal = props.location.meal;
-        console.log("MEALLLLLLLL", meal);
         if (!meal)
           meal = JSON.parse(localStorage.getItem("currentMealSelected"));
-        console.log("meal after", meal);
 
         // User created meal and the back button has not been hit
         if (
           meal.created_meal &&
           (mealId[0] === meal.food_name || mealId === meal.food_name)
         ) {
-          console.log("USER CREATED MEAL !!!!!!!!!!!");
           // A user created ingredient is clicked
           meal = await getSpecificUserMeal(mealId);
         } else {
@@ -99,18 +94,14 @@ function SpecificMeal(props) {
           if (mealId[0] !== meal.food_name || mealId !== meal.food_name) {
             // User created meal
             if (Array.isArray(mealId)) {
-              console.log("Is an array in the else statement");
               meal = await getSpecificUserMeal(mealId);
             }
             // nutritionix meal
             else {
-              console.log("In the else of the else statement");
-              console.log(mealId);
               meal = await getSpecificNutritionixMeal(mealId);
             }
           }
         }
-        console.log("Meal after all ifs and elses", meal);
 
         // Set the current meal to localStorage in case the user refreshes the page
         localStorage.setItem("currentMealSelected", JSON.stringify(meal));
@@ -119,13 +110,11 @@ function SpecificMeal(props) {
         setMeal(meal);
         setConsumedMeal(meal);
 
-        console.log("meal displaying in specificMeal", meal);
 
         // See if the meal is editable or not
         let arr = await getUserMeals();
         arr = arr.data;
         const index = arr.findIndex((m) => m.food_name === meal.food_name);
-        console.log("index", index);
         if (index > -1) setLocalUserMeal(true);
         else setLocalUserMeal(false);
 
@@ -177,14 +166,12 @@ function SpecificMeal(props) {
     serverObj.serving_qty = Number(servings);
     serverObj.thumb = consumedMeal.photo.thumb;
 
-    console.log(serverObj);
     handleClose();
 
     try {
       await postConsumedMeal(serverObj);
       history.push("/");
     } catch (error) {
-      console.log(error);
       toast.error("An error occurred adding a meal");
     }
   };
@@ -223,13 +210,11 @@ function SpecificMeal(props) {
       setConsumedMeal(response.data);
     } catch (error) {
       setLocalUserMeal(false);
-      console.log(error);
     }
   };
 
   const handleDelete = async () => {
     try {
-      console.log("meal in handleDelete", meal);
       let response, mealId;
       if (meal._id) {
         response = await deleteMealById(meal._id);
@@ -255,7 +240,6 @@ function SpecificMeal(props) {
   };
 
   const handleIngredientClick = (ingredientObj) => {
-    console.log("ingredientObj", ingredientObj);
     const mealName = ingredientObj.food;
     const obj = {
       food_name: mealName,

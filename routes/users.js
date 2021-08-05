@@ -49,9 +49,7 @@ router.post("/", async (req, res) => {
 });
 
 router.post("/google", async (req, res) => {
-  console.log("In google")
   const result = validateGoogleRequest(req.body);
-  console.log(result)
   if (result.error) return res.status(400).send(result.error.message);
 
   let user = await GoogleUser.findOne({ email: req.body.email });

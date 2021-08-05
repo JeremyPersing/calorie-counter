@@ -98,7 +98,9 @@ class Login extends Form {
                         </button>
                         <hr />
                         <GoogleButton login={true} />
-                        <FacebookButton login={true} />
+                        <div className="mt-2">
+                          <FacebookButton login={true} />
+                        </div>
                       </div>
                       <hr />
                       <div className="text-center">

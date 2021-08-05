@@ -29,7 +29,6 @@ function Home(props) {
     async function getStats() {
       try {
         const { data } = await getUserStats();
-        console.log(data);
         const now = new Date();
         const threeWeekDate = new Date(data.userStats.dietThreeWeekDate);
         const sixWeekDate = new Date(data.userStats.dietSixWeekDate);
@@ -112,7 +111,6 @@ function Home(props) {
 
         setTotalCaloriesConsumed(Math.round(caloriesConsumed));
       } catch (error) {
-        console.log(error);
       }
     }
     getStats();
@@ -144,7 +142,6 @@ function Home(props) {
     try {
       await deleteConsumedMealById(id);
     } catch (error) {
-      console.log(error);
       toast.error("An error ocurred deleting that meal");
 
       setMealsConsumed(original);
@@ -249,7 +246,6 @@ function Home(props) {
     handleCloseEdit();
     if (index > -1) {
       meals[index] = consumedMeal;
-      console.log(meals);
       setMealsConsumed(meals);
       const calsConsumed = calculateCaloriesConsumed(meals);
       setTotalCaloriesConsumed(calsConsumed);
@@ -258,11 +254,9 @@ function Home(props) {
         const serverMeal = { ...consumedMeal };
         serverMeal.thumb = serverMeal.photo.thumb;
         delete serverMeal.photo;
-        console.log("serverMeal", serverMeal);
         await putConsumedMeal(serverMeal);
       } catch (error) {
         setMealsConsumed(original);
-        console.log(error);
         toast.error("An error occurred trying to update that meal");
       }
     }
@@ -288,7 +282,6 @@ function Home(props) {
   };
 
   const handleIngredientClick = (ingredientObj) => {
-    console.log("ingedient clicked", ingredientObj);
     const mealName = ingredientObj.food_name;
     const obj = {
       food_name: mealName,

@@ -56,7 +56,6 @@ class IngredientInputForm extends Form {
     }
 
     const meal = this.state.data;
-    console.log("meal b4", meal);
 
     // Sanitize the data
     meal.serving_qty = Number(meal.serving_qty);
@@ -78,8 +77,6 @@ class IngredientInputForm extends Form {
     meal.user_meal = true;
     meal.sub_recipe = [];
 
-    console.log("meal after more info", meal);
-
     try {
       const { data } = await postUserMeal(meal);
 
@@ -93,16 +90,11 @@ class IngredientInputForm extends Form {
           created_meal: data.created_meal,
         };
         this.setPropsIngredients(obj);
-        console.log(
-          "Sould be pushing this object to the ingredient input form",
-          obj
-        );
       } // Pushing a full meal
       else this.setPropsIngredients(data);
 
       this.props.handleClose();
     } catch (error) {
-      console.log(error);
       if (error.response.status === 409) {
         this.props.handleClose();
         toast.error(

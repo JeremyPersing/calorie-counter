@@ -65,7 +65,6 @@ router.put("/updatestats", auth, async (req, res) => {
   }
 
   const prior = await UserStats.findById(req.user._id)
-  console.log(prior)
   const dietStartDate = prior.userStats.dietStartDate;
   const dietThreeWeekDate = prior.userStats.dietThreeWeekDate;
   const dietSixWeekDate = prior.userStats.dietSixWeekDate;
@@ -101,7 +100,6 @@ router.put("/updatestats", auth, async (req, res) => {
 });
 
 router.post("/", auth, async (req, res) => {
-  console.log(req.body)
   const result = validateRequest(req.body);
 
   if (result.error) {

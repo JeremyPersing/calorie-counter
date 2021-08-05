@@ -10,8 +10,6 @@ function Meals() {
     const meals = JSON.parse(localStorage.getItem("searchedMeals"));
     if (!meals) return;
     setProducts(meals);
-
-    console.log("products in Meals", meals);
   }, []);
 
   return (

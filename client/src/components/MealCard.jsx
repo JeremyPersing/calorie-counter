@@ -38,7 +38,6 @@ function MealCard(props) {
   const handleShow = () => setShow(true);
 
   const handleClick = () => {
-    console.log("mealCard clicked", meal);
     const mealName = meal.food_name;
     let pathName = "/meals/" + mealName; // Generic meal
 

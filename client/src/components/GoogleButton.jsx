@@ -16,7 +16,7 @@ function GoogleButton(props) {
 
   const googleResponse = async (res) => {
     try {
-      console.log("google response is occurring");
+
       const serverObj = {
         name: res.profileObj.name,
         email: res.profileObj.email,
@@ -45,10 +45,8 @@ function GoogleButton(props) {
 
       history.push("/");
     } catch (error) {
-      toast.error(
-        "Error Logging in with Google. Make sure that your account is registered."
-      );
-      console.log(error);
+      toast.error(error.response.data);
+
     }
   };
 
@@ -58,7 +56,7 @@ function GoogleButton(props) {
       buttonText="Login with Google"
       render={(renderProps) => (
         <button
-          onClick={renderProps.onClick}
+          onClick={() => renderProps.onClick()}
           className="btn-google btn-user btn-block"
         >
           <i className="fab fa-google fa-fw pr-1"></i>
