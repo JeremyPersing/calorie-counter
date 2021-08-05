@@ -2,7 +2,7 @@ const { UserStats, validateRequest } = require("../models/userStats");
 const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/auth");
-const Joi = require("Joi");
+const Joi = require("joi");
 
 // req.user is set to a decoded jwt in the auth middleware and we can connect to each
 // userStats id with that in place

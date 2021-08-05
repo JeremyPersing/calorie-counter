@@ -1,7 +1,7 @@
 const dotenv = require("dotenv");
 dotenv.config();
 const mongoose = require("mongoose");
-const Joi = require("Joi");
+const Joi = require("joi");
 
 const userStatsSchema = new mongoose.Schema({
   userStats: {
