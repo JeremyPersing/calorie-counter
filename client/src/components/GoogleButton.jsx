@@ -45,7 +45,6 @@ function GoogleButton(props) {
 
       history.push("/");
     } catch (error) {
-      console.log(typeof error);
       props.login
         ? toast.error("An unexpected error has occured logging in with Google")
         : toast.error(
