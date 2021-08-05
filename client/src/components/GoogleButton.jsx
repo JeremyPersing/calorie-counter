@@ -16,7 +16,7 @@ function GoogleButton(props) {
 
   const googleResponse = async (res) => {
     try {
-
+      console.log(res);
       const serverObj = {
         name: res.profileObj.name,
         email: res.profileObj.email,
@@ -45,8 +45,12 @@ function GoogleButton(props) {
 
       history.push("/");
     } catch (error) {
-      toast.error(error.response.data);
-
+      console.log(typeof error);
+      props.login
+        ? toast.error("An unexpected error has occured logging in with Google")
+        : toast.error(
+            "An unexpected error has occured registering in with Google"
+          );
     }
   };
 
