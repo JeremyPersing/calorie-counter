@@ -66,26 +66,6 @@ const mealSchema = new mongoose.Schema({
   user_meal: { type: Boolean, required: true },
 });
 
-// const consumedMealSchema = new mongoose.Schema({
-//   food_name: { type: String, required: true, trim: true },
-//   brand_name: { type: String, trim: true },
-//   serving_qty: { type: Number, required: true },
-//   serving_unit: { type: String, required: true, trim: true },
-//   serving_weight_grams: { type: Number },
-//   nf_calories: { type: Number, required: true },
-//   nf_protein: { type: Number, required: true },
-//   nf_total_carbohydrate: { type: Number, required: true },
-//   nf_total_fat: { type: Number, required: true },
-//   nix_item_id: { type: String },
-//   photo: { type: Object, required: true },
-//   sub_recipe: { type: Array },
-//   liked: { type: Boolean, required: true },
-//   created_meal: { type: Boolean, required: true },
-//   user_meal: { type: Boolean, required: true },
-//   servings: {type: Number, required: true}
-// });
-
-
 const userMealsSchema = {
   user_id: { type: String, required: true },
   meals: {
@@ -102,4 +82,4 @@ const UserMeals = mongoose.model("UserMeals", userMealsSchema);
 
 exports.UserMeals = UserMeals;
 exports.validateRequest = validateRequest;
-exports.validateConsumedMealRequest = validateConsumedMealRequest; ///////////////////////////
+exports.validateConsumedMealRequest = validateConsumedMealRequest;
