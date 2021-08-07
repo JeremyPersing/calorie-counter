@@ -29,6 +29,7 @@
     "lodash": "^4.17.21",
     "mongoose": "^5.12.13",
     "node-cron": "^3.0.0",
+    "nodemon": "^2.0.12",
     "path": "^0.12.7",
     "react-chartjs-2": "^3.0.3",
     "react-circular-progressbar": "^2.0.4",
