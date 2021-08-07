@@ -1,5 +1,5 @@
 const dotenv = require("dotenv").config();
-const {UserMeals} = require("./models/userMeals");
+const { UserMeals } = require("./models/userMeals");
 const Joi = require("joi");
 Joi.objectId = require("joi-objectid")(Joi);
 const mongoose = require("mongoose");
@@ -14,16 +14,15 @@ const pixabay = require("./routes/pixabay");
 const path = require("path");
 const app = express();
 
-
 if (!process.env.jwtPrivateKey) {
   console.log("FATAL ERROR jwtPrivateKey is not defined");
   process.exit(1);
 }
 
-const localDBUri = "mongodb://localhost/calorie-counter"
+const localDBUri = "mongodb://localhost/calorie-counter";
 
 mongoose
-  .connect(process.env.MONGODB_URI || localDBUri, {
+  .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
@@ -39,25 +38,29 @@ app.use("/api/auth", auth);
 app.use("/api/userstats", userStats);
 app.use("/api/pixabay", pixabay);
 
-
-cron.schedule('0 0 * * *', async () => {
+cron.schedule("45 10 * * 0-6", async () => {
   try {
-    await UserMeals.updateMany({}, {$set: {consumed_meals: []}});
-    console.log("Consumed Meals All deleted")
+    await UserMeals.updateMany({}, { $set: { consumed_meals: [] } });
+    console.log("Consumed Meals All deleted");
+  } catch (error) {
+    console.log("error in deleting conumed meals for the day", error);
   }
-  catch (error) {
-    console.log("error in deleting conumed meals for the day", error)
+});
+
+cron.schedule("0 0 * * 0-6", async () => {
+  try {
+    await UserMeals.updateMany({}, { $set: { consumed_meals: [] } });
+    console.log("Consumed Meals All deleted");
+  } catch (error) {
+    console.log("error in deleting conumed meals for the day", error);
   }
-})
-
-
+});
 
 app.use(express.static(path.resolve(__dirname, "./client/build")));
 
 app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
-})
-
+});
 
 const port = process.env.PORT || 3001;
 
