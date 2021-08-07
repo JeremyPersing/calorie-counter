@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import MealCard from "./MealCard";
 import Pagination from "./Pagination";
 
@@ -56,8 +56,9 @@ function PaginatedMealsDisplay(props) {
             ) : null}
           </div>
         </div>
-        {currProducts.map((item) => (
+        {currProducts.map((item, index) => (
           <MealCard
+            key={index}
             likedMeals={likedMeals}
             searchMeals={searchMeals}
             getUserMeals={getUserMeals}

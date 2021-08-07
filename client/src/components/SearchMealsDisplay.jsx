@@ -134,7 +134,7 @@ function SearchMealsDisplay(props) {
   };
 
   return (
-    <div>
+    <div>   
       <Search
         className="col-md-6 offset-md-3 d-flex mt-4 mb-4"
         onChange={handleChange}

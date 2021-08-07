@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/MealCard.css";
 import { useHistory } from "react-router-dom";
 import nutritionixService from "../services/nutritionixService";
@@ -22,8 +22,6 @@ function MealCard(props) {
   // Has additional props of onMealClick and addMealSearch
   const { meal, products, setProducts, getUserMeals, searchMeals, likedMeals } =
     props;
-
-  // const [currMeal, setCurrMeal] = useState(meal);
   const [show, setShow] = useState(false);
 
   // When the user deletes a created meal, currMeal state gets set to null
@@ -87,6 +85,13 @@ function MealCard(props) {
     }
   };
 
+  const updateMealInProducts = (meal, index) => {
+    const prods = [...products];
+    prods[index] = meal;
+
+    setProducts(prods);
+  };
+
   // Can be done on Meals.jsx, MyMeals.jsx, and LikedMeals.jsx
   const handleLike = async () => {
     const originalProds = [...products];
@@ -94,7 +99,7 @@ function MealCard(props) {
     const originalMeal = { ...meal };
     const tempMeal = { ...meal };
 
-    const index = prods.findIndex((m) => m.food_name === meal.food_name);
+    const index = products.findIndex((m) => m.food_name === meal.food_name);
 
     tempMeal.liked = !tempMeal.liked;
     prods[index] = tempMeal;
@@ -168,10 +173,7 @@ function MealCard(props) {
       };
 
       const { data } = await postUserMeal(serverObj);
-
-      prods[index] = data;
-
-      setProducts(prods);
+      updateMealInProducts(data, index);
 
       updateLocalSearchedMeals(prods);
       return;
@@ -188,7 +190,8 @@ function MealCard(props) {
   const handleAdd = async () => {
     const originalProds = [...products];
     const prods = [...products];
-    const index = prods.indexOf(meal);
+    if (products === prods) console.log("products === prods");
+    const index = products.indexOf(meal);
     const tempMeal = { ...meal };
 
     if (tempMeal.user_meal) tempMeal.user_meal = !tempMeal.user_meal;
@@ -228,9 +231,7 @@ function MealCard(props) {
       };
 
       const { data } = await postUserMeal(serverObj);
-
-      prods[index] = data;
-      setProducts(prods);
+      updateMealInProducts(data, index);
 
       pushLocalUserMeal(data);
       updateLocalSearchedMeals(prods);
@@ -252,7 +253,7 @@ function MealCard(props) {
 
     // User created meal
     if (tempMeal.created_meal) {
-      const index = prods.findIndex((m) => m._id === tempMeal._id);
+      const index = products.findIndex((m) => m._id === tempMeal._id);
 
       if (index > -1) prods.splice(index, 1);
       else return;
@@ -298,7 +299,6 @@ function MealCard(props) {
 
   return (
     <>
-      {/*  */}
       <div className="col-md-6 col-xl-4">
         <div className="card">
           <div className="meal-card-body">
