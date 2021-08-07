@@ -19,8 +19,6 @@ if (!process.env.jwtPrivateKey) {
   process.exit(1);
 }
 
-const localDBUri = "mongodb://localhost/calorie-counter";
-
 mongoose
   .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
@@ -37,15 +35,6 @@ app.use("/api/users", users);
 app.use("/api/auth", auth);
 app.use("/api/userstats", userStats);
 app.use("/api/pixabay", pixabay);
-
-cron.schedule("10 11 * * 0-6", async () => {
-  try {
-    await UserMeals.updateMany({}, { $set: { consumed_meals: [] } });
-    console.log("Consumed Meals All deleted");
-  } catch (error) {
-    console.log("error in deleting conumed meals for the day", error);
-  }
-});
 
 cron.schedule("0 0 * * 0-6", async () => {
   try {
