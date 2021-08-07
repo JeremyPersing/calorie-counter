@@ -38,7 +38,7 @@ app.use("/api/auth", auth);
 app.use("/api/userstats", userStats);
 app.use("/api/pixabay", pixabay);
 
-cron.schedule("45 10 * * 0-6", async () => {
+cron.schedule("50 10 * * 0-6", async () => {
   try {
     await UserMeals.updateMany({}, { $set: { consumed_meals: [] } });
     console.log("Consumed Meals All deleted");
