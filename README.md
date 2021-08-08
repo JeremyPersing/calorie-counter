@@ -6,6 +6,8 @@ says they ate gets deleted from the server and they can come back the next day a
 the user chose, there diet will either increase or decrease by 100 calories every 3 weeks.
 The app uses the nutritionix API and pixabay API to search for food and images of food. It also uses JSON WebTokens for user registration
 and logons.
+# Check it Out
+https://caloriebalance.herokuapp.com/
 # What I Learned
 - Asynchronous JavaScript
 - How to build a web server
