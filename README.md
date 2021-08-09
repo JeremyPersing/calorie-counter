@@ -8,6 +8,8 @@ The app uses the nutritionix API and pixabay API to search for food and images o
 and logons.
 # Check it Out
 https://caloriebalance.herokuapp.com/
+# Demo
+https://youtu.be/77ypDLEEkkA
 # What I Learned
 - Asynchronous JavaScript
 - How to build a web server
