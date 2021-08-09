@@ -1,4 +1,4 @@
-# Calorie Counter
+# CalorieBalance
 This is a MERN Stack web app that aims to help its users reach their weight gain, weight maintenance, or weight loss goals.
 It allows the user to create an account, with OAuth2 if that is preferred, then input their stats and select an appropriate diet plan.
 From there, theu can create meals, search for foods, and track what they ate throughout the day. Every night at 12 am, whatever the user
