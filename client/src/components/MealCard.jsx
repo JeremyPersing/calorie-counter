@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "../styles/MealCard.css";
 import { useHistory } from "react-router-dom";
 import nutritionixService from "../services/nutritionixService";
@@ -36,7 +36,10 @@ function MealCard(props) {
   const handleShow = () => setShow(true);
 
   const handleClick = () => {
-    const mealName = meal.food_name;
+    let mealName = meal.food_name;
+
+    if (mealName.includes("%")) mealName = mealName.replaceAll("%", "%25");
+
     let pathName = "/meals/" + mealName; // Generic meal
 
     // Represents non user created meals that are brand specific
